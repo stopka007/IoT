@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify';
+import patientRoutes from './patient.route';
 
-import { apiRoutes } from './api';
-
-export function registerRoutes(server: FastifyInstance): void {
-  server.register(apiRoutes, { prefix: '/api' });
-}
+export const registerRoutes = (server: FastifyInstance) => {
+  server.register(patientRoutes, { prefix: '/api/patients' });
+};
