@@ -1,40 +1,38 @@
-import { FastifyInstance, FastifyPluginAsync } from "fastify";
+import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 
-export const apiRoutes: FastifyPluginAsync = async (
-  fastify: FastifyInstance
-) => {
-  fastify.get("/", {
+export const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
+  fastify.get('/', {
     schema: {
       response: {
         200: {
-          type: "object",
+          type: 'object',
           properties: {
-            message: { type: "string" },
-            version: { type: "string" },
+            message: { type: 'string' },
+            version: { type: 'string' },
           },
         },
       },
     },
     handler: async () => {
       return {
-        message: "API is running",
-        version: "1.0.0",
+        message: 'API is running',
+        version: '1.0.0',
       };
     },
   });
 
   // Example resource endpoint
-  fastify.get("/examples", {
+  fastify.get('/examples', {
     schema: {
       response: {
         200: {
-          type: "array",
+          type: 'array',
           items: {
-            type: "object",
+            type: 'object',
             properties: {
-              id: { type: "number" },
-              name: { type: "string" },
-              createdAt: { type: "string", format: "date-time" },
+              id: { type: 'number' },
+              name: { type: 'string' },
+              createdAt: { type: 'string', format: 'date-time' },
             },
           },
         },
@@ -42,8 +40,8 @@ export const apiRoutes: FastifyPluginAsync = async (
     },
     handler: async () => {
       return [
-        { id: 1, name: "Example 1", createdAt: new Date().toISOString() },
-        { id: 2, name: "Example 2", createdAt: new Date().toISOString() },
+        { id: 1, name: 'Example 1', createdAt: new Date().toISOString() },
+        { id: 2, name: 'Example 2', createdAt: new Date().toISOString() },
       ];
     },
   });

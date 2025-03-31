@@ -1,7 +1,8 @@
-import Fastify, { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
+
+import Fastify, { FastifyInstance } from 'fastify';
 
 import { registerRoutes } from './routes';
 
@@ -53,4 +54,4 @@ export async function buildServer(): Promise<FastifyInstance> {
   });
 
   return server;
-} 
+}
