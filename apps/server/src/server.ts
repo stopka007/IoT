@@ -54,4 +54,4 @@ export async function buildServer(): Promise<FastifyInstance> {
   });
 
   return server;
-}
+};

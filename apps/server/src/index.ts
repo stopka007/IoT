@@ -1,4 +1,8 @@
 import { buildServer } from './server';
+import { connectDB } from './config/db';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const start = async () => {
   const server = await buildServer();
@@ -7,11 +11,13 @@ const start = async () => {
     const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
     const host = process.env.HOST || '0.0.0.0';
 
+    // Připoj DB před spuštěním serveru
+    await connectDB();
+
     await server.listen({ port, host });
 
     console.log(`Server listening on ${host}:${port}`);
 
-    // Handle graceful shutdown
     const shutdown = async () => {
       console.log('Shutting down server...');
       await server.close();
