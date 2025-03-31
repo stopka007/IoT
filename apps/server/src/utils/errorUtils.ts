@@ -1,3 +1,5 @@
+import { FastifyReply, FastifyRequest } from "fastify";
+
 import { ApiError } from "./errors";
 
 /**
@@ -5,7 +7,7 @@ import { ApiError } from "./errors";
  * This is an alternative to try-catch blocks in every route
  */
 export const asyncHandler = (handler: Function) => {
-  return async (req, reply) => {
+  return async (req: FastifyRequest, reply: FastifyReply) => {
     try {
       return await handler(req, reply);
     } catch (error) {

@@ -3,11 +3,11 @@ export class ApiError extends Error {
   message: string;
   cause?: Error;
 
-  constructor(statusCode: number, message: string, cause?: Error) {
+  constructor(statusCode: number, message: string, cause?: unknown) {
     super(message);
     this.statusCode = statusCode;
     this.message = message;
-    this.cause = cause;
+    this.cause = cause instanceof Error ? cause : new Error(String(cause));
     Object.setPrototypeOf(this, ApiError.prototype);
   }
 
@@ -21,35 +21,39 @@ export class ApiError extends Error {
     };
   }
 
-  static fromError(error: Error): ApiError {
+  static fromError(error: unknown): ApiError {
     if (error instanceof ApiError) {
       return error;
     }
 
-    return new ApiError(500, error.message || "Internal Server Error", error);
+    if (error instanceof Error) {
+      return new ApiError(500, error.message, error);
+    }
+
+    return new ApiError(500, "Internal Server Error", new Error(String(error)));
   }
 
-  static badRequest(message: string = "Bad Request", cause?: Error): ApiError {
+  static badRequest(message: string = "Bad Request", cause?: unknown): ApiError {
     return new ApiError(400, message, cause);
   }
 
-  static unauthorized(message: string = "Unauthorized", cause?: Error): ApiError {
+  static unauthorized(message: string = "Unauthorized", cause?: unknown): ApiError {
     return new ApiError(401, message, cause);
   }
 
-  static forbidden(message: string = "Forbidden", cause?: Error): ApiError {
+  static forbidden(message: string = "Forbidden", cause?: unknown): ApiError {
     return new ApiError(403, message, cause);
   }
 
-  static notFound(message: string = "Not Found", cause?: Error): ApiError {
+  static notFound(message: string = "Not Found", cause?: unknown): ApiError {
     return new ApiError(404, message, cause);
   }
 
-  static conflict(message: string = "Conflict", cause?: Error): ApiError {
+  static conflict(message: string = "Conflict", cause?: unknown): ApiError {
     return new ApiError(409, message, cause);
   }
 
-  static internal(message: string = "Internal Server Error", cause?: Error): ApiError {
+  static internal(message: string = "Internal Server Error", cause?: unknown): ApiError {
     return new ApiError(500, message, cause);
   }
 }
