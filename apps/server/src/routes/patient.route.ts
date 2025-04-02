@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-
 import Patient from "../models/patient.model";
 import { ApiError } from "../utils/errors";
 
