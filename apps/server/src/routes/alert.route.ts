@@ -9,7 +9,7 @@ export default async function (server: FastifyInstance) {
   server.get(
     "/",
     asyncHandler(async (request: FastifyRequest, reply: FastifyReply) => {
-      const { status, pacientId } = request.query as { status?: string; pacientId?: string };
+      const { status, deviceId } = request.query as { status?: string; deviceId?: string };
 
       // If status=open is provided, return only open alerts
       if (status === "open") {
@@ -17,10 +17,10 @@ export default async function (server: FastifyInstance) {
         return reply.send(openAlerts);
       }
 
-      // If pacientId is provided, filter by patient ID
-      if (pacientId) {
-        const patientAlerts = await Alert.find({ id_patient: pacientId });
-        return reply.send(patientAlerts);
+      // If deviceId is provided, filter by device ID
+      if (deviceId) {
+        const deviceAlerts = await Alert.find({ id_device: deviceId });
+        return reply.send(deviceAlerts);
       }
 
       // Default: return all alerts
