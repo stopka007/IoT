@@ -43,15 +43,11 @@ export default async function (server: FastifyInstance) {
       async (request: FastifyRequest<{ Params: { device_id: string } }>, reply: FastifyReply) => {
         const { device_id } = request.params;
 
-        // Validate device_id parameter
         if (!device_id || device_id.trim() === "") {
           throw ApiError.badRequest("Missing or empty device_id parameter");
         }
 
-        // Find device by id_device field instead of MongoDB's _id
         const device = await Device.findOne({ id_device: device_id });
-
-        // Use the checkResourceExists utility to handle not found case
         checkResourceExists(device, `Device not found with id_device: ${device_id}`);
 
         reply.send(device);
@@ -59,6 +55,36 @@ export default async function (server: FastifyInstance) {
     ),
   );
 
+  // Update device by device_id instead of mongo_id
+  server.patch<{ Params: { device_id: string }; Body: Partial<typeof Device.prototype> }>(
+    "/device/:device_id",
+    asyncHandler(
+      async (
+        request: FastifyRequest<{
+          Params: { device_id: string };
+          Body: Partial<typeof Device.prototype>;
+        }>,
+        reply: FastifyReply,
+      ) => {
+        const { device_id } = request.params;
+
+        if (!device_id || device_id.trim() === "") {
+          throw ApiError.badRequest("Missing or empty device_id parameter");
+        }
+
+        const device = await Device.findOneAndUpdate({ id_device: device_id }, request.body, {
+          new: true,
+          runValidators: true,
+        });
+
+        checkResourceExists(device, `Device not found with id_device: ${device_id}`);
+
+        reply.send(device);
+      },
+    ),
+  );
+
+  // Update device by MongoDB ID
   server.patch<{ Params: { id: string }; Body: Partial<typeof Device.prototype> }>(
     "/:id",
     async (request, reply) => {
@@ -93,6 +119,36 @@ export default async function (server: FastifyInstance) {
     },
   );
 
+  // Update only help_needed by device_id
+  server.patch<{ Params: { device_id: string }; Body: { help_needed: boolean } }>(
+    "/device/:device_id/help",
+    asyncHandler(
+      async (
+        request: FastifyRequest<{
+          Params: { device_id: string };
+          Body: { help_needed: boolean };
+        }>,
+        reply: FastifyReply,
+      ) => {
+        const { device_id } = request.params;
+
+        if (!device_id || device_id.trim() === "") {
+          throw ApiError.badRequest("Missing or empty device_id parameter");
+        }
+
+        const device = await Device.findOneAndUpdate(
+          { id_device: device_id },
+          { help_needed: request.body.help_needed },
+          { new: true, runValidators: true },
+        );
+
+        checkResourceExists(device, `Device not found with id_device: ${device_id}`);
+
+        reply.send(device);
+      },
+    ),
+  );
+
   // Get battery + help status
   server.get<{ Params: { id: string } }>("/:id/status", async (request, reply) => {
     try {
@@ -104,6 +160,28 @@ export default async function (server: FastifyInstance) {
     }
   });
 
+  // Get battery + help status by device_id
+  server.get<{ Params: { device_id: string } }>(
+    "/device/:device_id/status",
+    asyncHandler(
+      async (request: FastifyRequest<{ Params: { device_id: string } }>, reply: FastifyReply) => {
+        const { device_id } = request.params;
+
+        if (!device_id || device_id.trim() === "") {
+          throw ApiError.badRequest("Missing or empty device_id parameter");
+        }
+
+        const device = await Device.findOne({ id_device: device_id }).select(
+          "battery_level help_needed",
+        );
+
+        checkResourceExists(device, `Device not found with id_device: ${device_id}`);
+
+        reply.send(device);
+      },
+    ),
+  );
+
   // Delete device
   server.delete<{ Params: { id: string } }>("/:id", async (request, reply) => {
     try {
@@ -114,4 +192,23 @@ export default async function (server: FastifyInstance) {
       throw ApiError.internal("Failed to delete device", error);
     }
   });
+
+  // Delete device by device_id
+  server.delete<{ Params: { device_id: string } }>(
+    "/device/:device_id",
+    asyncHandler(
+      async (request: FastifyRequest<{ Params: { device_id: string } }>, reply: FastifyReply) => {
+        const { device_id } = request.params;
+
+        if (!device_id || device_id.trim() === "") {
+          throw ApiError.badRequest("Missing or empty device_id parameter");
+        }
+
+        const device = await Device.findOneAndDelete({ id_device: device_id });
+        checkResourceExists(device, `Device not found with id_device: ${device_id}`);
+
+        reply.send({ message: "Device deleted" });
+      },
+    ),
+  );
 }
