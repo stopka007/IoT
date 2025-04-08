@@ -6,9 +6,14 @@ import { ApiError } from "../utils/errors";
 
 export default async function (server: FastifyInstance) {
   // Create device
-  server.post("/", async (request, reply) => {
+  server.post<{ Body: Partial<typeof Device.prototype> }>("/", async (request, reply) => {
     try {
-      const device = await Device.create(request.body);
+      // Ensure alert is set to null if not provided
+      const deviceData = {
+        ...(request.body as Record<string, any>),
+        alert: request.body.alert || null,
+      };
+      const device = await Device.create(deviceData);
       reply.code(201).send(device);
     } catch (error) {
       throw ApiError.badRequest("Failed to create device", error);
@@ -173,6 +178,36 @@ export default async function (server: FastifyInstance) {
 
         const device = await Device.findOne({ id_device: device_id }).select(
           "battery_level help_needed",
+        );
+
+        checkResourceExists(device, `Device not found with id_device: ${device_id}`);
+
+        reply.send(device);
+      },
+    ),
+  );
+
+  // Update alert by device_id
+  server.patch<{ Params: { device_id: string }; Body: { alert: string | null } }>(
+    "/device/:device_id/alert",
+    asyncHandler(
+      async (
+        request: FastifyRequest<{
+          Params: { device_id: string };
+          Body: { alert: string | null };
+        }>,
+        reply: FastifyReply,
+      ) => {
+        const { device_id } = request.params;
+
+        if (!device_id || device_id.trim() === "") {
+          throw ApiError.badRequest("Missing or empty device_id parameter");
+        }
+
+        const device = await Device.findOneAndUpdate(
+          { id_device: device_id },
+          { alert: request.body.alert },
+          { new: true, runValidators: true },
         );
 
         checkResourceExists(device, `Device not found with id_device: ${device_id}`);
