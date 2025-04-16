@@ -5,15 +5,15 @@ import { mockUsers } from "./data";
 
 const UserList: React.FC = () => {
   return (
-    <ul className="flex-1 overflow-y-auto">
+    <ul className="flex-1 overflow-y-auto bg-gray-200">
       {mockUsers.map((user, index) => (
         <li
           key={index}
-          className="border-b border-white px-4 py-2 flex justify-between items-center hover:bg-gray-200 cursor-pointer"
+          className="border-neutral-300 border-s-stone-200  shadow-neutral-400 shadow-md px-4 py-3 flex justify-between items-center hover:bg-neutral-500 cursor-pointer hover:shadow-xl transform-3d transition duration-400 ease-in-out text-black hover:text-white"
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span
-              className={`w-2 h-2 rounded-full ${user.isActive ? "bg-green-500" : "bg-gray-400"}`}
+              className={`w-2 h-2 rounded-full ${user.isActive ? "bg-green-500" : "bg-red-700"}`}
               title={user.isActive ? "Active" : "Inactive"}
             />
             <span>{user.name}</span>

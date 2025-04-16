@@ -14,4 +14,24 @@ export const mockUsers = [
     battery: Math.floor(Math.random() * 100) + 1,
     isActive: Math.random() > 0.5,
   },
+  {
+    name: "Patient 3",
+    battery: Math.floor(Math.random() * 100) + 1,
+    isActive: Math.random() > 0.5,
+  },
+  {
+    name: "Patient 3",
+    battery: Math.floor(Math.random() * 100) + 1,
+    isActive: Math.random() > 0.5,
+  },
+  {
+    name: "Patient 3",
+    battery: Math.floor(Math.random() * 100) + 1,
+    isActive: Math.random() > 0.5,
+  },
+  {
+    name: "Patient 3",
+    battery: Math.floor(Math.random() * 100) + 1,
+    isActive: Math.random() > 0.5,
+  },
 ];
