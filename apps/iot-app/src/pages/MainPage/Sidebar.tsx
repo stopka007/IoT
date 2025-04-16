@@ -15,7 +15,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, sidebarWidth, setSideb
   return (
     <aside
       style={{ width: isSidebarOpen ? `${sidebarWidth}px` : "0px" }}
-      className={`transition-[width] duration-300 bg-gray-300 flex flex-col overflow-hidden relative`}
+      className={` bg-gray-300 flex flex-col overflow-hidden relative`}
     >
       {isSidebarOpen && (
         <>
