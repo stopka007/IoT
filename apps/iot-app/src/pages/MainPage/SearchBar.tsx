@@ -10,7 +10,7 @@ const SearchBar: React.FC = () => {
 
   return (
     <div className={`p-4 border-b ${borderColor}`}>
-      <h2 className="text-2xl font-semibold mb-2">Users</h2>
+      <h2 className="text-2xl font-semibold mb-2">Personál</h2>
       <div className="flex items-center justify-between gap-2">
         <input
           type="text"

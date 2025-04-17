@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+import WarningAlert from "../../alerts/WarningAlerts";
 import { useTheme } from "../../functions/ThemeContext";
 
 import Sidebar from "./Sidebar";
@@ -37,10 +38,22 @@ export default function MainPage() {
         </button>
 
         <header className={`text-center text-2xl font-medium py-4 border-b ${headerClass}`}>
-          Header
+          Název aplikace
         </header>
 
-        <div className="flex-1 p-4"></div>
+        <div className="flex flex-col gap-4 w-48 p-4">
+          <h2 className="text-3xl">Alerts</h2>
+          <WarningAlert />
+          <button className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition">
+            Low battery
+          </button>
+          <button className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition">
+            Alert
+          </button>
+          <button className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition">
+            Lost connection
+          </button>
+        </div>
       </main>
     </div>
   );
