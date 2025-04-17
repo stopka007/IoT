@@ -1,4 +1,4 @@
-import React, { ReactNode, createContext, useContext, useState } from "react";
+import React, { ReactNode, createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
 
@@ -12,16 +12,25 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useState<Theme>("light");
 
+  // Načíst téma z localStorage při načtení
+  useEffect(() => {
+    const storedTheme = localStorage.getItem("theme") as Theme | null;
+    if (storedTheme === "light" || storedTheme === "dark") {
+      setTheme(storedTheme);
+    }
+  }, []);
+
   const toggleTheme = () => {
-    setTheme(prev => (prev === "light" ? "dark" : "light"));
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
   };
+
+  const bgClass = theme === "light" ? "bg-white text-black" : "bg-neutral-500 text-white";
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      <div
-        className={theme === "light" ? "bg-white text-black" : "bg-neutral-500 text-white"}
-        style={{ minHeight: "100vh" }}
-      >
+      <div className={`${bgClass}`} style={{ minHeight: "100vh" }}>
         {children}
       </div>
     </ThemeContext.Provider>
