@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useTheme } from "../../functions/ThemeContext";
+import { useTheme } from "../functions/ThemeContext";
 
 import BatteryBar from "./BatteryBar";
 import { mockUsers } from "./data";

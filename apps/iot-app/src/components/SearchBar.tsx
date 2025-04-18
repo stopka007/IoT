@@ -1,7 +1,7 @@
 import React from "react";
 
-import FilterIcon from "../../Icons/FilterIcon";
-import { useTheme } from "../../functions/ThemeContext";
+import FilterIcon from "../Icons/FilterIcon";
+import { useTheme } from "../functions/ThemeContext";
 
 const SearchBar: React.FC = () => {
   const { theme } = useTheme();

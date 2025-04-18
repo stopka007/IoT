@@ -1,7 +1,7 @@
 import React from "react";
 
-import DragHandle from "../../functions/DragHandle";
-import { useTheme } from "../../functions/ThemeContext";
+import DragHandle from "../functions/DragHandle";
+import { useTheme } from "../functions/ThemeContext";
 
 import SearchBar from "./SearchBar";
 import UserList from "./UserList";
