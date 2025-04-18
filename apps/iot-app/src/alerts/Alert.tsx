@@ -5,6 +5,7 @@ interface AlertProps {
   title: string;
   message: string;
   room?: string;
+  pacient?: string;
 }
 
 const iconMap = {
@@ -36,7 +37,7 @@ const iconMap = {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="text-yellow-400"
+      className="text-red-400"
       viewBox="0 0 24 24"
     >
       <rect x="2" y="7" width="18" height="10" rx="2" ry="2" />
@@ -70,7 +71,7 @@ const iconMap = {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="text-purple-500"
+      className="text-blue-600"
       viewBox="0 0 24 24"
     >
       <path d="M16 8a6 6 0 0 0-8 0" />
@@ -81,7 +82,7 @@ const iconMap = {
   ),
 };
 
-const Alert: React.FC<AlertProps> = ({ type, title, message, room }) => {
+const Alert: React.FC<AlertProps> = ({ type, title, message, room, pacient }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -100,11 +101,12 @@ const Alert: React.FC<AlertProps> = ({ type, title, message, room }) => {
 
             <h3 className="text-2xl font-semibold mb-4">{title}</h3>
             <p className="mb-1">{message}</p>
-            {room && <p className="mb-6">Room {room}</p>}
-            <div className="flex justify-center gap-2">
+            {room && <p className="mb-1">Room: {room}</p>}
+            {pacient && <p className="mb-1">Pacient: {pacient}</p>}
+            <div className="flex justify-center mt-6 gap-2">
               <button
                 onClick={() => setIsOpen(false)}
-                className="px-4 py-2 text-sm bg-red-400 font-medium border border-red-300 hover:bg-red-500 rounded text-white transition ease-in-out hover:border-red-500 duration-300 hover:shadow-md"
+                className="px-4 py-2 text-sm bg-green-400 font-medium border border-green-300 hover:bg-green-500 rounded text-white transition ease-in-out hover:border-green-500 duration-300 hover:shadow-md"
               >
                 Ok
               </button>
