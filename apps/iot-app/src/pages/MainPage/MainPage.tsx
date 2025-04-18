@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import ArrowLeftIcon from "../../Icons/ArrowLeftIcon";
 import ArrowRightIcon from "../../Icons/ArrowRightIcon";
@@ -11,29 +11,38 @@ export default function MainPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(250);
   const { theme, toggleTheme } = useTheme();
-  const [isLoading, setIsLoading] = useState(false); // nový stav
+  const [isLoading, setIsLoading] = useState(true);
 
   const headerClass =
     theme === "light"
       ? "bg-gray-100 text-black border-gray-300"
       : "bg-neutral-600 text-white border-white/20";
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, []);
+
   const handleToggleTheme = () => {
     setIsLoading(true);
     setTimeout(() => {
       toggleTheme();
       setIsLoading(false);
-    }, 200);
+    }, 500);
   };
 
   return (
     <div className="h-screen flex overflow-hidden relative">
       {isLoading && <LoadingOverlay />}
+
       <Sidebar
         isSidebarOpen={isSidebarOpen}
         sidebarWidth={sidebarWidth}
         setSidebarWidth={setSidebarWidth}
       />
+
       <main className="flex-1 flex flex-col relative">
         <button
           onClick={() => setIsSidebarOpen(prev => !prev)}
