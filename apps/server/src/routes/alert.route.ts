@@ -29,6 +29,15 @@ export default async function (server: FastifyInstance) {
     }),
   );
 
+  // Delete alerts
+  server.delete(
+    "/delete",
+    asyncHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+      const alerts = await Alert.deleteMany();
+      reply.send(alerts);
+    }),
+  );
+
   // POST /alerts - Create a new alert (SOS notification)
   server.post(
     "/",
