@@ -3,9 +3,8 @@ import React, { useState } from "react";
 import ArrowLeftIcon from "../../Icons/ArrowLeftIcon";
 import ArrowRightIcon from "../../Icons/ArrowRightIcon";
 import Alert from "../../alerts/Alert";
+import Sidebar from "../../components/Sidebar";
 import { useTheme } from "../../functions/ThemeContext";
-
-import Sidebar from "./Sidebar";
 
 export default function MainPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
