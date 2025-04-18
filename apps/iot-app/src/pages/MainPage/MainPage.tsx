@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import ArrowLeftIcon from "../../Icons/ArrowLeftIcon";
 import ArrowRightIcon from "../../Icons/ArrowRightIcon";
 import Alert from "../../alerts/Alert";
+import LoadingOverlay from "../../components/LoadingOverlay";
 import Sidebar from "../../components/Sidebar";
 import { useTheme } from "../../functions/ThemeContext";
 
@@ -10,14 +11,24 @@ export default function MainPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(250);
   const { theme, toggleTheme } = useTheme();
+  const [isLoading, setIsLoading] = useState(false); // nový stav
 
   const headerClass =
     theme === "light"
       ? "bg-gray-100 text-black border-gray-300"
       : "bg-neutral-600 text-white border-white/20";
 
+  const handleToggleTheme = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      toggleTheme();
+      setIsLoading(false);
+    }, 200);
+  };
+
   return (
-    <div className="h-screen flex overflow-hidden">
+    <div className="h-screen flex overflow-hidden relative">
+      {isLoading && <LoadingOverlay />}
       <Sidebar
         isSidebarOpen={isSidebarOpen}
         sidebarWidth={sidebarWidth}
@@ -32,7 +43,7 @@ export default function MainPage() {
         </button>
 
         <button
-          onClick={toggleTheme}
+          onClick={handleToggleTheme}
           className="absolute right-2 top-2 z-10 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition"
         >
           {theme === "light" ? "Dark" : "Light"}
