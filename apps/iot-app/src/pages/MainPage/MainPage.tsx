@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 
-import WarningAlert from "../../alerts/WarningAlerts";
+import ArrowLeftIcon from "../../Icons/ArrowLeftIcon";
+import ArrowRightIcon from "../../Icons/ArrowRightIcon";
+import Alert from "../../alerts/Alert";
 import { useTheme } from "../../functions/ThemeContext";
 
 import Sidebar from "./Sidebar";
@@ -27,7 +29,7 @@ export default function MainPage() {
           onClick={() => setIsSidebarOpen(prev => !prev)}
           className="absolute left-2 top-2 z-10 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition"
         >
-          {isSidebarOpen ? "←" : "→"}
+          {isSidebarOpen ? <ArrowLeftIcon /> : <ArrowRightIcon />}
         </button>
 
         <button
@@ -43,16 +45,21 @@ export default function MainPage() {
 
         <div className="flex flex-col gap-4 w-48 p-4">
           <h2 className="text-3xl">Alerts</h2>
-          <WarningAlert />
-          <button className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition">
-            Low battery
-          </button>
-          <button className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition">
-            Alert
-          </button>
-          <button className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition">
-            Lost connection
-          </button>
+          <Alert type="warning" title="Warning" message="Possible patient fall!" room="A-105" />
+          <Alert
+            type="low-battery"
+            title="Low battery"
+            message="Sensor battery is below 10%"
+            room="B-207"
+          />
+          <Alert type="alert-canceled" title="Alert canceled" message="Alert has been dismissed" />
+          <Alert
+            type="lost-connection"
+            title="Lost connection"
+            message="Device disconnected from network"
+            room="A-006"
+            pacient="antonín komárek"
+          />
         </div>
       </main>
     </div>

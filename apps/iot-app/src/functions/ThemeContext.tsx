@@ -12,7 +12,6 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useState<Theme>("light");
 
-  // Načíst téma z localStorage při načtení
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme") as Theme | null;
     if (storedTheme === "light" || storedTheme === "dark") {
