@@ -4,6 +4,7 @@ import ArrowLeftIcon from "../../Icons/ArrowLeftIcon";
 import ArrowRightIcon from "../../Icons/ArrowRightIcon";
 import Alert from "../../alerts/Alert";
 import LoadingOverlay from "../../components/LoadingOverlay";
+import RoomsGrid from "../../components/RoomsComponent/RoomsGrid";
 import Sidebar from "../../components/Sidebar";
 import { useTheme } from "../../functions/ThemeContext";
 
@@ -79,6 +80,9 @@ export default function MainPage() {
             room="A-006"
             pacient="antonín komárek"
           />
+        </div>
+        <div className="p-6">
+          <RoomsGrid />
         </div>
       </main>
     </div>
