@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 
 import HomeIcon from "../../Icons/HomeIcon";
 import MessageSquareIcon from "../../Icons/MessageSquareIcon";
 import PersonIcon from "../../Icons/UserIcon";
 import { useTheme } from "../../functions/ThemeContext";
+import PatientDetail from "../PatientDetailComponent/PatientDetailComponent";
 
 interface RoomsComponentProps {
   title: string;
@@ -13,6 +14,7 @@ interface RoomsComponentProps {
 
 const RoomsComponent: React.FC<RoomsComponentProps> = ({ title, pacient, message }) => {
   const { theme } = useTheme();
+  const [selectedPatient, setSelectedPatient] = useState<string | null>(null);
 
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
   const baseText = theme === "light" ? "text-black" : "text-white";
@@ -43,6 +45,7 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({ title, pacient, message
         {pacient.map((name, index) => (
           <div
             key={index}
+            onClick={() => setSelectedPatient(name)}
             className={`flex duration-300  ease-in-out gap-2 mb-2 items-center px-2 py-2 overflow-x-auto rounded ${hoverBg} ${hoverText} cursor-pointer transition ${baseText}`}
           >
             <PersonIcon />
@@ -50,6 +53,14 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({ title, pacient, message
           </div>
         ))}
       </ul>
+      {selectedPatient && (
+        <PatientDetail
+          name={selectedPatient}
+          battery={Math.floor(Math.random() * 100)} // náhodně, nebo reálně pokud máš data
+          isActive={Math.random() > 0.5}
+          onClose={() => setSelectedPatient(null)}
+        />
+      )}
     </div>
   );
 };
