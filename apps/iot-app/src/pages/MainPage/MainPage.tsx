@@ -30,7 +30,7 @@ export default function MainPage() {
     setTimeout(() => {
       toggleTheme();
       setIsLoading(false);
-    }, 500);
+    }, 250);
   };
 
   return (
