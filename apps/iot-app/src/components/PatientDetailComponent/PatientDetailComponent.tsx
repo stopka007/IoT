@@ -1,39 +1,62 @@
-import React from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-import { useTheme } from "../../functions/ThemeContext";
-
-interface PatientDetailProps {
+interface Patient {
+  id: string;
   name: string;
-  battery: number;
-  isActive: boolean;
-  onClose: () => void;
+  room: string;
+  diagnosis: string;
+  notes: string;
 }
 
-const PatientDetail: React.FC<PatientDetailProps> = ({ name, battery, isActive, onClose }) => {
-  const { theme } = useTheme();
-  const baseText = theme === "light" ? "text-black" : "text-white";
-  const baseBg = theme === "light" ? "bg-white" : "bg-neutral-800";
+const mockPatients: Patient[] = [
+  {
+    id: "1",
+    name: "Jan Novák",
+    room: "101",
+    diagnosis: "Chřipka",
+    notes: "Citlivý na penicilin",
+  },
+  {
+    id: "2",
+    name: "Eva Svobodová",
+    room: "102",
+    diagnosis: "Zápal plic",
+    notes: "Zvláštní pozornost během noci",
+  },
+];
+
+const PatientDetail = () => {
+  const { id } = useParams<{ id: string }>();
+  const [patient, setPatient] = useState<Patient | null>(null);
+
+  useEffect(() => {
+    const found = mockPatients.find(p => p.id === id);
+    setPatient(found ?? null);
+  }, [id]);
+
+  if (!patient) {
+    return <div className="p-6 text-center text-xl text-red-500">Pacient nebyl nalezen.</div>;
+  }
 
   return (
-    <div className={`fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50`}>
-      <div className={`p-6 rounded-lg shadow-lg w-[300px] ${baseBg} ${baseText}`}>
-        <h2 className="text-xl font-bold mb-2">Detail pacienta</h2>
-        <p>
-          <strong>Jméno:</strong> {name}
-        </p>
-        <p>
-          <strong>Baterie:</strong> {battery}%
-        </p>
-        <p>
-          <strong>Status:</strong> {isActive ? "Aktivní" : "Neaktivní"}
-        </p>
-
-        <button
-          className="mt-4 px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
-          onClick={onClose}
-        >
-          Zavřít
-        </button>
+    <div className="p-6 flex justify-center">
+      <div className="bg-white dark:bg-neutral-800 shadow-md rounded-xl p-6 w-full max-w-md">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
+          Detail pacienta
+        </h2>
+        <div className="mb-2 text-gray-700 dark:text-gray-200">
+          <strong>Jméno:</strong> {patient.name}
+        </div>
+        <div className="mb-2 text-gray-700 dark:text-gray-200">
+          <strong>Pokoj:</strong> {patient.room}
+        </div>
+        <div className="mb-2 text-gray-700 dark:text-gray-200">
+          <strong>Diagnóza:</strong> {patient.diagnosis}
+        </div>
+        <div className="text-gray-700 dark:text-gray-200">
+          <strong>Poznámky:</strong> {patient.notes}
+        </div>
       </div>
     </div>
   );

@@ -1,8 +1,19 @@
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+
+import HomePage from "./components/MainPageComponent/HomePage";
+import PatientDetail from "./components/PatientDetailComponent/PatientDetailComponent";
+import MainPage from "./pages/MainPage/MainPage";
+
 function App() {
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">Hello World</h1>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainPage />}>
+          <Route index element={<HomePage />} />
+          <Route path="patients/:id" element={<PatientDetail />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 
