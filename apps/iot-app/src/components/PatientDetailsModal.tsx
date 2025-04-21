@@ -35,7 +35,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({ patient, onCl
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition"
-          aria-label="Zavrieť"
+          aria-label="Zavřít"
         >
           <CloseIcon />
         </button>
@@ -49,19 +49,19 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({ patient, onCl
             <span className={`font-medium ${labelColor}`}>ID pacienta:</span> {patient.id_patient}
           </div>
           <div>
-            <span className={`font-medium ${labelColor}`}>ID zariadenia:</span> {patient.id_device}
+            <span className={`font-medium ${labelColor}`}>ID zařízení:</span> {patient.id_device}
           </div>
           <div>
-            <span className={`font-medium ${labelColor}`}>Izba:</span> {patient.room}
+            <span className={`font-medium ${labelColor}`}>Pokoj:</span> {patient.room}
           </div>
           {patient.age !== undefined && (
             <div>
-              <span className={`font-medium ${labelColor}`}>Vek:</span> {patient.age}
+              <span className={`font-medium ${labelColor}`}>Věk:</span> {patient.age}
             </div>
           )}
           {patient.illness && (
             <div>
-              <span className={`font-medium ${labelColor}`}>Ochorenie:</span> {patient.illness}
+              <span className={`font-medium ${labelColor}`}>Nemoc:</span> {patient.illness}
             </div>
           )}
           {patient.notes && (
