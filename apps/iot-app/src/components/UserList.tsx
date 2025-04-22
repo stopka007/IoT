@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { data } from "react-router-dom";
 
 //import { useNavigate } from "react-router-dom";
 import { useTheme } from "../functions/ThemeContext";
 import { Patient, fetchAllPatients } from "../functions/patientService";
 
+import BatteryBar from "./BatteryBar";
 //import BatteryBar from "./BatteryBar";
 import LoadingOverlay from "./LoadingOverlay";
 import PatientDetailsModal from "./PatientDetailsModal";
@@ -62,9 +64,11 @@ const UserList: React.FC = () => {
               <span>{patient.name}</span>
             </div>
 
-            {/* <div className="flex items-center gap-1">
-             <BatteryBar battery={device.battery} />
-            </div> */}
+            {
+              <div className="flex items-center gap-1">
+                <BatteryBar battery={Math.floor(Math.random() * 100)} />
+              </div>
+            }
           </li>
         ))}
       </ul>
