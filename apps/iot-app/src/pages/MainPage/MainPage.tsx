@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 
 import ArrowLeftIcon from "../../Icons/ArrowLeftIcon";
 import ArrowRightIcon from "../../Icons/ArrowRightIcon";
+import Alert from "../../alerts/Alert";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import Breadcrumbs from "../../components/MainPageComponent/Breadcrumbs";
 import Sidebar from "../../components/Sidebar";
@@ -62,6 +63,21 @@ export default function MainPage() {
         <header className={`text-center text-2xl font-medium py-4 border-b ${headerClass}`}>
           Název aplikace
           <Breadcrumbs />
+          <Alert type="warning" title="Warning" message="Possible patient fall!" room="A-105" />
+          <Alert
+            type="low-battery"
+            title="Low battery"
+            message="Sensor battery is below 10%"
+            room="B-207"
+          />
+          <Alert type="alert-canceled" title="Alert canceled" message="Alert has been dismissed" />
+          <Alert
+            type="lost-connection"
+            title="Lost connection"
+            message="Device disconnected from network"
+            room="A-006"
+            pacient="antonín komárek"
+          />
         </header>
 
         <Outlet />

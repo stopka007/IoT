@@ -90,6 +90,9 @@ importers:
       '@fastify/swagger-ui':
         specifier: ^2.0.1
         version: 2.1.0
+      axios:
+        specifier: ^1.8.4
+        version: 1.8.4
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
