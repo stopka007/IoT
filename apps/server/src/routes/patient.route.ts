@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-
 import Patient from "../models/patient.model";
 import { ApiError } from "../utils/errors";
 
@@ -44,6 +43,9 @@ export default async function (server: FastifyInstance) {
       id_device: string;
       name: string;
       room: number;
+      illness: string;
+      age: number;
+      notes: string;
     }>;
   }>("/:id", async (request, reply) => {
     try {
