@@ -33,7 +33,13 @@ const PatientDetail = () => {
           <span className={`${labelClass} font-semibold`}>Jméno:</span> {patient.name}
         </div>
         <div className="mb-4">
+          <span className={`${labelClass} font-semibold`}>Věk:</span> {patient.age}
+        </div>
+        <div className="mb-4">
           <span className={`${labelClass} font-semibold`}>Pokoj:</span> {patient.room}
+        </div>
+        <div className="mb-4">
+          <span className={`${labelClass} font-semibold`}>Nemoc:</span> {patient.illness}
         </div>
         <div className="mb-4">
           <span className={`${labelClass} font-semibold`}>Baterie:</span> {patient.battery}%

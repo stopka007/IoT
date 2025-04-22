@@ -44,7 +44,7 @@ const RoomsGrid: React.FC = () => {
         setRoomsData(formattedRoomsData);
       } catch (err) {
         console.error("Failed to fetch patients:", err);
-        setError("Nepodarilo sa načítať dáta pacientov."); // User-friendly error message
+        setError("Nepodařilo se načíst data pacientů."); // User-friendly error message
       } finally {
         setIsLoading(false);
       }
@@ -54,7 +54,7 @@ const RoomsGrid: React.FC = () => {
   }, []); // Empty dependency array means this runs once on mount
 
   if (isLoading) {
-    return <div className="p-4 text-center">Načítavam dáta izieb...</div>;
+    return <div className="p-4 text-center">Načítám data pokojů...</div>;
   }
 
   if (error) {
@@ -62,7 +62,7 @@ const RoomsGrid: React.FC = () => {
   }
 
   if (roomsData.length === 0) {
-    return <div className="p-4 text-center">Nenašli sa žiadni pacienti.</div>;
+    return <div className="p-4 text-center">Nebyli nalezeni žádní pacienti.</div>;
   }
 
   // The component return starts here, separated from the data fetching logic
@@ -72,9 +72,9 @@ const RoomsGrid: React.FC = () => {
         {roomsData.map(room => (
           <div
             key={room.roomNumber}
-            className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]"
+            className="p-4 rounded-lg shadow dark:shadow-white/10 transition-colors duration-300"
           >
-            <RoomsComponent title={`Izba ${room.roomNumber}`} patients={room.patients} />
+            <RoomsComponent title={`Pokoj ${room.roomNumber}`} patients={room.patients} />
           </div>
         ))}
       </div>
