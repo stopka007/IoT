@@ -72,7 +72,7 @@ const RoomsGrid: React.FC = () => {
         {roomsData.map(room => (
           <div
             key={room.roomNumber}
-            className="p-4 rounded-lg shadow dark:shadow-white/10 transition-colors duration-300"
+            className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]"
           >
             <RoomsComponent title={`Pokoj ${room.roomNumber}`} patients={room.patients} />
           </div>
