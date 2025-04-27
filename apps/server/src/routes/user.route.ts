@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest, RouteShorthandOptions } from "fastify";
 
+import { authenticate } from "../middleware/auth.middleware";
 import User from "../models/user.model";
 import { ApiError } from "../utils/errors";
 
@@ -13,6 +14,18 @@ interface CreateUserRequestBody {
 
 // Regex for password complexity: min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+// Define reusable options for protected routes requiring userId param
+const protectedUserRouteOptions: RouteShorthandOptions = {
+  schema: {
+    params: {
+      type: "object",
+      properties: { userId: { type: "string" } },
+      required: ["userId"],
+    },
+  },
+  preHandler: [authenticate],
+};
 
 // Define the route handlers within a Fastify plugin
 async function userRoutes(fastify: FastifyInstance) {
@@ -83,34 +96,43 @@ async function userRoutes(fastify: FastifyInstance) {
   );
 
   // --- GET /api/users --- List all users ---
-  fastify.get("/", async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      // Find all users, explicitly exclude the password field
-      const users = await User.find({}).select("-password");
-      return reply.send(users);
-    } catch (error) {
-      fastify.log.error(error, "Error fetching users");
-      throw ApiError.internal("Failed to fetch users"); // Throw generic internal error for the handler
-    }
-  });
+  fastify.get(
+    "/",
+    { preHandler: [authenticate] }, // Options just for this route
+    async (request, reply: FastifyReply) => {
+      const requestingUser = request.user; // User info from authenticate middleware
+
+      // Authorization Check: Only admins can list all users
+      if (!requestingUser || requestingUser.role !== "admin") {
+        throw ApiError.forbidden("Insufficient permissions to list users.");
+      }
+
+      try {
+        // Find all users, explicitly exclude the password field
+        const users = await User.find({}).select("-password");
+        return reply.send(users);
+      } catch (error) {
+        fastify.log.error(error, "Error fetching users");
+        throw ApiError.internal("Failed to fetch users"); // Throw generic internal error for the handler
+      }
+    },
+  );
 
   // --- GET /api/users/:userId --- Get a single user by ID ---
   fastify.get(
     "/:userId",
-    {
-      schema: {
-        // Add schema validation for URL parameters
-        params: {
-          type: "object",
-          properties: {
-            userId: { type: "string" }, // Basic check, Mongoose will validate if it's a valid ObjectId format
-          },
-          required: ["userId"],
-        },
-      },
-    },
-    async (request: FastifyRequest<{ Params: { userId: string } }>, reply: FastifyReply) => {
-      const { userId } = request.params;
+    protectedUserRouteOptions, // Use the shared options object
+    async (request, reply: FastifyReply) => {
+      const userId = (request.params as { userId: string }).userId;
+      const requestingUser = request.user;
+
+      // Authorization Check: Allow self or admin
+      if (
+        !requestingUser ||
+        (requestingUser.role !== "admin" && requestingUser.userId !== userId)
+      ) {
+        throw ApiError.forbidden("Insufficient permissions to access this user.");
+      }
 
       try {
         const user = await User.findById(userId).select("-password");
@@ -139,35 +161,35 @@ async function userRoutes(fastify: FastifyInstance) {
     // Password and role changes are handled by separate endpoints
   }
 
-  fastify.patch(
-    "/:userId",
-    {
-      schema: {
-        params: {
-          type: "object",
-          properties: {
-            userId: { type: "string" },
-          },
-          required: ["userId"],
-        },
-        body: {
-          // Validate optional fields for update
-          type: "object",
-          properties: {
-            username: { type: "string", minLength: 1 },
-            email: { type: "string", format: "email" },
-          },
-          // No required fields, as it's a partial update
-          // Ensure at least one field is provided (can be added later if needed)
+  const patchUserOptions: RouteShorthandOptions = {
+    ...protectedUserRouteOptions, // Inherit base options (params validation, auth)
+    schema: {
+      ...protectedUserRouteOptions.schema, // Inherit params schema
+      body: {
+        // Add body schema specific to PATCH
+        type: "object",
+        properties: {
+          username: { type: "string", minLength: 1 },
+          email: { type: "string", format: "email" },
         },
       },
     },
-    async (
-      request: FastifyRequest<{ Params: { userId: string }; Body: UpdateUserRequestBody }>,
-      reply: FastifyReply,
-    ) => {
-      const { userId } = request.params;
-      const updateData = request.body;
+  };
+  fastify.patch(
+    "/:userId",
+    patchUserOptions, // Use the specific options for PATCH
+    async (request, reply: FastifyReply) => {
+      const userId = (request.params as { userId: string }).userId;
+      const updateData = request.body as UpdateUserRequestBody;
+      const requestingUser = request.user;
+
+      // Authorization Check: Allow self or admin
+      if (
+        !requestingUser ||
+        (requestingUser.role !== "admin" && requestingUser.userId !== userId)
+      ) {
+        throw ApiError.forbidden("Insufficient permissions to update this user.");
+      }
 
       // Prevent empty update requests
       if (Object.keys(updateData).length === 0) {
@@ -228,20 +250,18 @@ async function userRoutes(fastify: FastifyInstance) {
   // --- DELETE /api/users/:userId --- Delete a user ---
   fastify.delete(
     "/:userId",
-    {
-      schema: {
-        // Validate URL parameter
-        params: {
-          type: "object",
-          properties: {
-            userId: { type: "string" },
-          },
-          required: ["userId"],
-        },
-      },
-    },
-    async (request: FastifyRequest<{ Params: { userId: string } }>, reply: FastifyReply) => {
-      const { userId } = request.params;
+    protectedUserRouteOptions, // Use the shared options object
+    async (request, reply: FastifyReply) => {
+      const userId = (request.params as { userId: string }).userId;
+      const requestingUser = request.user;
+
+      // Authorization Check: Allow self or admin
+      if (
+        !requestingUser ||
+        (requestingUser.role !== "admin" && requestingUser.userId !== userId)
+      ) {
+        throw ApiError.forbidden("Insufficient permissions to delete this user.");
+      }
 
       try {
         const deletedUser = await User.findByIdAndDelete(userId);
@@ -268,7 +288,77 @@ async function userRoutes(fastify: FastifyInstance) {
     },
   );
 
-  // TODO: Add other user routes (DELETE, auth, role change etc.)
+  // --- PATCH /api/users/:userId/role --- Update a user's role (Admin only) ---
+  interface UpdateUserRoleRequestBody {
+    role: "admin" | "user";
+  }
+  // Define options specifically for the role update route
+  const patchUserRoleOptions: RouteShorthandOptions = {
+    ...protectedUserRouteOptions, // Inherit base options (params validation, auth)
+    schema: {
+      ...protectedUserRouteOptions.schema, // Inherit params schema
+      body: {
+        // Add body schema specific to Role PATCH
+        type: "object",
+        required: ["role"],
+        properties: {
+          role: { type: "string", enum: ["admin", "user"] },
+        },
+      },
+    },
+  };
+  fastify.patch(
+    "/:userId/role",
+    patchUserRoleOptions, // Use the specific options for role update
+    async (request, reply: FastifyReply) => {
+      const targetUserId = (request.params as { userId: string }).userId;
+      const newRole = (request.body as UpdateUserRoleRequestBody).role;
+      const requestingUser = request.user;
+
+      // Log the requesting user's details for debugging
+      fastify.log.info({ requestingUser }, "Checking authorization for role change");
+
+      try {
+        // Authorization Check: Ensure the requesting user is an admin
+        if (!requestingUser || requestingUser.role !== "admin") {
+          throw ApiError.forbidden("Insufficient permissions to change user roles.");
+        }
+
+        // Prevent admin from accidentally changing their own role via this endpoint?
+        // Optional: Add check if targetUserId === requestingUser.userId
+
+        // Find the target user to update
+        const targetUser = await User.findById(targetUserId);
+        if (!targetUser) {
+          throw ApiError.notFound("Target user not found.");
+        }
+
+        // Update the role and save
+        targetUser.role = newRole;
+        await targetUser.save(); // Mongoose validation applies
+
+        // Prepare response (excluding password)
+        const userResponse = targetUser.toObject();
+        delete userResponse.password;
+
+        return reply.send(userResponse);
+      } catch (error: any) {
+        // Handle known errors
+        if (error.name === "CastError" && error.path === "_id") {
+          throw ApiError.badRequest("Invalid target user ID format");
+        }
+        if (error.name === "ValidationError") {
+          // Should not happen often with enum validation in schema
+          throw ApiError.badRequest(`Validation Error: ${error.message}`, error);
+        }
+        // Log and re-throw other errors (including ApiError.forbidden, ApiError.notFound)
+        fastify.log.error(error, "Error updating user role");
+        throw error;
+      }
+    },
+  );
+
+  // TODO: Add auth routes (refresh, logout?)
 }
 
 export default userRoutes;
