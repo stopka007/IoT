@@ -29,10 +29,6 @@ async function userRoutes(fastify: FastifyInstance) {
             password: {
               type: "string",
               pattern: passwordRegex.source,
-              errorMessage: {
-                pattern:
-                  "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.",
-              },
             },
           },
         },
