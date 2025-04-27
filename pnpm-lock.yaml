@@ -90,6 +90,9 @@ importers:
       '@fastify/swagger-ui':
         specifier: ^2.0.1
         version: 2.1.0
+      '@sinclair/typebox':
+        specifier: ^0.34.33
+        version: 0.34.33
       axios:
         specifier: ^1.8.4
         version: 1.8.4
@@ -591,6 +594,9 @@ packages:
     resolution: {integrity: sha512-jjqy3uWlecfB98Psxb5cD6Fny9Fupv9LrDSPTQZUROqjvZmcCqNu4UMl7qqhlUUGpwiAkotj6GYu4SZdcr/nLw==, tarball: https://repo.plus4u.net/operatorGate/repository/public-javascript/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.38.0.tgz}
     cpu: [x64]
     os: [win32]
+
+  '@sinclair/typebox@0.34.33':
+    resolution: {integrity: sha512-5HAV9exOMcXRUxo+9iYB5n09XxzCXnfy4VTNW4xnDv+FgjzAGY989C28BIdljKqmF+ZltUwujE3aossvcVtq6g==, tarball: https://repo.plus4u.net/operatorGate/repository/public-javascript/@sinclair/typebox/-/typebox-0.34.33.tgz}
 
   '@swc/core-darwin-arm64@1.11.13':
     resolution: {integrity: sha512-loSERhLaQ9XDS+5Kdx8cLe2tM1G0HLit8MfehipAcsdctpo79zrRlkW34elOf3tQoVPKUItV0b/rTuhjj8NtHg==, tarball: https://repo.plus4u.net/operatorGate/repository/public-javascript/@swc/core-darwin-arm64/-/core-darwin-arm64-1.11.13.tgz}
@@ -2762,6 +2768,8 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.38.0':
     optional: true
+
+  '@sinclair/typebox@0.34.33': {}
 
   '@swc/core-darwin-arm64@1.11.13':
     optional: true
