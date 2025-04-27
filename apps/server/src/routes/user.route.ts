@@ -225,6 +225,49 @@ async function userRoutes(fastify: FastifyInstance) {
     },
   );
 
+  // --- DELETE /api/users/:userId --- Delete a user ---
+  fastify.delete(
+    "/:userId",
+    {
+      schema: {
+        // Validate URL parameter
+        params: {
+          type: "object",
+          properties: {
+            userId: { type: "string" },
+          },
+          required: ["userId"],
+        },
+      },
+    },
+    async (request: FastifyRequest<{ Params: { userId: string } }>, reply: FastifyReply) => {
+      const { userId } = request.params;
+
+      try {
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        if (!deletedUser) {
+          throw ApiError.notFound("User not found"); // Throw 404 if user didn't exist
+        }
+
+        // Successfully deleted
+        // Option 1: Send 204 No Content (common practice for DELETE)
+        return reply.status(204).send();
+
+        // Option 2: Send 200 OK with a confirmation message (also fine)
+        // return reply.send({ message: 'User deleted successfully' });
+      } catch (error: any) {
+        // Handle potential CastError if userId is not a valid ObjectId format
+        if (error.name === "CastError" && error.path === "_id") {
+          throw ApiError.badRequest("Invalid user ID format");
+        }
+        fastify.log.error(error, "Error deleting user");
+        // Re-throw other errors (like ApiError.notFound or potential internal errors)
+        throw error;
+      }
+    },
+  );
+
   // TODO: Add other user routes (DELETE, auth, role change etc.)
 }
 
