@@ -14,7 +14,7 @@ export default function MainPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(250);
   const { theme, toggleTheme } = useTheme();
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const headerClass =
@@ -30,13 +30,16 @@ export default function MainPage() {
     logout();
   };
 
+  if (isLoading) {
+    return <LoadingOverlay />;
+  }
+
   return (
     <div className="h-screen flex overflow-hidden relative">
       <Sidebar
         isSidebarOpen={isSidebarOpen}
         sidebarWidth={sidebarWidth}
         setSidebarWidth={setSidebarWidth}
-        username={user?.username || "User"}
       />
 
       <main className="flex-1 flex flex-col relative">
@@ -46,21 +49,25 @@ export default function MainPage() {
         >
           {isSidebarOpen ? <ArrowLeftIcon /> : <ArrowRightIcon />}
         </button>
-        <button
-          onClick={handleToggleTheme}
-          className="absolute right-2 top-2 z-10 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition"
-        >
-          {theme === "light" ? "Dark" : "Light"}
-        </button>
-        <button
-          onClick={handleLogout}
-          className="absolute right-20 top-2 z-10 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-800 hover:shadow-xs hover:shadow-red-600/50 transition"
-        >
-          Logout
-        </button>
-        <header className={`text-center text-2xl font-medium py-4 border-b ${headerClass}`}>
-          Název aplikace {user ? `(${user.role})` : ""}
-          <Breadcrumbs />
+        <header className={`p-4 pl-16 border-b ${headerClass} flex items-center justify-between`}>
+          <h1 className="text-2xl font-medium">😊 {user ? `(${user.role})` : ""}</h1>
+          <div className="flex items-center space-x-2 flex-shrink-0">
+            <button
+              onClick={handleToggleTheme}
+              className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition"
+            >
+              {theme === "light" ? "Dark" : "Light"}
+            </button>
+            <button
+              onClick={handleLogout}
+              className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-800 hover:shadow-xs hover:shadow-red-600/50 transition"
+            >
+              Logout
+            </button>
+          </div>
+        </header>
+        <Breadcrumbs />
+        <div className={`p-4 border-b ${headerClass} border-t-0`}>
           <Alert type="warning" title="Warning" message="Possible patient fall!" room="A-105" />
           <Alert
             type="low-battery"
@@ -76,8 +83,7 @@ export default function MainPage() {
             room="A-006"
             pacient="antonín komárek"
           />
-        </header>
-
+        </div>
         <Outlet />
       </main>
     </div>

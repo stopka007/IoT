@@ -5,6 +5,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import axios from "axios";
 import { z } from "zod";
 
 import apiClient from "../api/axiosConfig";
@@ -39,7 +40,7 @@ function LoginPage() {
     try {
       const response = await apiClient.post<{ token: string }>("/api/auth/login", data);
       if (response.data.token) {
-        login(response.data.token);
+        await login(response.data.token);
         navigate("/");
         toast.success("Logged in successfully!");
       } else {
@@ -47,10 +48,13 @@ function LoginPage() {
       }
     } catch (err) {
       console.error("Login failed:", err);
-      const errorMessage =
-        apiClient.isAxiosError(err) && err.response?.data?.message
-          ? err.response.data.message
-          : "Login failed. Check credentials or server status.";
+      let errorMessage = "Login failed. Check credentials or server status.";
+      if (axios.isAxiosError(err) && err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err instanceof Error) {
+        // Handle other generic errors if needed, though less likely here
+        // errorMessage = err.message;
+      }
       toast.error(errorMessage);
     }
   };
