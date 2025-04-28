@@ -109,6 +109,38 @@ async function authRoutes(fastify: FastifyInstance) {
     },
   );
 
+  // --- GET /api/auth/me --- Get Current Authenticated User ---
+  fastify.get(
+    "/me",
+    {
+      preHandler: [authenticate], // Requires user to be logged in
+    },
+    async (request, reply: FastifyReply) => {
+      const requestingUser = request.user;
+
+      if (!requestingUser) {
+        // Should not happen if authenticate middleware works, but safeguard
+        throw ApiError.unauthorized("Authentication required.");
+      }
+
+      try {
+        // Fetch user details using the ID from the token payload (via middleware)
+        const user = await User.findById(requestingUser.userId).select("-password");
+
+        if (!user) {
+          // User existed when token was created, but not anymore?
+          throw ApiError.notFound("User associated with token not found.");
+        }
+
+        return reply.send(user);
+      } catch (error: any) {
+        fastify.log.error(error, "Error fetching current user (/me)");
+        // Re-throw specific ApiErrors or let the central handler manage
+        throw error;
+      }
+    },
+  );
+
   // --- PATCH /api/auth/change-password --- Change authenticated user's password ---
   fastify.patch(
     "/change-password",

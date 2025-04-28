@@ -1,4 +1,5 @@
 import cors from "@fastify/cors";
+import rateLimit from "@fastify/rate-limit";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 
@@ -20,24 +21,27 @@ export async function buildServer(): Promise<FastifyInstance> {
     },
   });
 
-  // Register plugins
   await server.register(cors, {
     origin: true,
     credentials: true,
   });
 
-  // API documentation setup
+  await server.register(rateLimit, {
+    max: 100,
+    timeWindow: "1 minute",
+  });
+
   await server.register(swagger, {
     openapi: {
       info: {
-        title: "API Documentation",
-        description: "API documentation for the Fastify server",
+        title: "IoT API Documentation",
+        description: "API for the IoT Application",
         version: "1.0.0",
       },
       servers: [
         {
-          url: "http://localhost:3000",
-          description: "Development server",
+          url: process.env.API_URL || "http://localhost:3000",
+          description: "API server",
         },
       ],
     },
@@ -45,12 +49,15 @@ export async function buildServer(): Promise<FastifyInstance> {
 
   await server.register(swaggerUi, {
     routePrefix: "/docs",
+    uiConfig: {
+      docExpansion: "list",
+      deepLinking: false,
+    },
+    staticCSP: true,
+    transformStaticCSP: header => header,
   });
 
-  // Register global error handler
   server.setErrorHandler(errorHandler);
-
-  // Register routes
   registerRoutes(server);
 
   server.get("/health", async () => {
