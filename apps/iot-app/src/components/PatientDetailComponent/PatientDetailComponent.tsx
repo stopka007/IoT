@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { useTheme } from "../../functions/ThemeContext";
-import BatteryBar from "../BatteryBar";
+import { Battery } from "../../functions/battery";
 import { User, mockUsers } from "../data";
 
 const PatientDetail = () => {
@@ -44,7 +44,7 @@ const PatientDetail = () => {
         <div className="mb-4">
           <span className={`${labelClass} font-semibold`}>Baterie:</span> {patient.battery}%
           <div className="flex items-center gap-1 p-3">
-            <BatteryBar battery={patient.battery} />
+            <Battery deviceId={patient.id_device} />
           </div>
         </div>
         <div className="mb-4">

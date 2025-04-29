@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { data } from "react-router-dom";
 
 //import { useNavigate } from "react-router-dom";
 import { useTheme } from "../functions/ThemeContext";
+import { Battery } from "../functions/battery";
 import { Patient, fetchAllPatients } from "../functions/patientService";
 
-import BatteryBar from "./BatteryBar";
-//import BatteryBar from "./BatteryBar";
 import LoadingOverlay from "./LoadingOverlay";
 import PatientDetailsModal from "./PatientDetailsModal";
 
@@ -53,7 +51,7 @@ const UserList: React.FC = () => {
         {patients.map(patient => (
           <li
             key={patient._id}
-            onClick={() => handlePatientClick(patient)} // ✅ správně user.id
+            onClick={() => handlePatientClick(patient)}
             className={`border-neutral-300 border-s-stone-200 ${shadow} shadow-md px-4 py-3 flex justify-between items-center ${hoverBg} cursor-pointer ${hoverText} transition duration-400 ease-in-out ${baseText}`}
           >
             <div className="flex items-center gap-3">
@@ -64,11 +62,9 @@ const UserList: React.FC = () => {
               <span>{patient.name}</span>
             </div>
 
-            {
-              <div className="flex items-center gap-1">
-                <BatteryBar battery={Math.floor(Math.random() * 100)} />
-              </div>
-            }
+            <div className="flex items-center gap-1">
+              <Battery deviceId={patient.id_device} />
+            </div>
           </li>
         ))}
       </ul>
