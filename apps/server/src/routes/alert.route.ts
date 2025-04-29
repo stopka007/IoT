@@ -97,7 +97,6 @@ export default async function (server: FastifyInstance) {
           { id_device },
           {
             alert: alert._id,
-            help_needed: false,
           },
           { new: true },
         );
@@ -147,7 +146,6 @@ export default async function (server: FastifyInstance) {
           { id_device },
           {
             alert: null,
-            help_needed: false,
           },
           { new: true },
         );
