@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
+import SearchBar from "./SearchBar"; // Důležité!
 
-//import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { useTheme } from "../functions/ThemeContext";
 import { Battery } from "../functions/battery";
 import { Patient, fetchAllPatients } from "../functions/patientService";
@@ -10,9 +11,9 @@ import PatientDetailsModal from "./PatientDetailsModal";
 
 const UserList: React.FC = () => {
   const { theme } = useTheme();
-  //const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
@@ -24,8 +25,10 @@ const UserList: React.FC = () => {
   useEffect(() => {
     const loadPatients = async () => {
       try {
+        setLoading(true);
         const data = await fetchAllPatients();
         setPatients(data);
+        setFilteredPatients(data);
       } catch (error) {
         console.error("Error loading patients:", error);
       } finally {
@@ -47,18 +50,21 @@ const UserList: React.FC = () => {
   return (
     <>
       {loading && <LoadingOverlay />}
+
+      {/* Připojení vyhledávání */}
+      <SearchBar
+        patients={patients}
+        onSearchResult={setFilteredPatients}
+      />
+
       <ul className={`flex-1 overflow-y-auto ${baseBg}`}>
-        {patients.map(patient => (
+        {filteredPatients.map((patient) => (
           <li
             key={patient._id}
             onClick={() => handlePatientClick(patient)}
             className={`border-neutral-300 border-s-stone-200 ${shadow} shadow-md px-4 py-3 flex justify-between items-center ${hoverBg} cursor-pointer ${hoverText} transition duration-400 ease-in-out ${baseText}`}
           >
             <div className="flex items-center gap-3">
-              {/* <span
-                className={`w-2 h-2 rounded-full ${patient.isActive ? "bg-green-500" : "bg-red-700"}`}
-                title={patient.isActive ? "Active" : "Inactive"}
-              /> */}
               <span>{patient.name}</span>
             </div>
 
