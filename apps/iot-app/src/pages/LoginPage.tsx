@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,9 +12,15 @@ import { z } from "zod";
 import apiClient from "../api/axiosConfig";
 import { useAuth } from "../context/AuthContext";
 
+// Define expected login response structure
+interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
 const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(1, { message: "Password is required" }),
+  email: z.string().email({ message: "Neplatná emailová adresa" }),
+  password: z.string().min(1, { message: "Heslo je povinné" }),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -29,26 +36,34 @@ function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("registered") === "true") {
-      toast.success("Registration successful! Please log in.");
+      toast.success("Registrace úspěšná! Prosím, přihlaste se.");
     }
   }, [searchParams]);
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const response = await apiClient.post<{ token: string }>("/api/auth/login", data);
-      if (response.data.token) {
-        await login(response.data.token);
+      // Expect response with both tokens
+      const response = await apiClient.post<AuthTokens>("/api/auth/login", data);
+
+      // Check for both tokens
+      if (response.data && response.data.accessToken && response.data.refreshToken) {
+        // Pass the full AuthTokens object to login context
+        await login({
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken,
+        });
         navigate("/");
-        toast.success("Logged in successfully!");
+        toast.success("Přihlášení úspěšné!");
       } else {
-        throw new Error("Login succeeded but no token received.");
+        throw new Error("Odpověď serveru neobsahuje potřebné autentizační tokeny."); // Keep specific error
       }
     } catch (err) {
       console.error("Login failed:", err);
-      let errorMessage = "Login failed. Check credentials or server status.";
+      let errorMessage = "Přihlášení selhalo. Zkontrolujte přihlašovací údaje nebo stav serveru.";
       if (axios.isAxiosError(err) && err.response?.data?.message) {
         errorMessage = err.response.data.message;
       } else if (err instanceof Error) {
@@ -62,7 +77,7 @@ function LoginPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="p-8 bg-white rounded-lg shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">Login</h2>
+        <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">Přihlášení</h2>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="mb-4">
             <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
@@ -82,20 +97,30 @@ function LoginPage() {
               <p className="text-red-500 text-xs italic mt-1">{errors.email.message}</p>
             )}
           </div>
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
-              Password
+              Heslo
             </label>
-            <input
-              type="password"
-              id="password"
-              {...register("password")}
-              placeholder="Password..."
-              className={`shadow appearance-none border ${errors.password ? "border-red-500" : ""} rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline disabled:opacity-50`}
-              required
-              disabled={isSubmitting}
-              aria-invalid={errors.password ? "true" : "false"}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                {...register("password")}
+                placeholder="Password..."
+                className={`shadow appearance-none border ${errors.password ? "border-red-500" : ""} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline disabled:opacity-50 pr-10`}
+                required
+                disabled={isSubmitting}
+                aria-invalid={errors.password ? "true" : "false"}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-600 hover:text-gray-800"
+                aria-label={showPassword ? "Skrýt heslo" : "Zobrazit heslo"}
+              >
+                {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+              </button>
+            </div>
             {errors.password && (
               <p className="text-red-500 text-xs italic mt-1">{errors.password.message}</p>
             )}
@@ -106,12 +131,12 @@ function LoginPage() {
               className={`bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full transition-colors duration-200 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Logging in..." : "Login"}
+              {isSubmitting ? "Přihlašuji..." : "Přihlásit se"}
             </button>
           </div>
           <div className="mt-4 text-center">
             <Link to="/register" className="text-sm text-blue-500 hover:underline">
-              Don't have an account? Register
+              Nemáte účet? Registrovat se
             </Link>
           </div>
         </form>

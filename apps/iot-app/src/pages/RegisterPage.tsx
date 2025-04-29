@@ -14,23 +14,23 @@ import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
 
 const passwordValidation = z
   .string()
-  .min(8, { message: "Password must be at least 8 characters long" })
-  .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
-  .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
-  .regex(/[0-9]/, { message: "Password must contain at least one number" })
+  .min(8, { message: "Heslo musí mít alespoň 8 znaků" })
+  .regex(/[a-z]/, { message: "Heslo musí obsahovat alespoň jedno malé písmeno" })
+  .regex(/[A-Z]/, { message: "Heslo musí obsahovat alespoň jedno velké písmeno" })
+  .regex(/[0-9]/, { message: "Heslo musí obsahovat alespoň jednu číslici" })
   .regex(/[@$!%*?&]/, {
-    message: "Password must contain at least one special character (@$!%*?&)",
+    message: "Heslo musí obsahovat alespoň jeden speciální znak (@$!%*?&)",
   });
 
 const registerSchema = z
   .object({
-    email: z.string().email({ message: "Invalid email address" }),
-    username: z.string().min(1, { message: "Username is required" }),
+    email: z.string().email({ message: "Neplatná emailová adresa" }),
+    username: z.string().min(1, { message: "Uživatelské jméno je povinné" }),
     password: passwordValidation,
     confirmPassword: z.string(),
   })
   .refine(data => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: "Hesla se neshodují",
     path: ["confirmPassword"],
   });
 
@@ -66,7 +66,7 @@ function RegisterPage() {
       const errorMessage =
         axios.isAxiosError(err) && err.response?.data?.message
           ? err.response.data.message
-          : "Registration failed. Please try again.";
+          : "Registrace selhala. Zkuste to prosím znovu.";
       toast.error(errorMessage);
     }
   };
@@ -74,7 +74,7 @@ function RegisterPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="p-8 bg-white rounded-lg shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">Register</h2>
+        <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">Registrace</h2>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="mb-4">
             <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
@@ -96,13 +96,13 @@ function RegisterPage() {
           </div>
           <div className="mb-4">
             <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">
-              Username
+              Uživatelské jméno
             </label>
             <input
               type="text"
               id="username"
               {...register("username")}
-              placeholder="Choose a username"
+              placeholder="Zvolte si uživatelské jméno"
               className={`shadow appearance-none border ${errors.username ? "border-red-500" : ""} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline disabled:opacity-50`}
               required
               disabled={isSubmitting}
@@ -114,14 +114,14 @@ function RegisterPage() {
           </div>
           <div className="mb-4 relative">
             <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
-              Password
+              Heslo
             </label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
                 {...register("password")}
-                placeholder="Create a password"
+                placeholder="Vytvořte si heslo"
                 className={`shadow appearance-none border ${errors.password ? "border-red-500" : ""} rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline disabled:opacity-50 pr-10`}
                 required
                 disabled={isSubmitting}
@@ -131,7 +131,7 @@ function RegisterPage() {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-600 hover:text-gray-800"
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? "Skrýt heslo" : "Zobrazit heslo"}
               >
                 {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
               </button>
@@ -143,14 +143,14 @@ function RegisterPage() {
           </div>
           <div className="mb-6 relative">
             <label htmlFor="confirmPassword" className="block text-gray-700 text-sm font-bold mb-2">
-              Confirm Password
+              Potvrdit Heslo
             </label>
             <div className="relative">
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 id="confirmPassword"
                 {...register("confirmPassword")}
-                placeholder="Confirm your password"
+                placeholder="Potvrďte své heslo"
                 className={`shadow appearance-none border ${errors.confirmPassword ? "border-red-500" : ""} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline disabled:opacity-50 pr-10`}
                 required
                 disabled={isSubmitting}
@@ -160,7 +160,9 @@ function RegisterPage() {
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-600 hover:text-gray-800"
-                aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                aria-label={
+                  showConfirmPassword ? "Skrýt potvrzení hesla" : "Zobrazit potvrzení hesla"
+                }
               >
                 {showConfirmPassword ? (
                   <AiOutlineEyeInvisible size={20} />
@@ -179,12 +181,12 @@ function RegisterPage() {
               className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full transition-colors duration-200 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Registering..." : "Register"}
+              {isSubmitting ? "Registruji..." : "Registrovat se"}
             </button>
           </div>
           <div className="mt-4 text-center">
             <Link to="/login" className="text-sm text-blue-500 hover:underline">
-              Already have an account? Login
+              Již máte účet? Přihlásit se
             </Link>
           </div>
         </form>
