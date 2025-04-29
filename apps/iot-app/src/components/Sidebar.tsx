@@ -3,7 +3,6 @@ import React from "react";
 import DragHandle from "../functions/DragHandle";
 import { useTheme } from "../functions/ThemeContext";
 
-import SearchBar from "./SearchBar";
 import UserList from "./UserList";
 
 interface SidebarProps {
@@ -23,7 +22,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, sidebarWidth, setSideb
     >
       {isSidebarOpen && (
         <>
-          <SearchBar />
           <UserList />
           <DragHandle setSidebarWidth={setSidebarWidth} />
         </>
