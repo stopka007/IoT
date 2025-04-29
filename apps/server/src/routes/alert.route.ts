@@ -201,4 +201,26 @@ export default async function (server: FastifyInstance) {
       },
     ),
   );
+
+  // GET /alerts/battery/:id_device - Get battery level for a device
+  server.get<{ Params: { id_device: string } }>(
+    "/battery/:id_device",
+    asyncHandler(
+      async (request: FastifyRequest<{ Params: { id_device: string } }>, reply: FastifyReply) => {
+        const { id_device } = request.params;
+
+        // Find the device
+        const device = await Device.findOne({ id_device }).select("battery_level id_device");
+        if (!device) {
+          throw ApiError.notFound(`Device not found with id: ${id_device}`);
+        }
+
+        // Return battery level and device ID
+        reply.send({
+          battery_level: device.battery_level,
+          id_device: device.id_device,
+        });
+      },
+    ),
+  );
 }
