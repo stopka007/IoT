@@ -55,51 +55,44 @@ async function authRoutes(fastify: FastifyInstance) {
           throw ApiError.unauthorized("Invalid credentials");
         }
 
-        // --- Generate JWT ---
-        const jwtSecret = process.env.JWT_SECRET;
-        // Get expiry time in seconds from .env
-        const jwtExpiresInEnv = process.env.JWT_EXPIRES_IN;
+        // --- Generate JWTs (Access and Refresh) ---
+        const jwtAccessSecret = process.env.JWT_SECRET;
+        const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
+        const jwtAccessExpiresIn = process.env.JWT_EXPIRES_IN;
+        const jwtRefreshExpiresIn = process.env.JWT_REFRESH_EXPIRES_IN;
 
-        if (!jwtSecret) {
-          fastify.log.error("JWT_SECRET is not configured.");
+        if (!jwtAccessSecret || !jwtRefreshSecret) {
+          fastify.log.error("JWT secrets (JWT_SECRET, JWT_REFRESH_SECRET) are not configured.");
           throw ApiError.internal("Server configuration error.");
         }
-
-        let expiresInSeconds: number | undefined;
-        if (jwtExpiresInEnv) {
-          expiresInSeconds = parseInt(jwtExpiresInEnv, 10);
-          if (isNaN(expiresInSeconds)) {
-            fastify.log.error(
-              `Invalid JWT_EXPIRES_IN value: ${jwtExpiresInEnv}. Must be a number of seconds.`,
-            );
-            throw ApiError.internal("Server configuration error.");
-          }
-        } else {
-          fastify.log.warn(
-            "JWT_EXPIRES_IN not set, token will not expire unless library has default.",
-          );
-          // expiresInSeconds remains undefined - library might have a default or token won't expire
+        if (!jwtAccessExpiresIn || !jwtRefreshExpiresIn) {
+          fastify.log.warn("JWT expiry times (JWT_EXPIRES_IN, JWT_REFRESH_EXPIRES_IN) not set.");
+          // Consider throwing an error or setting defaults if expiry is mandatory
         }
 
-        const payload = {
+        // Access Token Payload (can include roles, etc.)
+        const accessPayload = {
           userId: user._id,
           role: user.role,
         };
 
-        // Log the payload before signing
-        fastify.log.info({ payload }, "Generating token with payload");
+        // Refresh Token Payload (keep minimal - just user identifier)
+        const refreshPayload = {
+          userId: user._id,
+        };
 
-        // Define options, conditionally add expiresIn if it was valid
-        const signOptions: jwt.SignOptions = {};
-        if (expiresInSeconds !== undefined) {
-          signOptions.expiresIn = expiresInSeconds; // Assign the number
-        }
+        fastify.log.info({ accessPayload }, "Generating access token");
+        const accessToken = jwt.sign(accessPayload, jwtAccessSecret, {
+          expiresIn: jwtAccessExpiresIn, // e.g., '15m' or seconds
+        });
 
-        // Sign the token
-        const token = jwt.sign(payload, jwtSecret, signOptions);
+        fastify.log.info({ refreshPayload }, "Generating refresh token");
+        const refreshToken = jwt.sign(refreshPayload, jwtRefreshSecret, {
+          expiresIn: jwtRefreshExpiresIn, // e.g., '7d' or seconds
+        });
 
-        // Send the token back to the client
-        return reply.send({ token });
+        // Send both tokens back to the client
+        return reply.send({ accessToken, refreshToken });
       } catch (error: any) {
         // Log specific auth errors differently if needed, otherwise let default handler manage
         fastify.log.error(error, "Error during login");
@@ -205,6 +198,62 @@ async function authRoutes(fastify: FastifyInstance) {
         fastify.log.error(error, "Error changing password");
         // Re-throw other errors (like ApiError.unauthorized or internal errors)
         throw error;
+      }
+    },
+  );
+
+  // --- POST /api/auth/refresh --- Refresh Access Token ---
+  fastify.post(
+    "/refresh",
+    {
+      schema: {
+        body: {
+          type: "object",
+          required: ["refreshToken"],
+          properties: {
+            refreshToken: { type: "string" },
+          },
+        },
+      },
+    },
+    async (request: FastifyRequest<{ Body: { refreshToken: string } }>, reply: FastifyReply) => {
+      const { refreshToken } = request.body;
+      const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
+      const jwtAccessSecret = process.env.JWT_SECRET; // Need this to sign new access token
+      const jwtAccessExpiresIn = process.env.JWT_EXPIRES_IN;
+
+      if (!jwtRefreshSecret || !jwtAccessSecret) {
+        fastify.log.error("JWT secrets are not configured for refresh.");
+        throw ApiError.internal("Server configuration error.");
+      }
+
+      try {
+        // Verify the refresh token
+        const decoded = jwt.verify(refreshToken, jwtRefreshSecret) as { userId: string };
+
+        // Optional: Check if user still exists
+        const user = await User.findById(decoded.userId);
+        if (!user) {
+          throw ApiError.unauthorized("User not found for refresh token.");
+        }
+
+        // Generate a new access token
+        const accessPayload = {
+          userId: user._id,
+          role: user.role,
+        };
+        const newAccessToken = jwt.sign(accessPayload, jwtAccessSecret, {
+          expiresIn: jwtAccessExpiresIn,
+        });
+
+        return reply.send({ accessToken: newAccessToken });
+      } catch (error: any) {
+        fastify.log.error(error, "Error during token refresh");
+        if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {
+          throw ApiError.unauthorized("Invalid or expired refresh token.");
+        } else {
+          throw ApiError.internal("Could not refresh token.");
+        }
       }
     },
   );

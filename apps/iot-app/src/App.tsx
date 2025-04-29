@@ -6,6 +6,7 @@ import PatientDetail from "./components/PatientDetailComponent/PatientDetailComp
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage/MainPage";
+import ProfilePage from "./pages/ProfilePage";
 import RegisterPage from "./pages/RegisterPage";
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<MainPage />}>
             <Route index element={<HomePage />} />
             <Route path="patient-detail/:id" element={<PatientDetail />} />
+            <Route path="profile" element={<ProfilePage />} />
           </Route>
         </Route>
       </Routes>

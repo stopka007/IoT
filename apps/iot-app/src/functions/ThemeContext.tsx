@@ -10,30 +10,39 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>(() => {
+    const storedTheme = localStorage.getItem("theme") as Theme | null;
+    return storedTheme === "light" || storedTheme === "dark" ? storedTheme : "light";
+  });
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem("theme") as Theme | null;
-    if (storedTheme === "light" || storedTheme === "dark") {
-      setTheme(storedTheme);
+    const root = window.document.documentElement;
+    const body = window.document.body;
+
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
+
+    body.classList.remove(
+      "bg-white",
+      "text-black",
+      "bg-neutral-900",
+      "bg-neutral-800",
+      "text-white",
+    );
+    if (theme === "dark") {
+      body.classList.add("bg-neutral-700", "text-white");
+    } else {
+      body.classList.add("bg-white", "text-black");
     }
-  }, []);
+
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
   const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
+    setTheme(prevTheme => (prevTheme === "light" ? "dark" : "light"));
   };
 
-  const bgClass = theme === "light" ? "bg-white text-black" : "bg-neutral-500 text-white";
-
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      <div className={`${bgClass}`} style={{ minHeight: "100vh" }}>
-        {children}
-      </div>
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components

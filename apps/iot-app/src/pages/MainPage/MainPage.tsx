@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 import ArrowLeftIcon from "../../Icons/ArrowLeftIcon";
 import ArrowRightIcon from "../../Icons/ArrowRightIcon";
+import ChevronDownIcon from "../../Icons/ChevronDownIcon";
 import Alert from "../../alerts/Alert";
 import CreateDeviceModal from "../../components/CreateDeviceModal";
 import LoadingOverlay from "../../components/LoadingOverlay";
@@ -16,7 +17,7 @@ export default function MainPage() {
   const [sidebarWidth, setSidebarWidth] = useState(250);
   const { theme, toggleTheme } = useTheme();
   const { user, logout, isLoading } = useAuth();
-  //onst navigate = useNavigate();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showCreateDeviceModal, setShowCreateDeviceModal] = useState(false);
 
@@ -60,37 +61,78 @@ export default function MainPage() {
         >
           {isSidebarOpen ? <ArrowLeftIcon /> : <ArrowRightIcon />}
         </button>
-        <header className={`p-4 pl-16 border-b ${headerClass} flex items-center justify-between`}>
-          <h1 className="text-2xl font-medium">😊 {user ? `(${user.role})` : ""}</h1>
-          <div className="flex items-center space-x-2 flex-shrink-0">
+        <header
+          className={`p-4 pl-16 border-b ${headerClass} flex items-center justify-between relative`}
+        >
+          <div>{/* Placeholder for left content if needed */}</div>
+          <div className="flex items-center space-x-4 flex-shrink-0">
             <button
               onClick={handleToggleTheme}
               className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition"
             >
-              {theme === "light" ? "Dark" : "Light"}
+              {theme === "light" ? "Tmavý režim" : "Světlý režim"}
             </button>
-            <button
-              onClick={openLogoutModal}
-              className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-800 hover:shadow-xs hover:shadow-red-600/50 transition"
-            >
-              Logout
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsDropdownOpen(prev => !prev)}
+                className={`${theme === "light" ? "text-black" : "text-white"} flex items-center space-x-1 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700`}
+              >
+                <span>{user?.username || "User"}</span>
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  ></path>
+                </svg>
+              </button>
+              {isDropdownOpen && (
+                <div
+                  className={`absolute right-0 mt-2 w-48 ${theme === "light" ? "bg-white" : "bg-neutral-700"} rounded-md shadow-lg py-1 z-20`}
+                  onMouseLeave={() => setIsDropdownOpen(false)}
+                >
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className={`block px-4 py-2 text-sm ${theme === "light" ? "text-gray-700 hover:bg-gray-100" : "text-gray-200 hover:bg-neutral-600"}`}
+                  >
+                    Profil
+                  </Link>
+                  <button
+                    onClick={() => {
+                      openLogoutModal();
+                      setIsDropdownOpen(false);
+                    }}
+                    className={`block w-full text-left px-4 py-2 text-sm ${theme === "light" ? "text-red-700 hover:bg-gray-100" : "text-red-400 hover:bg-neutral-600"}`}
+                  >
+                    Odhlásit se
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </header>
         <Breadcrumbs />
         <div className={`p-4 border-b ${headerClass} border-t-0`}>
-          <Alert type="warning" title="Warning" message="Possible patient fall!" room="A-105" />
+          <Alert type="warning" title="Varování" message="Možný pád pacienta!" room="A-105" />
           <Alert
             type="low-battery"
-            title="Low battery"
-            message="Sensor battery is below 10%"
+            title="Nízká baterie"
+            message="Baterie senzoru je pod 10%"
             room="B-207"
           />
-          <Alert type="alert-canceled" title="Alert canceled" message="Alert has been dismissed" />
+          <Alert type="alert-canceled" title="Výstraha zrušena" message="Výstraha byla zrušena" />
           <Alert
             type="lost-connection"
-            title="Lost connection"
-            message="Device disconnected from network"
+            title="Ztráta spojení"
+            message="Zařízení odpojeno od sítě"
             room="A-006"
             pacient="antonín komárek"
           />
@@ -100,7 +142,7 @@ export default function MainPage() {
                 onClick={() => setShowCreateDeviceModal(true)}
                 className="bg-green-500 text-black px-4 py-2 rounded-md hover:bg-green-800 hover:shadow-xs"
               >
-                Create Device
+                Vytvořit Zařízení
               </button>
             )}
           </div>
@@ -117,10 +159,10 @@ export default function MainPage() {
             <h3
               className={`text-lg font-medium ${theme === "light" ? "text-gray-900" : "text-white"} mb-4`}
             >
-              Confirm Logout
+              Potvrdit Odhlášení
             </h3>
             <p className={`${theme === "light" ? "text-gray-500" : "text-gray-300"} mb-6`}>
-              Are you sure you want to logout?
+              Opravdu se chcete odhlásit?
             </p>
             <div className="flex justify-end gap-4">
               <button
@@ -131,7 +173,7 @@ export default function MainPage() {
                     : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
                 } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
               >
-                Cancel
+                Zrušit
               </button>
               <button
                 onClick={() => {
@@ -140,7 +182,7 @@ export default function MainPage() {
                 }}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200"
               >
-                Logout
+                Odhlásit se
               </button>
             </div>
           </div>
