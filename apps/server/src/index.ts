@@ -6,6 +6,7 @@ import { buildServer } from "./server";
 dotenv.config();
 
 const start = async () => {
+  console.log("--- Starting server ---");
   const server = await buildServer();
 
   try {
