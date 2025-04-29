@@ -29,9 +29,7 @@ const getGlowColor = (level: number): string => {
 
 export const getBatteryLevel = async (id_device: string): Promise<BatteryResponse> => {
   try {
-    console.log("Fetching battery for device:", id_device);
     const response = await apiClient.get<BatteryResponse>(`/api/devices/battery/${id_device}`);
-    console.log("Battery response:", response.data);
     return response.data;
   } catch (error) {
     console.error(`Error fetching battery level for device ${id_device}:`, error);
@@ -54,7 +52,6 @@ export const Battery: React.FC<BatteryProps> = ({ deviceId, onBatteryUpdate }) =
     try {
       setLoading(true);
       setError(null);
-      console.log("Fetching battery for:", deviceId);
       const response = await getBatteryLevel(deviceId);
 
       if (typeof response.battery_level === "number") {
