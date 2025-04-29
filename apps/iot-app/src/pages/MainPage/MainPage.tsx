@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
 
 import ArrowLeftIcon from "../../Icons/ArrowLeftIcon";
 import ArrowRightIcon from "../../Icons/ArrowRightIcon";
 import Alert from "../../alerts/Alert";
+import CreateDeviceModal from "../../components/CreateDeviceModal";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import Breadcrumbs from "../../components/MainPageComponent/Breadcrumbs";
 import Sidebar from "../../components/Sidebar";
@@ -15,7 +16,9 @@ export default function MainPage() {
   const [sidebarWidth, setSidebarWidth] = useState(250);
   const { theme, toggleTheme } = useTheme();
   const { user, logout, isLoading } = useAuth();
-  const navigate = useNavigate();
+  //onst navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showCreateDeviceModal, setShowCreateDeviceModal] = useState(false);
 
   const headerClass =
     theme === "light"
@@ -28,6 +31,14 @@ export default function MainPage() {
 
   const handleLogout = () => {
     logout();
+  };
+
+  const openLogoutModal = () => {
+    setShowLogoutModal(true);
+  };
+
+  const closeLogoutModal = () => {
+    setShowLogoutModal(false);
   };
 
   if (isLoading) {
@@ -59,7 +70,7 @@ export default function MainPage() {
               {theme === "light" ? "Dark" : "Light"}
             </button>
             <button
-              onClick={handleLogout}
+              onClick={openLogoutModal}
               className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-800 hover:shadow-xs hover:shadow-red-600/50 transition"
             >
               Logout
@@ -83,9 +94,65 @@ export default function MainPage() {
             room="A-006"
             pacient="antonín komárek"
           />
+          <div>
+            {user?.role === "admin" && (
+              <button
+                onClick={() => setShowCreateDeviceModal(true)}
+                className="bg-green-500 text-black px-4 py-2 rounded-md hover:bg-green-800 hover:shadow-xs"
+              >
+                Create Device
+              </button>
+            )}
+          </div>
         </div>
         <Outlet />
       </main>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50">
+          <div
+            className={`${theme === "light" ? "bg-white" : "bg-neutral-800"} rounded-lg shadow-lg p-6 max-w-sm w-full mx-4 transform transition-all duration-300 ease-in-out scale-100 opacity-100`}
+          >
+            <h3
+              className={`text-lg font-medium ${theme === "light" ? "text-gray-900" : "text-white"} mb-4`}
+            >
+              Confirm Logout
+            </h3>
+            <p className={`${theme === "light" ? "text-gray-500" : "text-gray-300"} mb-6`}>
+              Are you sure you want to logout?
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={closeLogoutModal}
+                className={`px-4 py-2 text-sm font-medium ${
+                  theme === "light"
+                    ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
+                    : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
+                } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  handleLogout();
+                  closeLogoutModal();
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Device Modal */}
+      <CreateDeviceModal
+        isOpen={showCreateDeviceModal}
+        onClose={() => setShowCreateDeviceModal(false)}
+        theme={theme}
+      />
     </div>
   );
 }
