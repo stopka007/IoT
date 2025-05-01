@@ -11,10 +11,10 @@ import Sidebar from "../../components/SideBarComponent/Sidebar";
 import { useTheme } from "../../functions/ThemeContext";
 import AssignDeviceModal from "../../modals/assignDeviceModal";
 import AssignRoomModal from "../../modals/assignRoomModal";
+import ConfirmModal from "../../modals/confirmModal";
 import CreateDeviceModal from "../../modals/createDeviceModal";
 import CreatePatientModal from "../../modals/createPatientModal";
 import CreateRoomModal from "../../modals/createRoomModal";
-import LogoutModal from "../../modals/logoutModal";
 
 export default function MainPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -134,20 +134,33 @@ export default function MainPage() {
         </header>
         <Breadcrumbs />
         <div className={`p-4 border-b ${headerClass} border-t-0`}>
-          <Alert type="warning" title="Varování" message="Možný pád pacienta!" room="A-105" />
+          <Alert
+            type="warning"
+            title="Varování"
+            message="Možný pád pacienta!"
+            room="A-105"
+            pacient="Jan Novák"
+          />
           <Alert
             type="low-battery"
             title="Nízká baterie"
             message="Baterie senzoru je pod 10%"
             room="B-207"
+            pacient="Marie Svobodová"
           />
-          <Alert type="alert-canceled" title="Výstraha zrušena" message="Výstraha byla zrušena" />
+          <Alert
+            type="alert-canceled"
+            title="Výstraha zrušena"
+            message="Výstraha byla zrušena"
+            room="C-301"
+            pacient="Petr Dvořák"
+          />
           <Alert
             type="lost-connection"
             title="Ztráta spojení"
             message="Zařízení odpojeno od sítě"
             room="A-006"
-            pacient="antonín komárek"
+            pacient="Antonín Komárek"
           />
           <div>
             {user?.role === "admin" && (
@@ -190,11 +203,12 @@ export default function MainPage() {
       </main>
 
       {/* Logout Modal */}
-      <LogoutModal
+      <ConfirmModal
         isOpen={showLogoutModal}
         onClose={closeLogoutModal}
-        onLogout={handleLogout}
+        onConfirm={handleLogout}
         theme={theme}
+        type="logout"
       />
 
       {/* Create Device Modal */}

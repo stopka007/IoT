@@ -1,19 +1,15 @@
 import React, { useState } from "react";
 
-// Corrected path
 import CloseIcon from "../Icons/CloseIcon";
-// Corrected path
 import { useTheme } from "../functions/ThemeContext";
 import { Patient } from "../functions/patientService";
 
 import EditPatientModal from "./editPatientModal";
 
-// Corrected path
-
 interface PatientDetailsModalProps {
   patient: Patient | null;
   onClose: () => void;
-  onUpdate?: () => void; // Add callback for updates
+  onUpdate?: () => void;
 }
 
 const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
@@ -24,7 +20,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
   const { theme } = useTheme();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  if (!patient) return null; // Don't render if no patient is selected
+  if (!patient) return null;
 
   const modalBg = theme === "light" ? "bg-white" : "bg-neutral-700";
   const textColor = theme === "light" ? "text-black" : "text-white";
@@ -38,7 +34,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
   const handleEditClose = () => {
     setIsEditModalOpen(false);
     if (onUpdate) {
-      onUpdate(); // Refresh patient data after edit
+      onUpdate();
     }
   };
 
@@ -46,11 +42,11 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
     <>
       <div
         className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4"
-        onClick={onClose} // Close modal on overlay click
+        onClick={onClose}
       >
         <div
           className={`relative w-full max-w-md p-6 rounded-lg shadow-xl ${modalBg} ${textColor} border ${borderColor}`}
-          onClick={e => e.stopPropagation()} // Prevent closing modal when clicking inside content
+          onClick={e => e.stopPropagation()}
         >
           <button
             onClick={onClose}
@@ -63,8 +59,6 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
           <h3 className="text-2xl font-semibold mb-4 border-b pb-2">{patient.name}</h3>
 
           <div className="space-y-3 text-sm">
-            {" "}
-            {/* Ensure no backslashes here */}
             <div>
               <span className={`font-medium ${labelColor}`}>Pokoj:</span> {patient.room}
             </div>
@@ -80,11 +74,8 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
             )}
             {patient.notes && (
               <div className="mt-2 pt-2 border-t">
-                {" "}
-                {/* Ensure no backslashes here */}
                 <span className={`font-medium block mb-1 ${labelColor}`}>Poznámky:</span>
-                <p className="whitespace-pre-wrap">{patient.notes}</p>{" "}
-                {/* Ensure no backslashes here */}
+                <p className="whitespace-pre-wrap">{patient.notes}</p>
               </div>
             )}
           </div>
@@ -104,7 +95,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
               onClick={onClose}
               className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
                 theme === "light"
-                  ? "text-gray-700 bg-red-400 hover:bg-gray-200 focus:ring-gray-300"
+                  ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
                   : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
               } focus:outline-none focus:ring-2 transition-colors duration-200`}
             >

@@ -1,12 +1,34 @@
-interface LogoutModalProps {
+interface ConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLogout: () => void;
+  onConfirm: () => void;
   theme: string;
+  type: "logout" | "delete";
+  title?: string;
+  message?: string;
+  confirmButtonText?: string;
+  cancelButtonText?: string;
 }
 
-export default function LogoutModal({ isOpen, onClose, onLogout, theme }: LogoutModalProps) {
+export default function ConfirmModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  theme,
+  type,
+  title,
+  message,
+  confirmButtonText,
+  cancelButtonText,
+}: ConfirmModalProps) {
   if (!isOpen) return null;
+
+  // Default values based on type
+  const defaultTitle = type === "logout" ? "Potvrdit Odhlášení" : "Potvrdit Smazání";
+  const defaultMessage =
+    type === "logout" ? "Opravdu se chcete odhlásit?" : "Opravdu chcete smazat tento záznam?";
+  const defaultConfirmText = type === "logout" ? "Odhlásit se" : "Smazat";
+  const defaultCancelText = "Zrušit";
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50">
@@ -16,10 +38,10 @@ export default function LogoutModal({ isOpen, onClose, onLogout, theme }: Logout
         <h3
           className={`text-lg font-medium ${theme === "light" ? "text-gray-900" : "text-white"} mb-4`}
         >
-          Potvrdit Odhlášení
+          {title || defaultTitle}
         </h3>
         <p className={`${theme === "light" ? "text-gray-500" : "text-gray-300"} mb-6`}>
-          Opravdu se chcete odhlásit?
+          {message || defaultMessage}
         </p>
         <div className="flex justify-end gap-4">
           <button
@@ -30,16 +52,20 @@ export default function LogoutModal({ isOpen, onClose, onLogout, theme }: Logout
                 : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
             } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
           >
-            Zrušit
+            {cancelButtonText || defaultCancelText}
           </button>
           <button
             onClick={() => {
-              onLogout();
+              onConfirm();
               onClose();
             }}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200"
+            className={`px-4 py-2 text-sm font-medium text-white ${
+              type === "logout"
+                ? "bg-red-600 hover:bg-red-700 focus:ring-red-500"
+                : "bg-red-600 hover:bg-red-700 focus:ring-red-500"
+            } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
           >
-            Odhlásit se
+            {confirmButtonText || defaultConfirmText}
           </button>
         </div>
       </div>
