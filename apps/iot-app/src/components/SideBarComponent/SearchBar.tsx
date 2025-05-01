@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import FilterIcon from "../Icons/FilterIcon";
-import { useTheme } from "../functions/ThemeContext";
-import { Patient } from "../functions/patientService";
+
+import FilterIcon from "../../Icons/FilterIcon";
+import { useTheme } from "../../functions/ThemeContext";
+import { Patient } from "../../functions/patientService";
 
 interface SearchBarProps {
   patients: Patient[];
@@ -10,7 +11,10 @@ interface SearchBarProps {
 
 // Funkce pro odstranění diakritiky
 const removeDiacritics = (str: string): string => {
-  return str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+  return str
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
 };
 
 const SearchBar: React.FC<SearchBarProps> = ({ patients, onSearchResult }) => {
@@ -27,9 +31,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ patients, onSearchResult }) => {
 
     const normalizedQuery = removeDiacritics(newQuery);
 
-    const filtered = patients.filter((p) =>
-      removeDiacritics(p.name).includes(normalizedQuery)
-    );
+    const filtered = patients.filter(p => removeDiacritics(p.name).includes(normalizedQuery));
 
     onSearchResult(filtered);
   };

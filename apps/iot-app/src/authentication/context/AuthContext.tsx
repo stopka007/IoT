@@ -10,8 +10,8 @@ import toast from "react-hot-toast";
 
 import { AxiosError } from "axios";
 
-import apiClient from "../api/axiosConfig";
-import LoadingOverlay from "../components/LoadingOverlay";
+import apiClient from "../../api/axiosConfig";
+import LoadingOverlay from "../../components/LoadingOverlay";
 
 interface User {
   userId: string;

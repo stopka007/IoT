@@ -72,18 +72,28 @@ export default async function (server: FastifyInstance) {
   interface CreateAlertWithDeviceBody {
     id_device: string;
     alertData?: Record<string, any>;
+    deviceData?: {
+      room?: number;
+      id_patient?: string;
+      battery_level?: number;
+      help_needed?: boolean;
+    };
   }
 
   server.post<{ Body: CreateAlertWithDeviceBody }>(
     "/create-with-device",
     asyncHandler(
       async (request: FastifyRequest<{ Body: CreateAlertWithDeviceBody }>, reply: FastifyReply) => {
-        const { id_device, alertData = {} } = request.body;
+        const { id_device, alertData = {}, deviceData = {} } = request.body;
 
-        // 1. Find the device first
-        const device = await Device.findOne({ id_device });
+        // 1. Find or create the device
+        let device = await Device.findOne({ id_device });
         if (!device) {
-          throw ApiError.notFound(`Device not found with id: ${id_device}`);
+          // Create new device if it doesn't exist
+          device = await Device.create({
+            id_device,
+            ...deviceData,
+          });
         }
 
         // 2. Create the alert
@@ -97,6 +107,7 @@ export default async function (server: FastifyInstance) {
           { id_device },
           {
             alert: alert._id,
+            ...deviceData, // Update any additional device data
           },
           { new: true },
         );

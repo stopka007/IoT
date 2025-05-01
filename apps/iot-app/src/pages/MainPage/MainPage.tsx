@@ -1,16 +1,20 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 
 import ArrowLeftIcon from "../../Icons/ArrowLeftIcon";
 import ArrowRightIcon from "../../Icons/ArrowRightIcon";
-import ChevronDownIcon from "../../Icons/ChevronDownIcon";
 import Alert from "../../alerts/Alert";
-import CreateDeviceModal from "../../components/CreateDeviceModal";
+import { useAuth } from "../../authentication/context/AuthContext";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import Breadcrumbs from "../../components/MainPageComponent/Breadcrumbs";
-import Sidebar from "../../components/Sidebar";
-import { useAuth } from "../../context/AuthContext";
+import Sidebar from "../../components/SideBarComponent/Sidebar";
 import { useTheme } from "../../functions/ThemeContext";
+import AssignDeviceModal from "../../modals/assignDeviceModal";
+import AssignRoomModal from "../../modals/assignRoomModal";
+import CreateDeviceModal from "../../modals/createDeviceModal";
+import CreatePatientModal from "../../modals/createPatientModal";
+import CreateRoomModal from "../../modals/createRoomModal";
+import LogoutModal from "../../modals/logoutModal";
 
 export default function MainPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -20,6 +24,15 @@ export default function MainPage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showCreateDeviceModal, setShowCreateDeviceModal] = useState(false);
+  const [showAssignDeviceModal, setShowAssignDeviceModal] = useState(false);
+  const [showCreatePatientModal, setShowCreatePatientModal] = useState(false);
+  const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
+  const [showAssignRoomModal, setShowAssignRoomModal] = useState(false);
+  const [updateKey, setUpdateKey] = useState(0);
+
+  const handleUpdate = useCallback(() => {
+    setUpdateKey(prev => prev + 1);
+  }, []);
 
   const headerClass =
     theme === "light"
@@ -138,62 +151,92 @@ export default function MainPage() {
           />
           <div>
             {user?.role === "admin" && (
-              <button
-                onClick={() => setShowCreateDeviceModal(true)}
-                className="bg-green-500 text-black px-4 py-2 rounded-md hover:bg-green-800 hover:shadow-xs"
-              >
-                Vytvořit Zařízení
-              </button>
+              <div className="space-x-4">
+                <button
+                  onClick={() => setShowCreateDeviceModal(true)}
+                  className="bg-green-500 text-black px-4 py-2 rounded-md hover:bg-green-800 hover:shadow-xs"
+                >
+                  Vytvořit Zařízení
+                </button>
+                <button
+                  onClick={() => setShowAssignDeviceModal(true)}
+                  className="bg-blue-500 text-black px-4 py-2 rounded-md hover:bg-blue-800 hover:shadow-xs"
+                >
+                  Přiřadit Zařízení
+                </button>
+                <button
+                  onClick={() => setShowCreatePatientModal(true)}
+                  className="bg-purple-500 text-black px-4 py-2 rounded-md hover:bg-purple-800 hover:shadow-xs"
+                >
+                  Vytvořit Pacienta
+                </button>
+                <button
+                  onClick={() => setShowCreateRoomModal(true)}
+                  className="bg-yellow-500 text-black px-4 py-2 rounded-md hover:bg-yellow-800 hover:shadow-xs"
+                >
+                  Vytvořit Pokoj
+                </button>
+                <button
+                  onClick={() => setShowAssignRoomModal(true)}
+                  className="bg-orange-500 text-black px-4 py-2 rounded-md hover:bg-orange-800 hover:shadow-xs"
+                >
+                  Přiřadit Pokoj
+                </button>
+              </div>
             )}
           </div>
         </div>
-        <Outlet />
+        <Outlet context={{ onUpdate: handleUpdate, key: updateKey }} />
       </main>
 
-      {/* Logout Confirmation Modal */}
-      {showLogoutModal && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50">
-          <div
-            className={`${theme === "light" ? "bg-white" : "bg-neutral-800"} rounded-lg shadow-lg p-6 max-w-sm w-full mx-4 transform transition-all duration-300 ease-in-out scale-100 opacity-100`}
-          >
-            <h3
-              className={`text-lg font-medium ${theme === "light" ? "text-gray-900" : "text-white"} mb-4`}
-            >
-              Potvrdit Odhlášení
-            </h3>
-            <p className={`${theme === "light" ? "text-gray-500" : "text-gray-300"} mb-6`}>
-              Opravdu se chcete odhlásit?
-            </p>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={closeLogoutModal}
-                className={`px-4 py-2 text-sm font-medium ${
-                  theme === "light"
-                    ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
-                    : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
-                } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
-              >
-                Zrušit
-              </button>
-              <button
-                onClick={() => {
-                  handleLogout();
-                  closeLogoutModal();
-                }}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200"
-              >
-                Odhlásit se
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Logout Modal */}
+      <LogoutModal
+        isOpen={showLogoutModal}
+        onClose={closeLogoutModal}
+        onLogout={handleLogout}
+        theme={theme}
+      />
 
       {/* Create Device Modal */}
       <CreateDeviceModal
         isOpen={showCreateDeviceModal}
         onClose={() => setShowCreateDeviceModal(false)}
         theme={theme}
+        onUpdate={handleUpdate}
+      />
+
+      {/* Assign Device Modal */}
+      <AssignDeviceModal
+        isOpen={showAssignDeviceModal}
+        onClose={() => setShowAssignDeviceModal(false)}
+        theme={theme}
+        onUpdate={handleUpdate}
+      />
+
+      {/* Create Patient Modal */}
+      <CreatePatientModal
+        isOpen={showCreatePatientModal}
+        onClose={() => setShowCreatePatientModal(false)}
+        theme={theme}
+        onUpdate={handleUpdate}
+      />
+
+      <CreateRoomModal
+        isOpen={showCreateRoomModal}
+        onClose={() => setShowCreateRoomModal(false)}
+        theme={theme}
+        onUpdate={handleUpdate}
+      />
+
+      {/* Assign Room Modal */}
+      <AssignRoomModal
+        isOpen={showAssignRoomModal}
+        onClose={() => {
+          setShowAssignRoomModal(false);
+          handleUpdate();
+        }}
+        theme={theme}
+        onUpdate={handleUpdate}
       />
     </div>
   );

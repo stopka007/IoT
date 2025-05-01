@@ -1,9 +1,9 @@
 import { Toaster } from "react-hot-toast";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
+import ProtectedRoute from "./authentication/ProtectedRoute";
 import HomePage from "./components/MainPageComponent/HomePage";
 import PatientDetail from "./components/PatientDetailComponent/PatientDetailComponent";
-import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage/MainPage";
 import ProfilePage from "./pages/ProfilePage";

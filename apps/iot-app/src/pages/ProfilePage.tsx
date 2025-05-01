@@ -11,8 +11,8 @@ import axios from "axios";
 import { z } from "zod";
 
 import apiClient from "../api/axiosConfig";
-import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
-import { useAuth } from "../context/AuthContext";
+import PasswordStrengthMeter from "../authentication/PasswordStrengthMeter";
+import { useAuth } from "../authentication/context/AuthContext";
 
 // Re-use or import password validation logic from RegisterPage
 const passwordValidation = z

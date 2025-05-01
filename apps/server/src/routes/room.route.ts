@@ -21,8 +21,8 @@ interface RoomQueryParams {
 
 // Type definitions for the request body
 interface CreateRoomBody {
-  name: string;
-  patient: {
+  name: number;
+  patient?: {
     name: string;
     id: string;
   };
@@ -44,9 +44,9 @@ export default async function (server: FastifyInstance) {
     asyncHandler(async (request: FastifyRequest, reply: FastifyReply) => {
       const body = request.body as CreateRoomBody;
 
-      // Validate required fields in one check for efficiency
-      if (!body?.name?.trim() || !body?.patient?.name?.trim() || !body?.patient?.id?.trim()) {
-        throw ApiError.badRequest("Room name, patient name, and patient ID are required");
+      // Validate required fields
+      if (!body?.name) {
+        throw ApiError.badRequest("Room name is required");
       }
 
       // Create the room
@@ -70,7 +70,7 @@ export default async function (server: FastifyInstance) {
       // Build query
       const query: Record<string, any> = {};
 
-      if (name) query.name = { $regex: name, $options: "i" };
+      if (name) query.name = Number(name);
       if (patientName) query["patient.name"] = { $regex: patientName, $options: "i" };
       if (isActive !== undefined) query.isActive = isActive === "true";
 

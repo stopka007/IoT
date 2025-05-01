@@ -42,6 +42,9 @@ export const Battery: React.FC<BatteryProps> = ({ deviceId, onBatteryUpdate }) =
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Memoize onBatteryUpdate to prevent unnecessary re-renders
+  const memoizedOnBatteryUpdate = useCallback(onBatteryUpdate || (() => {}), []);
+
   const fetchBattery = useCallback(async () => {
     if (!deviceId) {
       console.log("No device ID provided");
@@ -55,9 +58,8 @@ export const Battery: React.FC<BatteryProps> = ({ deviceId, onBatteryUpdate }) =
       const response = await getBatteryLevel(deviceId);
 
       if (typeof response.battery_level === "number") {
-        console.log("Setting battery level to:", response.battery_level);
         setBatteryLevel(response.battery_level);
-        onBatteryUpdate?.(response.battery_level);
+        memoizedOnBatteryUpdate(response.battery_level);
       } else {
         console.error("Invalid battery level received:", response);
         setError("Invalid battery data received");
@@ -68,11 +70,30 @@ export const Battery: React.FC<BatteryProps> = ({ deviceId, onBatteryUpdate }) =
     } finally {
       setLoading(false);
     }
-  }, [deviceId, onBatteryUpdate]);
+  }, [deviceId, memoizedOnBatteryUpdate]);
 
   useEffect(() => {
-    fetchBattery();
-  }, [fetchBattery]);
+    // Reset state when deviceId changes
+    setBatteryLevel(null);
+    setError(null);
+
+    // Initial fetch immediately when deviceId changes
+    if (deviceId) {
+      fetchBattery();
+    }
+
+    // Set up periodic updates every 1 minute
+    const intervalId = setInterval(() => {
+      if (deviceId) {
+        fetchBattery();
+      }
+    }, 60 * 1000); // 60 seconds * 1000 milliseconds
+
+    // Cleanup interval on component unmount or when deviceId changes
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [deviceId, fetchBattery]);
 
   if (loading) {
     return <div>Loading...</div>;

@@ -10,7 +10,7 @@ import axios from "axios";
 import { z } from "zod";
 
 import apiClient from "../api/axiosConfig";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../authentication/context/AuthContext";
 
 // Define expected login response structure
 interface AuthTokens {

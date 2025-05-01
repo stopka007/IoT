@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
-import SearchBar from "./SearchBar"; // Důležité!
+import React, { useCallback, useEffect, useState } from "react";
 
+// Důležité!
 // import { useNavigate } from "react-router-dom";
-import { useTheme } from "../functions/ThemeContext";
-import { Battery } from "../functions/battery";
-import { Patient, fetchAllPatients } from "../functions/patientService";
+import { useTheme } from "../../functions/ThemeContext";
+import { Battery } from "../../functions/battery";
+import { Patient, fetchAllPatients } from "../../functions/patientService";
+import PatientDetailsModal from "../../modals/PatientDetailsModal";
+import LoadingOverlay from "../LoadingOverlay";
 
-import LoadingOverlay from "./LoadingOverlay";
-import PatientDetailsModal from "./PatientDetailsModal";
+import SearchBar from "./SearchBar";
 
 const UserList: React.FC = () => {
   const { theme } = useTheme();
@@ -22,22 +23,22 @@ const UserList: React.FC = () => {
   const hoverText = theme === "light" ? "hover:text-white" : "hover:text-black";
   const shadow = theme === "light" ? "shadow-neutral-400" : "shadow-black";
 
-  useEffect(() => {
-    const loadPatients = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchAllPatients();
-        setPatients(data);
-        setFilteredPatients(data);
-      } catch (error) {
-        console.error("Error loading patients:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadPatients();
+  const loadPatients = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await fetchAllPatients();
+      setPatients(data);
+      setFilteredPatients(data);
+    } catch (error) {
+      console.error("Error loading patients:", error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadPatients();
+  }, [loadPatients]);
 
   const handlePatientClick = (patient: Patient) => {
     setSelectedPatient(patient);
@@ -47,18 +48,19 @@ const UserList: React.FC = () => {
     setSelectedPatient(null);
   };
 
+  const handlePatientUpdated = () => {
+    loadPatients();
+  };
+
   return (
     <>
       {loading && <LoadingOverlay />}
 
       {/* Připojení vyhledávání */}
-      <SearchBar
-        patients={patients}
-        onSearchResult={setFilteredPatients}
-      />
+      <SearchBar patients={patients} onSearchResult={setFilteredPatients} />
 
       <ul className={`flex-1 overflow-y-auto ${baseBg}`}>
-        {filteredPatients.map((patient) => (
+        {filteredPatients.map(patient => (
           <li
             key={patient._id}
             onClick={() => handlePatientClick(patient)}
@@ -76,7 +78,11 @@ const UserList: React.FC = () => {
       </ul>
 
       {selectedPatient && (
-        <PatientDetailsModal patient={selectedPatient} onClose={handleCloseModal} />
+        <PatientDetailsModal
+          patient={selectedPatient}
+          onClose={handleCloseModal}
+          onUpdate={handlePatientUpdated}
+        />
       )}
     </>
   );
