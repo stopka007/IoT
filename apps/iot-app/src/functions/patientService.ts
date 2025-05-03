@@ -41,6 +41,16 @@ export const fetchPatientById = async (id: string): Promise<Patient> => {
   }
 };
 
+export const fetchPatientByIdPatient = async (idPatient: string): Promise<Patient> => {
+  try {
+    const response = await apiClient.get(`/api/patients/by-id-patient/${idPatient}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching patient with id_patient ${idPatient}:`, error);
+    throw error;
+  }
+};
+
 // Use Partial<Omit<Patient, '_id'>> for update data flexibility
 export const updatePatient = async (
   id: string,

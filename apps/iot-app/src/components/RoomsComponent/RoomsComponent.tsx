@@ -5,15 +5,21 @@ import MessageSquareIcon from "../../Icons/MessageSquareIcon";
 import PersonIcon from "../../Icons/UserIcon";
 import { useTheme } from "../../functions/ThemeContext";
 import { Patient } from "../../functions/patientService";
-import PatientDetailsModal from "../PatientDetailsModal";
+import PatientDetailsModal from "../../modals/PatientDetailsModal";
 
 interface RoomsComponentProps {
   title: string;
   message?: string;
   patients: Patient[];
+  onPatientUpdate?: () => void;
 }
 
-const RoomsComponent: React.FC<RoomsComponentProps> = ({ title, patients, message }) => {
+const RoomsComponent: React.FC<RoomsComponentProps> = ({
+  title,
+  patients,
+  message,
+  onPatientUpdate,
+}) => {
   const { theme } = useTheme();
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -31,6 +37,12 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({ title, patients, messag
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedPatient(null);
+  };
+
+  const handlePatientUpdated = () => {
+    if (onPatientUpdate) {
+      onPatientUpdate();
+    }
   };
 
   return (
@@ -68,13 +80,17 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({ title, patients, messag
             ))
           ) : (
             <li className={`italic px-2 py-2 ${baseText} opacity-70`}>
-              Žiadni pacienti v tejto izbe.
+              V Této místnosti nejsou žádní pacienti.
             </li>
           )}
         </ul>
       </div>
 
-      <PatientDetailsModal patient={selectedPatient} onClose={handleCloseModal} />
+      <PatientDetailsModal
+        patient={selectedPatient}
+        onClose={handleCloseModal}
+        onUpdate={handlePatientUpdated}
+      />
     </>
   );
 };

@@ -4,7 +4,7 @@ import mongoose, { Document, Schema } from "mongoose";
  * Interface representing a Room document in MongoDB
  */
 export interface IRoom extends Document {
-  name: string;
+  name: number;
   patient: {
     name: string;
     id: string;
@@ -18,22 +18,24 @@ export interface IRoom extends Document {
 const RoomSchema = new Schema<IRoom>(
   {
     name: {
-      type: String,
-      required: [true, "Room name is required"],
-      trim: true,
-      maxlength: [100, "Room name cannot be more than 100 characters"],
+      type: Number,
+      required: [true, "Room number is required"],
+      max: [9999, "Room number cannot be more than 9999"],
     },
     patient: {
-      name: {
-        type: String,
-        required: [true, "Patient name is required"],
-        trim: true,
-        maxlength: [100, "Patient name cannot be more than 100 characters"],
-      },
-      id: {
-        type: String,
-        required: [true, "Patient ID is required"],
-        trim: true,
+      required: false,
+      type: {
+        name: {
+          type: String,
+          required: false,
+          trim: true,
+          maxlength: [100, "Patient name cannot be more than 100 characters"],
+        },
+        id: {
+          type: String,
+          required: false,
+          trim: true,
+        },
       },
     },
     isActive: {

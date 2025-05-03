@@ -1,9 +1,9 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
-import { useAuth } from "../context/AuthContext";
+import LoadingOverlay from "../components/LoadingOverlay";
 
-import LoadingOverlay from "./LoadingOverlay";
+import { useAuth } from "./context/AuthContext";
 
 interface ProtectedRouteProps {
   allowedRoles?: Array<"admin" | "user">;

@@ -10,7 +10,7 @@ interface AlertModalProps {
   title: string;
   message: string;
   room?: string;
-  pacient?: string;
+  patient?: string;
   onClose: () => void;
 }
 
@@ -26,7 +26,7 @@ const AlertModal: React.FC<AlertModalProps> = ({
   title,
   message,
   room,
-  pacient,
+  patient,
   onClose,
 }) => {
   return (
@@ -35,8 +35,8 @@ const AlertModal: React.FC<AlertModalProps> = ({
         <div className="mb-4">{iconMap[type]}</div>
         <h3 className="text-2xl font-semibold mb-4">{title}</h3>
         <p className="mb-1">{message}</p>
-        {room && <p className="mb-1">Room: {room}</p>}
-        {pacient && <p className="mb-1">Pacient: {pacient}</p>}
+        {room && <p className="mb-1">Pokoj: {room}</p>}
+        {patient && <p className="mb-1">Pacient: {patient}</p>}
         <div className="flex justify-center mt-6 gap-2">
           <button
             onClick={onClose}

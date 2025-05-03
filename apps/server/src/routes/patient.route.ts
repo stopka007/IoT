@@ -168,14 +168,13 @@ export default async function (server: FastifyInstance) {
   );
 
   // Get patient by ID - PROTECTED
-  server.get<{ Params: ParamsType }>( // Keep type assertion
+  server.get<{ Params: ParamsType }>(
     "/:id",
     {
-      schema: { params: ParamsSchema }, // Apply schema
+      schema: { params: ParamsSchema },
       preHandler: [authenticate],
     },
     async (request, reply) => {
-      // request.params is now correctly typed by Fastify + Typebox
       try {
         const patient = await Patient.findById(request.params.id);
         if (!patient) throw ApiError.notFound("Patient not found");
@@ -183,6 +182,30 @@ export default async function (server: FastifyInstance) {
       } catch (error) {
         if (error instanceof ApiError) throw error;
         server.log.error(error, "Error fetching patient");
+        throw ApiError.internal("Failed to fetch patient", error);
+      }
+    },
+  );
+
+  // Get patient by id_patient - PROTECTED
+  server.get<{ Params: { id_patient: string } }>(
+    "/by-id-patient/:id_patient",
+    {
+      schema: {
+        params: Type.Object({
+          id_patient: Type.String(),
+        }),
+      },
+      preHandler: [authenticate],
+    },
+    async (request, reply) => {
+      try {
+        const patient = await Patient.findOne({ id_patient: request.params.id_patient });
+        if (!patient) throw ApiError.notFound("Patient not found");
+        reply.send(patient);
+      } catch (error) {
+        if (error instanceof ApiError) throw error;
+        server.log.error(error, "Error fetching patient by id_patient");
         throw ApiError.internal("Failed to fetch patient", error);
       }
     },

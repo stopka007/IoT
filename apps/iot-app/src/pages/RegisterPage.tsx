@@ -10,7 +10,7 @@ import axios from "axios";
 import { z } from "zod";
 
 import apiClient from "../api/axiosConfig";
-import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
+import PasswordStrengthMeter from "../authentication/PasswordStrengthMeter";
 
 const passwordValidation = z
   .string()
