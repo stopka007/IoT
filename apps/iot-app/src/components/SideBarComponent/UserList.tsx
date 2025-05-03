@@ -4,11 +4,17 @@ import React, { useCallback, useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../functions/ThemeContext";
 import { Battery } from "../../functions/battery";
+import { getBatteryLevel } from "../../functions/battery";
 import { Patient, fetchAllPatients } from "../../functions/patientService";
 import PatientDetailsModal from "../../modals/PatientDetailsModal";
+import Filter from "../Filter";
 import LoadingOverlay from "../LoadingOverlay";
 
 import SearchBar from "./SearchBar";
+
+interface BatteryCache {
+  [deviceId: string]: number;
+}
 
 const UserList: React.FC = () => {
   const { theme } = useTheme();
@@ -16,12 +22,15 @@ const UserList: React.FC = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [searchResults, setSearchResults] = useState<Patient[]>([]);
+  const [batteryLevels, setBatteryLevels] = useState<BatteryCache>({});
 
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
   const baseText = theme === "light" ? "text-black" : "text-white";
   const hoverBg = theme === "light" ? "hover:bg-neutral-500" : "hover:bg-neutral-400";
   const hoverText = theme === "light" ? "hover:text-white" : "hover:text-black";
   const shadow = theme === "light" ? "shadow-neutral-400" : "shadow-black";
+  const borderColor = theme === "light" ? "border-gray-400" : "border-neutral-500";
 
   const loadPatients = useCallback(async () => {
     try {
@@ -29,6 +38,20 @@ const UserList: React.FC = () => {
       const data = await fetchAllPatients();
       setPatients(data);
       setFilteredPatients(data);
+      setSearchResults(data);
+
+      // Fetch battery levels once
+      const newBatteryLevels: BatteryCache = {};
+      for (const patient of data) {
+        try {
+          const response = await getBatteryLevel(patient.id_device);
+          newBatteryLevels[patient.id_device] = response.battery_level;
+        } catch (error) {
+          console.error(`Failed to fetch battery for device ${patient.id_device}:`, error);
+          newBatteryLevels[patient.id_device] = 0; // Default to 0 if fetch fails
+        }
+      }
+      setBatteryLevels(newBatteryLevels);
     } catch (error) {
       console.error("Error loading patients:", error);
     } finally {
@@ -56,8 +79,17 @@ const UserList: React.FC = () => {
     <>
       {loading && <LoadingOverlay />}
 
-      {/* Připojení vyhledávání */}
-      <SearchBar patients={patients} onSearchResult={setFilteredPatients} />
+      <div className={`p-4 border-b ${borderColor}`}>
+        <h2 className="text-2xl font-semibold mb-2">Personál</h2>
+        <div className="flex items-center">
+          <SearchBar patients={patients} onSearchResult={setFilteredPatients} />
+          <Filter
+            patients={searchResults}
+            onFilterChange={setFilteredPatients}
+            batteryLevels={batteryLevels}
+          />
+        </div>
+      </div>
 
       <ul className={`flex-1 overflow-y-auto ${baseBg}`}>
         {filteredPatients.map(patient => (
