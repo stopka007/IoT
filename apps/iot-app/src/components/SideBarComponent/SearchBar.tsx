@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-import FilterIcon from "../../Icons/FilterIcon";
 import { useTheme } from "../../functions/ThemeContext";
 import { Patient } from "../../functions/patientService";
 
@@ -9,7 +8,6 @@ interface SearchBarProps {
   onSearchResult: (results: Patient[]) => void;
 }
 
-// Funkce pro odstranění diakritiky
 const removeDiacritics = (str: string): string => {
   return str
     .normalize("NFD")
@@ -37,22 +35,14 @@ const SearchBar: React.FC<SearchBarProps> = ({ patients, onSearchResult }) => {
   };
 
   return (
-    <div className={`p-4 border-b ${borderColor}`}>
-      <h2 className="text-2xl font-semibold mb-2">Personál</h2>
-      <div className="flex items-center justify-between gap-2">
-        <input
-          type="text"
-          placeholder="Vyhledat pacienta..."
-          value={query}
-          onChange={handleChange}
-          className={`w-full p-2 rounded ${bgColor} ${textColor} border ${borderColor} text-sm`}
-        />
-        <button
-          className={`ml-2 p-2 rounded ${bgColor} ${textColor} border ${borderColor} hover:bg-opacity-80 transition`}
-        >
-          <FilterIcon />
-        </button>
-      </div>
+    <div className={`flex-1 mr-2`}>
+      <input
+        type="text"
+        placeholder="Vyhledat pacienta..."
+        value={query}
+        onChange={handleChange}
+        className={`w-full p-2 rounded ${bgColor} ${textColor} border ${borderColor} text-sm`}
+      />
     </div>
   );
 };
