@@ -8,7 +8,6 @@ interface FilterProps {
   patients: Patient[];
   onFilterChange: (filteredPatients: Patient[]) => void;
   batteryLevels?: BatteryCache;
-  sidebarWidth: number;
 }
 
 type SortOrder = "A-Z" | "Z-A";
@@ -20,12 +19,7 @@ interface BatteryCache {
   [deviceId: string]: number;
 }
 
-const Filter: React.FC<FilterProps> = ({
-  patients,
-  onFilterChange,
-  batteryLevels = {},
-  sidebarWidth,
-}) => {
+const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels = {} }) => {
   const { theme } = useTheme();
   const [showFilterOptions, setShowFilterOptions] = useState(false);
   const [activeCategory, setActiveCategory] = useState<FilterCategory | null>(null);
@@ -229,8 +223,7 @@ const Filter: React.FC<FilterProps> = ({
 
       {showFilterOptions && (
         <div
-          style={{ width: `calc(${sidebarWidth}px - 1rem)` }}
-          className={`absolute right-0 mt-2 w-full max-w-xs ${menuBgColor} rounded-md shadow-lg z-50 border ${borderColor} max-h-60 overflow-x-auto`}
+          className={`absolute right-0 mt-2 w-72 ${menuBgColor} rounded-md shadow-lg z-50 border ${borderColor} max-h-60 overflow-x-auto`}
           onClick={e => e.stopPropagation()}
         >
           {/* Filter category tabs */}

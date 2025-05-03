@@ -7,9 +7,9 @@ import { Battery } from "../../functions/battery";
 import { getBatteryLevel } from "../../functions/battery";
 import { Patient, fetchAllPatients } from "../../functions/patientService";
 import PatientDetailsModal from "../../modals/PatientDetailsModal";
-import Filter from "../Filter";
 import LoadingOverlay from "../LoadingOverlay";
 
+import Filter from "./Filter";
 import SearchBar from "./SearchBar";
 
 interface BatteryCache {
