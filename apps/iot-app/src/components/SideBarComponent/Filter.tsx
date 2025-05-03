@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import FilterIcon from "../Icons/FilterIcon";
-import { useTheme } from "../functions/ThemeContext";
-import { Patient } from "../functions/patientService";
+import FilterIcon from "../../Icons/FilterIcon";
+import { useTheme } from "../../functions/ThemeContext";
+import { Patient } from "../../functions/patientService";
 
 interface FilterProps {
   patients: Patient[];
