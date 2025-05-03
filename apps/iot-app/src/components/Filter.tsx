@@ -2,24 +2,24 @@ import React, { useEffect, useRef, useState } from "react";
 
 import FilterIcon from "../Icons/FilterIcon";
 import { useTheme } from "../functions/ThemeContext";
-import { getBatteryLevel } from "../functions/battery";
 import { Patient } from "../functions/patientService";
 
 interface FilterProps {
   patients: Patient[];
   onFilterChange: (filteredPatients: Patient[]) => void;
+  batteryLevels?: BatteryCache;
 }
 
 type SortOrder = "A-Z" | "Z-A";
 type BatteryFilter = "Nejnižší" | "Nejvyšší";
 type FilterCategory = "pacienti" | "mistnosti" | "stav-baterie";
 
-// Cache for battery levels to avoid multiple API calls
+// Cache for battery levels
 interface BatteryCache {
   [deviceId: string]: number;
 }
 
-const Filter: React.FC<FilterProps> = ({ patients, onFilterChange }) => {
+const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels = {} }) => {
   const { theme } = useTheme();
   const [showFilterOptions, setShowFilterOptions] = useState(false);
   const [activeCategory, setActiveCategory] = useState<FilterCategory | null>(null);
@@ -27,8 +27,6 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange }) => {
   const [selectedRooms, setSelectedRooms] = useState<number[]>([]);
   const [batteryFilter, setBatteryFilter] = useState<BatteryFilter | null>(null);
   const [availableRooms, setAvailableRooms] = useState<number[]>([]);
-  const [batteryLevels, setBatteryLevels] = useState<BatteryCache>({});
-  const [isFetchingBattery, setIsFetchingBattery] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
 
   // Theme-based styling
@@ -39,40 +37,6 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange }) => {
   const highlightBgColor = theme === "light" ? "bg-gray-200" : "bg-neutral-500";
   const hoverBgColor = theme === "light" ? "hover:bg-gray-100" : "hover:bg-neutral-600";
   const activeTextColor = theme === "light" ? "text-blue-600" : "text-blue-300";
-
-  // Fetch battery levels for all patients
-  useEffect(() => {
-    const fetchBatteryLevels = async () => {
-      if (patients.length === 0 || isFetchingBattery) return;
-
-      setIsFetchingBattery(true);
-
-      const newBatteryLevels: BatteryCache = { ...batteryLevels };
-      let hasNewData = false;
-
-      for (const patient of patients) {
-        if (newBatteryLevels[patient.id_device] === undefined) {
-          try {
-            const response = await getBatteryLevel(patient.id_device);
-            newBatteryLevels[patient.id_device] = response.battery_level;
-            hasNewData = true;
-          } catch (error) {
-            console.error(`Failed to fetch battery for device ${patient.id_device}:`, error);
-            // Set a default value in case of error
-            newBatteryLevels[patient.id_device] = 0;
-          }
-        }
-      }
-
-      if (hasNewData) {
-        setBatteryLevels(newBatteryLevels);
-      }
-
-      setIsFetchingBattery(false);
-    };
-
-    fetchBatteryLevels();
-  }, [patients]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
