@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import FilterIcon from "../../Icons/FilterIcon";
 import { useTheme } from "../../functions/ThemeContext";
 import { Patient } from "../../functions/patientService";
 
@@ -21,34 +20,17 @@ interface BatteryCache {
 
 const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels = {} }) => {
   const { theme } = useTheme();
-  const [showFilterOptions, setShowFilterOptions] = useState(false);
   const [activeCategory, setActiveCategory] = useState<FilterCategory | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>("A-Z");
   const [selectedRooms, setSelectedRooms] = useState<number[]>([]);
   const [batteryFilter, setBatteryFilter] = useState<BatteryFilter | null>(null);
   const [availableRooms, setAvailableRooms] = useState<number[]>([]);
-  const filterRef = useRef<HTMLDivElement>(null);
 
   // Theme-based styling
   const bgColor = theme === "light" ? "bg-white" : "bg-neutral-600";
   const textColor = theme === "light" ? "text-black" : "text-white";
   const borderColor = theme === "light" ? "border-gray-300" : "border-neutral-500";
-  const menuBgColor = theme === "light" ? "bg-white" : "bg-neutral-700";
-  const hoverBgColor = theme === "light" ? "hover:bg-gray-100" : "hover:bg-neutral-600";
   const activeTextColor = theme === "light" ? "text-blue-600" : "text-blue-300";
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
-        setShowFilterOptions(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   useEffect(() => {
     if (patients.length > 0) {
@@ -88,20 +70,33 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
     onFilterChange(filteredResults);
   }, [patients, selectedRooms, sortOrder, batteryFilter, batteryLevels, onFilterChange]);
 
-  const toggleFilterPanel = () => {
-    setShowFilterOptions(prev => !prev);
-  };
-
-  const handleCategoryClick = (category: FilterCategory) => {
-    setActiveCategory(category);
-  };
-
   const toggleRoomSelection = (room: number) => {
     setSelectedRooms(prev =>
       prev.includes(room) ? prev.filter(r => r !== room) : [...prev, room],
     );
   };
+  useEffect(() => {
+    const storedRooms = localStorage.getItem("filter_selectedRooms");
+    const storedBattery = localStorage.getItem("filter_batteryFilter");
+    const storedSortOrder = localStorage.getItem("filter_sortOrder");
 
+    if (storedRooms) {
+      try {
+        setSelectedRooms(JSON.parse(storedRooms));
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (e) {
+        console.warn("Nepodařilo se načíst rooms z localStorage");
+      }
+    }
+
+    if (storedBattery && (storedBattery === "Nejvyšší" || storedBattery === "Nejnižší")) {
+      setBatteryFilter(storedBattery as BatteryFilter);
+    }
+
+    if (storedSortOrder && (storedSortOrder === "A-Z" || storedSortOrder === "Z-A")) {
+      setSortOrder(storedSortOrder as SortOrder);
+    }
+  }, []);
   const handleSortOrderChange = (order: SortOrder) => {
     setSortOrder(order);
     setBatteryFilter(null); // Clear battery filter when sorting by name
@@ -110,6 +105,17 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
   const handleBatteryFilterChange = (filter: BatteryFilter) => {
     setBatteryFilter(filter);
   };
+  useEffect(() => {
+    localStorage.setItem("filter_selectedRooms", JSON.stringify(selectedRooms));
+  }, [selectedRooms]);
+
+  useEffect(() => {
+    localStorage.setItem("filter_batteryFilter", batteryFilter || "");
+  }, [batteryFilter]);
+
+  useEffect(() => {
+    localStorage.setItem("filter_sortOrder", sortOrder);
+  }, [sortOrder]);
 
   // Determine the content panel based on active category
   const renderContentPanel = () => {
@@ -207,82 +213,48 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
   };
 
   // Calculate active filtering status
-  const hasActiveFilters = selectedRooms.length > 0 || batteryFilter !== null;
-
   return (
-    <div className="relative" ref={filterRef}>
-      <button
-        onClick={toggleFilterPanel}
-        className={`w-10 h-10 flex items-center justify-center rounded ${bgColor} border ${borderColor} hover:bg-gray-200 transition ${
-          hasActiveFilters ? "ring-2 ring-blue-500" : ""
-        }`}
-        aria-label="Filter"
-      >
-        <FilterIcon />
-      </button>
+    <div className={`rounded-md shadow border ${borderColor} ${bgColor}`}>
+      <div className="flex border-b border-gray-200 dark:border-neutral-600">
+        {["pacienti", "mistnosti", "stav-baterie"].map(cat => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat as FilterCategory)}
+            className={`px-4 py-2 text-sm flex-1 ${
+              activeCategory === cat
+                ? `${activeTextColor} font-medium border-b-2 border-blue-500 dark:border-blue-400`
+                : `${textColor} hover:bg-neutral-600`
+            }`}
+          >
+            {cat === "pacienti" ? "Pacienti" : cat === "mistnosti" ? "Místnosti" : "Stav baterie"}
+          </button>
+        ))}
+      </div>
+      {renderContentPanel()}
 
-      {showFilterOptions && (
-        <div
-          className={`absolute right-0 mt-2 w-72 ${menuBgColor} rounded-md shadow-lg z-50 border ${borderColor} max-h-60 overflow-x-auto`}
-          onClick={e => e.stopPropagation()}
-        >
-          {/* Filter category tabs */}
-          <div className="flex border-b border-gray-200 dark:border-neutral-600">
-            <button
-              onClick={() => handleCategoryClick("pacienti")}
-              className={`px-4 py-2 text-sm flex-1 ${
-                activeCategory === "pacienti"
-                  ? `${activeTextColor} font-medium border-b-2 border-blue-500 dark:border-blue-400`
-                  : `${textColor} ${hoverBgColor}`
-              }`}
-            >
-              Pacienti
-            </button>
-            <button
-              onClick={() => handleCategoryClick("mistnosti")}
-              className={`px-4 py-2 text-sm flex-1 ${
-                activeCategory === "mistnosti"
-                  ? `${activeTextColor} font-medium border-b-2 border-blue-500 dark:border-blue-400`
-                  : `${textColor} ${hoverBgColor}`
-              }`}
-            >
-              Místnosti
-            </button>
-            <button
-              onClick={() => handleCategoryClick("stav-baterie")}
-              className={`px-4 py-2 text-sm flex-1 ${
-                activeCategory === "stav-baterie"
-                  ? `${activeTextColor} font-medium border-b-2 border-blue-500 dark:border-blue-400`
-                  : `${textColor} ${hoverBgColor}`
-              }`}
-            >
-              Stav baterie
-            </button>
+      {/* Summary + clear */}
+      {(selectedRooms.length > 0 || batteryFilter !== null) && (
+        <div className="p-2 border-t border-gray-200 dark:border-neutral-600 flex justify-between items-center">
+          <div className="text-xs">
+            {selectedRooms.length > 0 && (
+              <span className="mr-2">Místnosti: {selectedRooms.length}</span>
+            )}
+            {batteryFilter && <span>Baterie: {batteryFilter}</span>}
           </div>
+          <button
+            onClick={() => {
+              setSelectedRooms([]);
+              setBatteryFilter(null);
+              setSortOrder("A-Z");
 
-          {/* Content based on selected category */}
-          {renderContentPanel()}
-
-          {/* Active filters summary and clear button */}
-          {hasActiveFilters && (
-            <div className="p-2 border-t border-gray-200 dark:border-neutral-600 flex justify-between items-center">
-              <div className="text-xs">
-                {selectedRooms.length > 0 && (
-                  <span className="mr-2">Místnosti: {selectedRooms.length}</span>
-                )}
-                {batteryFilter && <span>Baterie: {batteryFilter}</span>}
-              </div>
-              <button
-                onClick={() => {
-                  setSelectedRooms([]);
-                  setBatteryFilter(null);
-                }}
-                className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-300"
-              >
-                Vymazat filtry
-              </button>
-            </div>
-          )}
+              localStorage.removeItem("filter_selectedRooms");
+              localStorage.removeItem("filter_batteryFilter");
+              localStorage.removeItem("filter_sortOrder");
+            }}
+            className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-300"
+          >
+            Vymazat filtry
+          </button>
         </div>
       )}
     </div>
