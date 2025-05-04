@@ -23,11 +23,11 @@ type ParamsType = Static<typeof ParamsSchema>;
 // Base patient properties (adjust required/optional based on IPatient)
 const PatientBaseSchema = Type.Object({
   id_patient: Type.String(),
-  id_device: Type.String(),
+  id_device: Type.Optional(Type.String()),
   name: Type.String(),
-  age: Type.Number(),
-  room: Type.Number(),
-  illness: Type.String(),
+  room: Type.Optional(Type.Number()),
+  illness: Type.Optional(Type.String()),
+  age: Type.Optional(Type.Number()),
   notes: Type.Optional(Type.String()),
   // Add other required/optional fields from IPatient here
 });

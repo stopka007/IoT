@@ -7,6 +7,10 @@ export interface Room {
   name: number;
 }
 
+function generateId(): string {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+
 export interface UseCreatePatientLogic {
   rooms: Room[];
   patientName: string;
@@ -75,6 +79,8 @@ export const useCreatePatientLogic = (
       setIsLoading(true);
       setError(null);
       const response = await apiClient.post("/api/patients", {
+        id_patient: generateId(),
+        id_device: "",
         name: patientName,
         room: Number(selectedRoom),
         illness: illness || undefined,

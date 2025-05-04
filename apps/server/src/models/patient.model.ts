@@ -12,7 +12,7 @@ export interface IPatient extends Document {
 }
 
 const PatientSchema: Schema = new Schema({
-  id_patient: { type: String, required: true },
+  id_patient: { type: String, required: false },
   id_device: { type: String, required: false },
   name: { type: String, required: true },
   room: { type: Number, required: false },
