@@ -12,7 +12,7 @@ const DragHandle: React.FC<DragHandleProps> = ({ setSidebarWidth }) => {
 
     const onMouseMove = (e: MouseEvent) => {
       if (isDragging.current) {
-        const newWidth = Math.max(150, Math.min(e.clientX, 500));
+        const newWidth = Math.max(300, Math.min(e.clientX, 500));
         setSidebarWidth(newWidth);
       }
     };

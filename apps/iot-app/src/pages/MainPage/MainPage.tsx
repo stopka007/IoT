@@ -18,7 +18,7 @@ import CreateRoomModal from "../../modals/createRoomModal";
 
 export default function MainPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [sidebarWidth, setSidebarWidth] = useState(250);
+  const [sidebarWidth, setSidebarWidth] = useState(300);
   const { theme, toggleTheme } = useTheme();
   const { user, logout, isLoading } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

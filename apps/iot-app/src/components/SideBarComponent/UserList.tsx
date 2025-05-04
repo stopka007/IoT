@@ -10,6 +10,7 @@ import PatientDetailsModal from "../../modals/PatientDetailsModal";
 import LoadingOverlay from "../LoadingOverlay";
 
 import Filter from "./Filter";
+import FilterToggle from "./FilterToggle";
 import SearchBar from "./SearchBar";
 
 interface BatteryCache {
@@ -74,6 +75,7 @@ const UserList: React.FC = () => {
   const handlePatientUpdated = () => {
     loadPatients();
   };
+  const [showFilter, setShowFilter] = useState(false);
 
   return (
     <>
@@ -83,12 +85,17 @@ const UserList: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-2">Personál</h2>
         <div className="flex items-center">
           <SearchBar patients={patients} onSearchResult={setFilteredPatients} />
-          <Filter
-            patients={searchResults}
-            onFilterChange={setFilteredPatients}
-            batteryLevels={batteryLevels}
-          />
+          <FilterToggle onToggle={() => setShowFilter(!showFilter)} isActive={showFilter} />
         </div>
+        {showFilter && (
+          <div className="mt-2">
+            <Filter
+              patients={searchResults}
+              onFilterChange={setFilteredPatients}
+              batteryLevels={batteryLevels}
+            />
+          </div>
+        )}
       </div>
 
       <ul className={`flex-1 overflow-y-auto ${baseBg}`}>
