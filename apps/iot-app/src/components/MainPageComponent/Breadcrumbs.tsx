@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 
 import GreaterThanIcon from "../../Icons/GreaterThanIcon";
+import apiClient from "../../api/axiosConfig";
 import { useTheme } from "../../functions/ThemeContext";
-import { mockUsers } from "../data";
+import { Patient } from "../../functions/patientService";
 
 const Breadcrumbs: React.FC = () => {
   const { theme } = useTheme();
   const location = useLocation();
-  const { id } = useParams<{ id: string }>();
+  const { roomNumber, id } = useParams<{ roomNumber?: string; id?: string }>();
 
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [roomName, setRoomName] = useState<string | null>(null);
   const baseText = theme === "light" ? "text-black" : "text-white";
   const hoverText =
     theme === "light"
@@ -20,9 +23,32 @@ const Breadcrumbs: React.FC = () => {
       ? "bg-gray-100 text-black border-gray-300"
       : "bg-neutral-600 text-white border-white/20";
 
-  const patientName = mockUsers.find(p => p.id === id)?.name;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [roomRes, patientsRes] = await Promise.all([
+          apiClient.get<{ data: { name: string }[] }>("/api/rooms"),
+          apiClient.get<{ data: Patient[] }>("/api/patients"),
+        ]);
 
+        const foundRoom = roomRes.data.data.find(r => r.name.toString() === roomNumber);
+        if (foundRoom) {
+          setRoomName(foundRoom.name.toString());
+        }
+
+        const roomPatients = patientsRes.data.data.filter(p => p.room?.toString() === roomNumber);
+        setPatients(roomPatients);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
+  }, [roomNumber]);
+
+  const patientName = id ? patients.find(p => p._id === id)?.name : undefined;
   const isOnPatientDetail = location.pathname.startsWith("/patient-detail/") && patientName;
+  const isOnRoomDetail = location.pathname.startsWith("/room-detail/") && roomNumber;
 
   return (
     <nav className={`flex px-5 py-3 ${headerClass}`} aria-label="Breadcrumb">
@@ -45,7 +71,14 @@ const Breadcrumbs: React.FC = () => {
           </Link>
         </li>
 
-        {isOnPatientDetail && (
+        {isOnRoomDetail && roomName && (
+          <li className="flex items-center">
+            <GreaterThanIcon />
+            <span className={`ms-1 text-sm font-medium ${baseText}`}>Pokoj {roomName}</span>
+          </li>
+        )}
+
+        {isOnPatientDetail && patientName && (
           <li className="flex items-center">
             <GreaterThanIcon />
             <span className={`ms-1 text-sm font-medium ${baseText}`}>{patientName}</span>
