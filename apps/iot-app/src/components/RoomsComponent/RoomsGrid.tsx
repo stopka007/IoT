@@ -29,7 +29,11 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate }) => {
   const [roomsData, setRoomsData] = useState<RoomData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { key: updateKey } = useOutletContext<{ key: number }>();
+  const { key: updateKey, showDetailedView } = useOutletContext<{
+    key: number;
+    onUpdate: () => void;
+    showDetailedView: boolean;
+  }>();
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
@@ -101,24 +105,31 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate }) => {
   return (
     <div className="h-[calc(100vh-120px)] overflow-y-auto px-4">
       <div className="flex flex-wrap gap-4 py-4 overflow-y-auto pb-60">
-        <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
-          <NewRoomComponent />
-        </div>
-        <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
-          <NewPacientComponent />
-        </div>
-        {roomsData.map(({ roomNumber, patients }) => (
-          <div
-            key={roomNumber}
-            className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]"
-          >
-            <RoomsComponent
-              title={`Pokoj ${roomNumber}`}
-              patients={patients}
-              onPatientUpdate={loadData}
-            />
-          </div>
-        ))}
+        {showDetailedView ? (
+          <>
+            {roomsData.map(({ roomNumber, patients }) => (
+              <div
+                key={roomNumber}
+                className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]"
+              >
+                <RoomsComponent
+                  title={`Pokoj ${roomNumber}`}
+                  patients={patients}
+                  onPatientUpdate={loadData}
+                />
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
+              <NewRoomComponent />
+            </div>
+            <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
+              <NewPacientComponent />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

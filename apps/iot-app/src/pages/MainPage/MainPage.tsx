@@ -22,6 +22,8 @@ export default function MainPage() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showCreateDeviceModal, setShowCreateDeviceModal] = useState(false);
   const [showAssignDeviceModal, setShowAssignDeviceModal] = useState(false);
+  const [showDetailedView, setShowDetailedView] = useState(true);
+
   const [updateKey, setUpdateKey] = useState(0);
 
   const handleUpdate = useCallback(() => {
@@ -124,6 +126,15 @@ export default function MainPage() {
                 </div>
               )}
             </div>
+            <div className="flex items-center space-x-2">
+              <label className="text-sm text-gray-200">Zobrazit přehled</label>
+              <input
+                type="checkbox"
+                checked={showDetailedView}
+                onChange={() => setShowDetailedView(prev => !prev)}
+                className="form-checkbox h-4 w-4 text-blue-600"
+              />
+            </div>
           </div>
         </header>
         <Breadcrumbs />
@@ -169,7 +180,7 @@ export default function MainPage() {
             )}
           </div>
         </div>
-        <Outlet context={{ onUpdate: handleUpdate, key: updateKey }} />
+        <Outlet context={{ onUpdate: handleUpdate, key: updateKey, showDetailedView }} />
       </main>
 
       {/* Logout Modal */}
