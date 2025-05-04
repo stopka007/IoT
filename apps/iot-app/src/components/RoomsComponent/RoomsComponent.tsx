@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import HomeIcon from "../../Icons/HomeIcon";
 import MessageSquareIcon from "../../Icons/MessageSquareIcon";
@@ -22,7 +23,8 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
 }) => {
   const { theme } = useTheme();
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [, setIsModalOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
   const baseText = theme === "light" ? "text-black" : "text-white";
@@ -32,6 +34,11 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
   const handlePatientClick = (patient: Patient) => {
     setSelectedPatient(patient);
     setIsModalOpen(true);
+  };
+
+  const handleRoomClick = () => {
+    const roomNumber = title.replace("Pokoj ", ""); // Např. "Pokoj 102" → "102"
+    navigate(`/room-detail/${roomNumber}`);
   };
 
   const handleCloseModal = () => {
@@ -51,7 +58,7 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
         className={`max-w-sm w-full p-4 border rounded-lg shadow-md ${baseBg} border-gray-300 dark:border-neutral-500 h-[250px] flex flex-col justify-between hover:shadow-lg hover:shadow-neutral-500/50 dark:hover:shadow-black/50 transition duration-300 ease-in-out`}
       >
         <div>
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-4" onClick={handleRoomClick}>
             <HomeIcon />
             <h2 className={`text-2xl font-bold ${baseText}`}>{title}</h2>
           </div>

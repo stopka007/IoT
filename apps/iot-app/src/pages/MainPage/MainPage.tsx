@@ -10,11 +10,8 @@ import Breadcrumbs from "../../components/MainPageComponent/Breadcrumbs";
 import Sidebar from "../../components/SideBarComponent/Sidebar";
 import { useTheme } from "../../functions/ThemeContext";
 import AssignDeviceModal from "../../modals/assignDeviceModal";
-import AssignRoomModal from "../../modals/assignRoomModal";
 import ConfirmModal from "../../modals/confirmModal";
 import CreateDeviceModal from "../../modals/createDeviceModal";
-import CreatePatientModal from "../../modals/createPatientModal";
-import CreateRoomModal from "../../modals/createRoomModal";
 
 export default function MainPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -25,9 +22,8 @@ export default function MainPage() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showCreateDeviceModal, setShowCreateDeviceModal] = useState(false);
   const [showAssignDeviceModal, setShowAssignDeviceModal] = useState(false);
-  const [showCreatePatientModal, setShowCreatePatientModal] = useState(false);
-  const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
-  const [showAssignRoomModal, setShowAssignRoomModal] = useState(false);
+  const [showDetailedView, setShowDetailedView] = useState(true);
+
   const [updateKey, setUpdateKey] = useState(0);
 
   const handleUpdate = useCallback(() => {
@@ -85,6 +81,17 @@ export default function MainPage() {
             >
               {theme === "light" ? "Tmavý režim" : "Světlý režim"}
             </button>
+            <div className="flex items-center space-x-2">
+              <label className="inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={showDetailedView}
+                  onChange={() => setShowDetailedView(prev => !prev)}
+                />
+                <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen(prev => !prev)}
@@ -171,29 +178,11 @@ export default function MainPage() {
                 >
                   Přiřadit Zařízení
                 </button>
-                <button
-                  onClick={() => setShowCreatePatientModal(true)}
-                  className="bg-purple-500 text-black px-4 py-2 rounded-md hover:bg-purple-800 hover:shadow-xs"
-                >
-                  Vytvořit Pacienta
-                </button>
-                <button
-                  onClick={() => setShowCreateRoomModal(true)}
-                  className="bg-yellow-500 text-black px-4 py-2 rounded-md hover:bg-yellow-800 hover:shadow-xs"
-                >
-                  Vytvořit Pokoj
-                </button>
-                <button
-                  onClick={() => setShowAssignRoomModal(true)}
-                  className="bg-orange-500 text-black px-4 py-2 rounded-md hover:bg-orange-800 hover:shadow-xs"
-                >
-                  Přiřadit Pokoj
-                </button>
               </div>
             )}
           </div>
         </div>
-        <Outlet context={{ onUpdate: handleUpdate, key: updateKey }} />
+        <Outlet context={{ onUpdate: handleUpdate, key: updateKey, showDetailedView }} />
       </main>
 
       {/* Logout Modal */}
@@ -217,32 +206,6 @@ export default function MainPage() {
       <AssignDeviceModal
         isOpen={showAssignDeviceModal}
         onClose={() => setShowAssignDeviceModal(false)}
-        theme={theme}
-        onUpdate={handleUpdate}
-      />
-
-      {/* Create Patient Modal */}
-      <CreatePatientModal
-        isOpen={showCreatePatientModal}
-        onClose={() => setShowCreatePatientModal(false)}
-        theme={theme}
-        onUpdate={handleUpdate}
-      />
-
-      <CreateRoomModal
-        isOpen={showCreateRoomModal}
-        onClose={() => setShowCreateRoomModal(false)}
-        theme={theme}
-        onUpdate={handleUpdate}
-      />
-
-      {/* Assign Room Modal */}
-      <AssignRoomModal
-        isOpen={showAssignRoomModal}
-        onClose={() => {
-          setShowAssignRoomModal(false);
-          handleUpdate();
-        }}
         theme={theme}
         onUpdate={handleUpdate}
       />

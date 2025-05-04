@@ -5,6 +5,7 @@ interface AssignRoomModalProps {
   onClose: () => void;
   theme: string;
   onUpdate?: () => void;
+  initialRoom: number | null;
 }
 
 export default function AssignRoomModal({

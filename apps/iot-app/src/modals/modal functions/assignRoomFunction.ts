@@ -30,10 +30,11 @@ export const useAssignRoomLogic = (
   isOpen: boolean,
   onClose: () => void,
   onUpdate?: () => void,
+  initialRoom?: number | null, // Přidání argumentu pro pokoj
 ): UseAssignRoomLogic => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
-  const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
+  const [selectedRoom, setSelectedRoom] = useState<number | null>(initialRoom || null); // Použití `initialRoom` pokud je předán
   const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,6 +73,13 @@ export const useAssignRoomLogic = (
       fetchData();
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    // Pokud je pokoj předán jako argument, automaticky ho nastaví do formuláře
+    if (initialRoom && !selectedRoom) {
+      setSelectedRoom(initialRoom);
+    }
+  }, [initialRoom, selectedRoom]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
