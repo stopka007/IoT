@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 
 import apiClient from "../../api/axiosConfig";
 import { Patient } from "../../functions/patientService";
 
-import NewRoomComponent from "./NewRoomComponent";
+import NewRoomComponent from "./NewRoomwidget";
 import RoomsComponent from "./RoomsComponent";
 
 interface Room {
@@ -27,6 +28,7 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate }) => {
   const [roomsData, setRoomsData] = useState<RoomData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { key: updateKey } = useOutletContext<{ key: number }>();
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
@@ -81,7 +83,7 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate }) => {
     if (onUpdate) {
       loadData();
     }
-  }, [onUpdate, loadData]);
+  }, [onUpdate, loadData, updateKey]);
 
   if (isLoading) {
     return <div className="p-4 text-center">Načítám data pokojů...</div>;

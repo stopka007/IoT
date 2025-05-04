@@ -3,7 +3,7 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
 import ProtectedRoute from "./authentication/ProtectedRoute";
 import HomePage from "./components/MainPageComponent/HomePage";
-import PatientDetail from "./components/PatientDetailComponent/PatientDetailComponent";
+import RoomDetailComponent from "./components/RoomsComponent/RoomDetailComponent";
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage/MainPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -20,7 +20,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<MainPage />}>
             <Route index element={<HomePage />} />
-            <Route path="patient-detail/:id" element={<PatientDetail />} />
+            <Route path="room-detail/:roomNumber" element={<RoomDetailComponent />} />
             <Route path="profile" element={<ProfilePage />} />
           </Route>
         </Route>
