@@ -14,7 +14,6 @@ import AssignRoomModal from "../../modals/assignRoomModal";
 import ConfirmModal from "../../modals/confirmModal";
 import CreateDeviceModal from "../../modals/createDeviceModal";
 import CreatePatientModal from "../../modals/createPatientModal";
-import CreateRoomModal from "../../modals/createRoomModal";
 
 export default function MainPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -26,7 +25,6 @@ export default function MainPage() {
   const [showCreateDeviceModal, setShowCreateDeviceModal] = useState(false);
   const [showAssignDeviceModal, setShowAssignDeviceModal] = useState(false);
   const [showCreatePatientModal, setShowCreatePatientModal] = useState(false);
-  const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [showAssignRoomModal, setShowAssignRoomModal] = useState(false);
   const [updateKey, setUpdateKey] = useState(0);
 
@@ -177,12 +175,7 @@ export default function MainPage() {
                 >
                   Vytvořit Pacienta
                 </button>
-                <button
-                  onClick={() => setShowCreateRoomModal(true)}
-                  className="bg-yellow-500 text-black px-4 py-2 rounded-md hover:bg-yellow-800 hover:shadow-xs"
-                >
-                  Vytvořit Pokoj
-                </button>
+
                 <button
                   onClick={() => setShowAssignRoomModal(true)}
                   className="bg-orange-500 text-black px-4 py-2 rounded-md hover:bg-orange-800 hover:shadow-xs"
@@ -225,13 +218,6 @@ export default function MainPage() {
       <CreatePatientModal
         isOpen={showCreatePatientModal}
         onClose={() => setShowCreatePatientModal(false)}
-        theme={theme}
-        onUpdate={handleUpdate}
-      />
-
-      <CreateRoomModal
-        isOpen={showCreateRoomModal}
-        onClose={() => setShowCreateRoomModal(false)}
         theme={theme}
         onUpdate={handleUpdate}
       />

@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import apiClient from "../../api/axiosConfig";
 import { Patient } from "../../functions/patientService";
 
+import NewRoomComponent from "./NewRoomComponent";
 import RoomsComponent from "./RoomsComponent";
 
 interface Room {
@@ -109,6 +110,9 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate }) => {
             />
           </div>
         ))}
+        <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
+          <NewRoomComponent />
+        </div>
       </div>
     </div>
   );
