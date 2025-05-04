@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router-dom";
 
 import apiClient from "../../api/axiosConfig";
 import { Patient } from "../../functions/patientService";
+import NewPacientComponent from "../NewPatientComponent/NewPatientComponent";
 
 import NewRoomComponent from "./NewRoomwidget";
 import RoomsComponent from "./RoomsComponent";
@@ -100,6 +101,12 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate }) => {
   return (
     <div className="h-[calc(100vh-120px)] overflow-y-auto px-4">
       <div className="flex flex-wrap gap-4 py-4 overflow-y-auto pb-60">
+        <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
+          <NewRoomComponent />
+        </div>
+        <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
+          <NewPacientComponent />
+        </div>
         {roomsData.map(({ roomNumber, patients }) => (
           <div
             key={roomNumber}
@@ -112,9 +119,6 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate }) => {
             />
           </div>
         ))}
-        <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
-          <NewRoomComponent />
-        </div>
       </div>
     </div>
   );

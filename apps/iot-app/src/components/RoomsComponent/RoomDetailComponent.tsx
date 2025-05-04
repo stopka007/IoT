@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { Outlet, useParams } from "react-router-dom";
 
 import HomeIcon from "../../Icons/HomeIcon";
 import PersonIcon from "../../Icons/UserIcon";
 import apiClient from "../../api/axiosConfig";
 import { useTheme } from "../../functions/ThemeContext";
 import { Patient } from "../../functions/patientService";
+import AssignRoomModal from "../../modals/assignRoomModal";
 
 interface Room {
   name: number;
@@ -18,6 +19,9 @@ const RoomDetailComponent = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [showAssignRoomModal, setShowAssignRoomModal] = useState(false);
+  const [updateKey, setUpdateKey] = useState(0);
+
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -45,6 +49,9 @@ const RoomDetailComponent = () => {
 
     fetchData();
   }, [roomNumber]);
+  const handleUpdate = useCallback(() => {
+    setUpdateKey(prev => prev + 1);
+  }, []);
 
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
   const baseText = theme === "light" ? "text-black" : "text-white";
@@ -67,6 +74,12 @@ const RoomDetailComponent = () => {
         <div className="flex items-center gap-2 p-4">
           <HomeIcon />
           <h2 className="text-2xl font-bold">Pokoj {room.name}</h2>
+          <button
+            className="ml-auto px-4 items-end justify-end "
+            onClick={() => setShowAssignRoomModal(true)}
+          >
+            Připojit uživatele
+          </button>
         </div>
 
         <div className="text-lg px-4">
@@ -74,9 +87,7 @@ const RoomDetailComponent = () => {
           <p>Obsazenost: {patients.length}</p>
         </div>
 
-        {/* Obsah v jednom panelu: seznam + detail */}
         <div className="flex gap-6 mt-4 flex-1 overflow-hidden px-4">
-          {/* SEZNAM */}
           <div className="w-[400px] flex flex-col border-r border-gray-300 dark:border-neutral-500 pr-2 overflow-y-auto">
             <h3 className="text-lg font-semibold mb-2">Pacienti</h3>
             <ul className="space-y-1 overflow-y-auto">
@@ -97,7 +108,6 @@ const RoomDetailComponent = () => {
             </ul>
           </div>
 
-          {/* DETAIL */}
           <div className="flex-1 overflow-y-auto">
             {selectedPatient ? (
               <div>
@@ -116,7 +126,6 @@ const RoomDetailComponent = () => {
                   <p>
                     <span className="font-semibold">Pokoj:</span> {selectedPatient.room}
                   </p>
-                  {/* Další pole lze doplnit */}
                 </div>
               </div>
             ) : (
@@ -125,6 +134,17 @@ const RoomDetailComponent = () => {
           </div>
         </div>
       </div>
+      <Outlet context={{ onUpdate: handleUpdate, key: updateKey }} />
+      <AssignRoomModal
+        isOpen={showAssignRoomModal}
+        onClose={() => {
+          setShowAssignRoomModal(false);
+          handleUpdate();
+        }}
+        theme={theme}
+        onUpdate={handleUpdate}
+        initialRoom={room.name}
+      />
     </div>
   );
 };
