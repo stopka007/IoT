@@ -1,0 +1,59 @@
+
+ PASS  src/__tests__/health.test.ts
+ FAIL  src/__tests__/auth.test.ts
+  ● Auth › should login successfully with correct credentials
+
+    ValidationError: User validation failed: username: Username is required
+
+      at model.Object.<anonymous>.Document.invalidate (../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/document.js:3329:32
+      at model.Object.<anonymous>.Document.invalidate (../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/document.js:3329:32)
+      at ../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/document.js:3090:17
+      at ../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/schemaType.js:1407:9
+
+  ● Auth › should fail login with wrong password
+
+    ValidationError: User validation failed: username: Username is required
+
+      at model.Object.<anonymous>.Document.invalidate (../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/document.js:3329:32
+      at model.Object.<anonymous>.Document.invalidate (../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/document.js:3329:32)
+      at ../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/document.js:3090:17
+      at ../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/schemaType.js:1407:9
+
+  ● Auth › should not access protected route without token
+
+    ValidationError: User validation failed: username: Username is required
+
+      at model.Object.<anonymous>.Document.invalidate (../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/document.js:3329:32
+      at model.Object.<anonymous>.Document.invalidate (../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/document.js:3329:32)
+      at ../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/document.js:3090:17
+      at ../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/schemaType.js:1407:9
+
+  ● Auth › should access protected route with valid token
+
+    ValidationError: User validation failed: username: Username is required
+
+      at model.Object.<anonymous>.Document.invalidate (../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/document.js:3329:32
+      at model.Object.<anonymous>.Document.invalidate (../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/document.js:3329:32)
+      at ../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/document.js:3090:17
+      at ../../node_modules/.pnpm/mongoose@8.13.1/node_modules/mongoose/lib/schemaType.js:1407:9
+
+Test Suites: 1 failed, 1 passed, 2 total
+Tests:       4 failed, 1 passed, 5 total
+Snapshots:   0 total
+Time:        2.633 s, estimated 29 s
+Ran all test suites.
+[13:28:25 UTC] INFO: incoming request
+    reqId: "req-1"
+    req: {
+      "method": "GET",
+      "url": "/health",
+      "hostname": "localhost:80",
+      "remoteAddress": "127.0.0.1"
+    }
+[13:28:25 UTC] INFO: request completed
+    reqId: "req-1"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 12.511653998866677
+ ELIFECYCLE  Test failed. See above for more details.[A[A
