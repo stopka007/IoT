@@ -18,7 +18,10 @@ describe("Auth", () => {
   beforeAll(async () => {
     app = await buildServer();
     if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(process.env.MONGODB_URI!);
+      await mongoose.connect(process.env.MONGODB_URI!, {
+        serverSelectionTimeoutMS: 60000,
+        socketTimeoutMS: 60000,
+      });
     }
     while (mongoose.connection.readyState !== 1) {
       await new Promise(res => setTimeout(res, 100));
