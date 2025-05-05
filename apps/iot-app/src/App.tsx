@@ -4,6 +4,7 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import ProtectedRoute from "./authentication/ProtectedRoute";
 import HomePage from "./components/MainPageComponent/HomePage";
 import RoomDetailComponent from "./components/RoomsComponent/RoomDetailComponent";
+import AlertArchivePage from "./pages/AlertArchivePage";
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage/MainPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -22,6 +23,7 @@ function App() {
             <Route index element={<HomePage />} />
             <Route path="room-detail/:roomNumber" element={<RoomDetailComponent />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="alert-archive" element={<AlertArchivePage />} />
           </Route>
         </Route>
       </Routes>

@@ -44,6 +44,7 @@ export default async function (server: FastifyInstance) {
     "/",
     asyncHandler(async (request: FastifyRequest, reply: FastifyReply) => {
       const alert = await Alert.create(request.body);
+      alert.history.push({ status: "open", timestamp: alert.timestamp }); // Log creation in history
       reply.code(201).send(alert);
     }),
   );
@@ -56,7 +57,7 @@ export default async function (server: FastifyInstance) {
     asyncHandler(async (request: FastifyRequest<AlertResolveParams>, reply: FastifyReply) => {
       const updated = await Alert.findByIdAndUpdate(
         request.params.id,
-        { status: "resolved" },
+        { status: "resolved", $push: { history: { status: "resolved", timestamp: new Date() } } }, // Log resolution in history
         { new: true, runValidators: true },
       );
 
