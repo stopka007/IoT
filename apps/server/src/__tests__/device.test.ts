@@ -5,7 +5,7 @@ import { Device } from "../models/device.model";
 import { buildServer } from "../server";
 
 describe("Device CRUD", () => {
-  jest.setTimeout(20000);
+  jest.setTimeout(60000);
   let app: FastifyInstance;
   let createdDeviceId: string;
   let createdDeviceDeviceId: string = "test-device-123";
@@ -22,6 +22,10 @@ describe("Device CRUD", () => {
     app = await buildServer();
     if (mongoose.connection.readyState === 0) {
       await mongoose.connect(process.env.MONGODB_URI!);
+    }
+    // Wait for mongoose connection to be ready
+    while (mongoose.connection.readyState !== 1) {
+      await new Promise(res => setTimeout(res, 100));
     }
     await Device.deleteMany({ id_device: createdDeviceDeviceId });
   });
