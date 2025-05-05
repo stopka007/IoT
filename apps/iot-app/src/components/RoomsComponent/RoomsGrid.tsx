@@ -3,9 +3,12 @@ import { useOutletContext } from "react-router-dom";
 
 import apiClient from "../../api/axiosConfig";
 import { Patient } from "../../functions/patientService";
-import NewPacientComponent from "../NewPatientComponent/NewPatientComponent";
+import ConnectDeviceComponent from "../AdminView/ConnectDeviceComponent";
+import ConnectPacientRoomComponent from "../AdminView/ConnectPacientRoomComponent";
+import NewDeviceComponent from "../AdminView/NewDeviceComponent";
+import NewPacientComponent from "../AdminView/NewPatientComponent";
+import NewRoomComponent from "../AdminView/NewRoomComponent";
 
-import NewRoomComponent from "./NewRoomwidget";
 import RoomsComponent from "./RoomsComponent";
 
 interface Room {
@@ -127,6 +130,25 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate }) => {
             </div>
             <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
               <NewPacientComponent />
+            </div>
+            <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
+              <NewDeviceComponent />
+            </div>
+            <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
+              <ConnectDeviceComponent />
+            </div>
+            <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
+              <ConnectPacientRoomComponent
+                isOpen={false}
+                onClose={function (): void {
+                  throw new Error("Function not implemented.");
+                }}
+                onUpdate={function (): void {
+                  throw new Error("Function not implemented.");
+                }}
+                theme={""}
+                initialRoom={0}
+              />
             </div>
           </>
         )}
