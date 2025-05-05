@@ -4,12 +4,28 @@ export interface IAlert extends Document {
   id_device: string;
   timestamp: Date;
   status: "open" | "resolved";
+  history: { status: string; timestamp: Date }[];
 }
 
 const AlertSchema: Schema = new Schema({
   id_device: { type: String, required: true, ref: "Device" },
   timestamp: { type: Date, default: Date.now },
   status: { type: String, enum: ["open", "resolved"], default: "open" },
+  history: [
+    {
+      status: { type: String, enum: ["open", "resolved"], required: true },
+      timestamp: { type: Date, default: Date.now },
+    },
+  ],
+});
+
+AlertSchema.pre<IAlert>("save", function (next) {
+  if (this.isModified("status") && this.status === "resolved" && this.history.length === 0) {
+    this.history.push({ status: "open", timestamp: this.timestamp }); // Log the original creation status
+  } else if (this.isModified("status")) {
+    this.history.push({ status: this.status, timestamp: new Date() }); // Log status change to resolved
+  }
+  next();
 });
 
 export default mongoose.model<IAlert>("Alert", AlertSchema);
