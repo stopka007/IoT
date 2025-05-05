@@ -97,11 +97,15 @@ export default async function (server: FastifyInstance) {
           });
         }
 
-        // 2. Create the alert
+        // 2. Create the alert with initial history
         const alert = await Alert.create({
           id_device,
           ...alertData,
         });
+
+        // Add creation to history
+        alert.history.push({ status: "open", timestamp: alert.timestamp });
+        await alert.save();
 
         // 3. Update the device with the alert reference
         const updatedDevice = await Device.findOneAndUpdate(
@@ -142,10 +146,18 @@ export default async function (server: FastifyInstance) {
           throw ApiError.notFound(`Device not found with id: ${id_device}`);
         }
 
-        // 2. Find and resolve the alert
+        // 2. Find and resolve the alert with history update
         const alert = await Alert.findOneAndUpdate(
           { id_device, status: "open" },
-          { status: "resolved", $push: { history: { status: "resolved", timestamp: new Date() } } },
+          {
+            status: "resolved",
+            $push: {
+              history: {
+                status: "resolved",
+                timestamp: new Date(),
+              },
+            },
+          },
           { new: true },
         );
 
