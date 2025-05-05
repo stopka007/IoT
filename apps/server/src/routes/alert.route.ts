@@ -145,7 +145,7 @@ export default async function (server: FastifyInstance) {
         // 2. Find and resolve the alert
         const alert = await Alert.findOneAndUpdate(
           { id_device, status: "open" },
-          { status: "resolved" },
+          { status: "resolved", $push: { history: { status: "resolved", timestamp: new Date() } } },
           { new: true },
         );
 
