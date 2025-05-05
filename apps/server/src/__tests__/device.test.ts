@@ -21,7 +21,10 @@ describe("Device CRUD", () => {
   beforeAll(async () => {
     app = await buildServer();
     if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(process.env.MONGODB_URI!);
+      await mongoose.connect(process.env.MONGODB_URI!, {
+        serverSelectionTimeoutMS: 60000,
+        socketTimeoutMS: 60000,
+      });
     }
     // Wait for mongoose connection to be ready
     while (mongoose.connection.readyState !== 1) {
