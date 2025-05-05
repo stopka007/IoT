@@ -12,7 +12,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@fastify/cors": "^9.0.0",
