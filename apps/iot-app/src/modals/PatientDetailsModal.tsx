@@ -4,6 +4,7 @@ import CloseIcon from "../Icons/CloseIcon";
 import { useTheme } from "../functions/ThemeContext";
 import { Patient } from "../functions/patientService";
 
+import AssignDeviceModal from "./assignDeviceModal";
 import EditPatientModal from "./editPatientModal";
 
 interface PatientDetailsModalProps {
@@ -19,6 +20,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
 }) => {
   const { theme } = useTheme();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAssignDeviceModalOpen, setIsAssignDeviceModalOpen] = useState(false);
 
   if (!patient) return null;
 
@@ -29,6 +31,10 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
 
   const handleEditClick = () => {
     setIsEditModalOpen(true);
+  };
+
+  const handleAssignDeviceClick = () => {
+    setIsAssignDeviceModalOpen(true);
   };
 
   const handleEditClose = () => {
@@ -92,6 +98,16 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
               Edit Patient
             </button>
             <button
+              onClick={handleAssignDeviceClick}
+              className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
+                theme === "light"
+                  ? "text-white bg-blue-500 hover:bg-blue-700 focus:ring-blue-500"
+                  : "text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
+              } focus:outline-none focus:ring-2 transition-colors duration-200`}
+            >
+              Assign Device
+            </button>
+            <button
               onClick={onClose}
               className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
                 theme === "light"
@@ -111,6 +127,15 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
           onClose={handleEditClose}
           theme={theme}
           patientId={patient._id}
+        />
+      )}
+      {isAssignDeviceModalOpen && (
+        <AssignDeviceModal
+          isOpen={isAssignDeviceModalOpen}
+          onClose={() => setIsAssignDeviceModalOpen(false)}
+          theme={theme}
+          onUpdate={onUpdate}
+          initialPatient={patient._id}
         />
       )}
     </>

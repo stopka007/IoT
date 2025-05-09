@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 
 import HomeIcon from "../../Icons/HomeIcon";
 import PersonIcon from "../../Icons/UserIcon";
@@ -23,6 +23,7 @@ const RoomDetailComponent = () => {
   const [updateKey, setUpdateKey] = useState(0);
 
   const { theme } = useTheme();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,6 +58,11 @@ const RoomDetailComponent = () => {
   const baseText = theme === "light" ? "text-black" : "text-white";
   const hoverBg = theme === "light" ? "hover:bg-neutral-300" : "hover:bg-neutral-500";
   const hoverText = theme === "light" ? "hover:text-black" : "hover:text-white";
+
+  const handlePatientClick = (patient: Patient) => {
+    setSelectedPatient(patient);
+    navigate(`/patient-detail/${patient._id}`);
+  };
 
   if (error) {
     return <div className="p-6 text-center text-red-500">{error}</div>;
@@ -95,7 +101,7 @@ const RoomDetailComponent = () => {
                 patients.map(patient => (
                   <div
                     key={patient._id}
-                    onClick={() => setSelectedPatient(patient)}
+                    onClick={() => handlePatientClick(patient)}
                     className={`flex items-center gap-2 px-2 py-2 rounded cursor-pointer transition ${hoverBg} ${hoverText}`}
                   >
                     <PersonIcon />

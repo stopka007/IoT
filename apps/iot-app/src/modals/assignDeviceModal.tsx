@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { useAssignDeviceLogic } from "./modal functions/assignDeviceFunction";
 
 interface AssignDeviceModalProps {
@@ -5,6 +7,7 @@ interface AssignDeviceModalProps {
   onClose: () => void;
   theme: "light" | "dark";
   onUpdate?: () => void;
+  initialPatient?: string;
 }
 
 export default function AssignDeviceModal({
@@ -12,6 +15,7 @@ export default function AssignDeviceModal({
   onClose,
   theme,
   onUpdate,
+  initialPatient,
 }: AssignDeviceModalProps) {
   const {
     patients,
@@ -24,6 +28,12 @@ export default function AssignDeviceModal({
     error,
     handleSubmit,
   } = useAssignDeviceLogic(isOpen, onClose, onUpdate);
+
+  useEffect(() => {
+    if (initialPatient) {
+      setSelectedPatient(initialPatient); // Automatically set the selected room
+    }
+  }, [initialPatient, setSelectedPatient]);
 
   if (!isOpen) return null;
 

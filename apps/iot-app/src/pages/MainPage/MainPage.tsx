@@ -150,7 +150,7 @@ export default function MainPage() {
           <Alert
             type="low-battery"
             title="Nízká baterie"
-            message="Baterie senzoru je pod 10%"
+            message="Baterie senzoru je pod 30%"
             room="B-207"
             patient="665656565656565656565656"
           />

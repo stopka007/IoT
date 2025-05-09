@@ -91,6 +91,22 @@ export const useAssignRoomLogic = (
     try {
       setIsLoading(true);
       setError(null);
+
+      // Fetch the current number of patients in the selected room
+      const patientsResponse = await apiClient.get<{ data: Patient[] }>("/api/patients");
+      const currentPatientsInRoom = patientsResponse.data.data.filter(
+        (patient: Patient) => patient.room === selectedRoom,
+      ).length;
+
+      // Fetch the room details to get its capacity
+      const roomResponse = await apiClient.get<{ data: Room[] }>("/api/rooms");
+      const roomDetails = roomResponse.data.data.find((room: Room) => room.name === selectedRoom);
+
+      if (roomDetails && currentPatientsInRoom >= roomDetails.capacity) {
+        setError("The selected room is full. Please choose another room.");
+        return;
+      }
+
       const response = await apiClient.patch(`/api/patients/${selectedPatient}`, {
         room: Number(selectedRoom),
       });
@@ -100,7 +116,7 @@ export const useAssignRoomLogic = (
         setSelectedPatient("");
         setSelectedRoom(null);
 
-        // Call onUpdate before closing the modal
+        // Call onUpdate to refresh data in the parent component
         if (onUpdate) {
           onUpdate();
         }

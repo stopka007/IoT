@@ -14,16 +14,29 @@ interface Room {
   capacity: number;
 }
 
-const ConnectPacientRoomComponent = () => {
-  const { theme } = useTheme();
+// Define the props interface
+interface ConnectPacientRoomComponentProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onUpdate: () => void;
+  theme: string;
+  initialRoom: number;
+}
+
+const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = ({
+  isOpen,
+  onClose,
+  onUpdate,
+  theme,
+}) => {
+  const { theme: currentTheme } = useTheme();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [, setPatients] = useState<Patient[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const [showAssignRoomModal, setShowAssignRoomModal] = useState(false);
-  const [updateKey, setUpdateKey] = useState(0);
+  const [showAssignRoomModal, setShowAssignRoomModal] = useState(isOpen);
   const [error, setError] = useState<string | null>(null);
 
-  const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
+  const baseBg = currentTheme === "light" ? "bg-gray-200" : "bg-neutral-600";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,11 +54,11 @@ const ConnectPacientRoomComponent = () => {
     };
 
     fetchData();
-  }, [updateKey]);
+  }, []);
 
   const handleUpdate = useCallback(() => {
-    setUpdateKey(prev => prev + 1);
-  }, []);
+    onUpdate(); // Call the passed onUpdate function
+  }, [onUpdate]);
 
   if (error) {
     return <div className="text-red-500 text-center">{error}</div>;
@@ -83,6 +96,7 @@ const ConnectPacientRoomComponent = () => {
           isOpen={showAssignRoomModal}
           onClose={() => {
             setShowAssignRoomModal(false);
+            onClose(); // Call the passed onClose function
             handleUpdate();
           }}
           theme={theme}
@@ -91,7 +105,7 @@ const ConnectPacientRoomComponent = () => {
         />
       )}
 
-      <Outlet context={{ onUpdate: handleUpdate, key: updateKey }} />
+      <Outlet context={{ onUpdate: handleUpdate }} />
     </>
   );
 };

@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { useAssignRoomLogic } from "./modal functions/assignRoomFunction";
 
 interface AssignRoomModalProps {
@@ -13,6 +15,7 @@ export default function AssignRoomModal({
   onClose,
   theme,
   onUpdate,
+  initialRoom,
 }: AssignRoomModalProps) {
   const {
     rooms,
@@ -25,6 +28,12 @@ export default function AssignRoomModal({
     error,
     handleSubmit,
   } = useAssignRoomLogic(isOpen, onClose, onUpdate);
+
+  useEffect(() => {
+    if (initialRoom) {
+      setSelectedRoom(initialRoom); // Automatically set the selected room
+    }
+  }, [initialRoom, setSelectedRoom]);
 
   if (!isOpen) return null;
 

@@ -23,7 +23,6 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
 }) => {
   const { theme } = useTheme();
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [, setIsModalOpen] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
@@ -33,7 +32,6 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
 
   const handlePatientClick = (patient: Patient) => {
     setSelectedPatient(patient);
-    setIsModalOpen(true);
   };
 
   const handleRoomClick = () => {
@@ -42,8 +40,8 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
     setSelectedPatient(null);
+    navigate("/");
   };
 
   const handlePatientUpdated = () => {
