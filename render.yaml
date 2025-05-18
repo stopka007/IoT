@@ -6,12 +6,11 @@ services:
     rootDir: apps/server
     buildCommand: cd ../.. && pnpm install && pnpm turbo run build --filter=server
     startCommand: node dist/index.js
-    plan: free # Explicitly set free tier
     envVars:
       - key: NODE_ENV
         value: production
       - key: MONGO_URI
-        sync: false # This will be set manually in Render dashboard
+        sync: false
       - key: API_URL
         fromService:
           type: web
@@ -22,11 +21,10 @@ services:
   # Frontend static site
   - type: web
     name: iot-frontend
-    runtime: static
+    runtime: node
     rootDir: apps/iot-app
     buildCommand: cd ../.. && pnpm install && pnpm turbo run build --filter=iot-app
-    startCommand: serve -s dist
-    plan: free # Explicitly set free tier
+    startCommand: npx serve dist
     envVars:
       - key: NODE_ENV
         value: production
