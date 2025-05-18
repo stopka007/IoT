@@ -24,6 +24,7 @@ COPY apps/server ./apps/server
 COPY turbo.json ./turbo.json
 
 RUN pnpm --filter server run build
+RUN pnpm deploy --filter server --prod ./deploy_output/server
 
 FROM base AS production
 WORKDIR /usr/src/app
@@ -32,8 +33,6 @@ ENV NODE_ENV=production
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 serveruser
-
-RUN pnpm deploy --filter server --prod ./deploy_output/server
 
 COPY --from=builder --chown=serveruser:nodejs /usr/src/app/deploy_output/server ./
 
