@@ -42,7 +42,7 @@ const AlertArchivePage = () => {
       const uniqueDeviceIds = Array.from(new Set(response.data.map((a: AlertType) => a.id_device)));
       const map: Record<string, string> = {};
       await Promise.all(
-        uniqueDeviceIds.map(async id_device => {
+        (uniqueDeviceIds as string[]).map(async id_device => {
           try {
             const deviceResp = await apiClient.get(`/api/devices/device/${id_device}`);
             const device = deviceResp.data;
