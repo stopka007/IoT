@@ -1,0 +1,35 @@
+services:
+  # Backend API service
+  - type: web
+    name: iot-backend
+    runtime: node
+    rootDir: apps/server
+    buildCommand: cd ../.. && pnpm install && pnpm turbo run build --filter=server
+    startCommand: node dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false # This will be set manually in Render dashboard
+      - key: API_URL
+        fromService:
+          type: web
+          name: iot-backend
+          envVarKey: RENDER_EXTERNAL_URL
+    healthCheckPath: /health
+
+  # Frontend static site
+  - type: web
+    name: iot-frontend
+    runtime: node
+    rootDir: apps/iot-app
+    buildCommand: cd ../.. && pnpm install && pnpm turbo run build --filter=iot-app
+    startCommand: node .next/standalone/server.js # Assuming Next.js app
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: iot-backend
+          envVarKey: RENDER_EXTERNAL_URL
