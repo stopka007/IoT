@@ -6,6 +6,7 @@ services:
     rootDir: apps/server
     buildCommand: cd ../.. && pnpm install && pnpm turbo run build --filter=server
     startCommand: node dist/index.js
+    plan: free # Explicitly set free tier
     envVars:
       - key: NODE_ENV
         value: production
@@ -23,6 +24,7 @@ services:
     name: iot-frontend
     runtime: node
     rootDir: apps/iot-app
+    plan: free # Explicitly set free tier
     buildCommand: cd ../.. && pnpm install && pnpm turbo run build --filter=iot-app
     startCommand: node .next/standalone/server.js # Assuming Next.js app
     envVars:
