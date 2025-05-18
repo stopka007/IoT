@@ -5,6 +5,8 @@ export interface IAlert extends Document {
   timestamp: Date;
   status: "open" | "resolved";
   history: { status: string; timestamp: Date }[];
+  patient_name?: string;
+  patient_id?: string;
 }
 
 const AlertSchema: Schema = new Schema({
@@ -17,6 +19,8 @@ const AlertSchema: Schema = new Schema({
       timestamp: { type: Date, default: Date.now },
     },
   ],
+  patient_name: { type: String },
+  patient_id: { type: String },
 });
 
 AlertSchema.pre<IAlert>("save", function (next) {

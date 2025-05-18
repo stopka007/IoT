@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import HistoricalAlert from "../alerts/HistoricalAlert";
 import apiClient from "../api/axiosConfig";
 import { useTheme } from "../functions/ThemeContext";
+import { fetchPatientByIdPatient } from "../functions/patientService";
 
 interface AlertType {
   _id: string;
@@ -16,7 +17,8 @@ interface AlertType {
     timestamp: Date;
   }>;
   room?: string;
-  patient?: string;
+  patient_name?: string;
+  patient_id?: string;
 }
 
 const AlertArchivePage = () => {
@@ -26,6 +28,9 @@ const AlertArchivePage = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "open" | "resolved">("all");
+  const [devicePatientMap, setDevicePatientMap] = useState<Record<string, string>>(
+    /* deviceId -> patientName */ {},
+  );
 
   const fetchAlerts = async () => {
     try {
@@ -33,6 +38,24 @@ const AlertArchivePage = () => {
       setError(null);
       const response = await apiClient.get("/api/alerts");
       setAlerts(response.data);
+      // After fetching alerts, fetch patient names for each device
+      const uniqueDeviceIds = Array.from(new Set(response.data.map((a: AlertType) => a.id_device)));
+      const map: Record<string, string> = {};
+      await Promise.all(
+        uniqueDeviceIds.map(async id_device => {
+          try {
+            const deviceResp = await apiClient.get(`/api/devices/device/${id_device}`);
+            const device = deviceResp.data;
+            if (device && device.id_patient) {
+              const patient = await fetchPatientByIdPatient(device.id_patient);
+              map[id_device] = patient.name;
+            }
+          } catch {
+            // ignore errors, leave name undefined
+          }
+        }),
+      );
+      setDevicePatientMap(map);
     } catch (err) {
       console.error("Error fetching alerts:", err);
       setError("Failed to fetch alerts");
@@ -47,7 +70,10 @@ const AlertArchivePage = () => {
   }, []);
 
   const filteredAlerts = alerts.filter(alert => {
-    const matchesSearch = alert.id_device.toLowerCase().includes(searchTerm.toLowerCase());
+    const patientName = devicePatientMap[alert.id_device] || "";
+    const matchesSearch =
+      patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      alert.id_device.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || alert.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -69,7 +95,7 @@ const AlertArchivePage = () => {
             <div className="flex space-x-4">
               <input
                 type="text"
-                placeholder="Search by device ID..."
+                placeholder="Search by patient name..."
                 className={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500
                   ${
                     isDark
@@ -129,7 +155,6 @@ const AlertArchivePage = () => {
                   status={alert.status}
                   history={alert.history}
                   room={alert.room}
-                  patient={alert.patient}
                 />
               ))}
             </div>

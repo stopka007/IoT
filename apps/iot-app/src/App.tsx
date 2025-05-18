@@ -23,7 +23,7 @@ function App() {
             <Route index element={<HomePage />} />
             <Route path="room-detail/:roomNumber" element={<RoomDetailComponent />} />
             <Route path="profile" element={<ProfilePage />} />
-            <Route path="alert-archive" element={<AlertArchivePage />} />
+            <Route path="archive" element={<AlertArchivePage />} />
           </Route>
         </Route>
       </Routes>
