@@ -2,6 +2,8 @@ import { toast } from "react-hot-toast";
 
 import axios, { InternalAxiosRequestConfig } from "axios";
 
+console.log("VITE_API_URL at runtime:", import.meta.env.VITE_API_URL);
+
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
