@@ -3,7 +3,9 @@ import { Static, Type } from "@sinclair/typebox";
 import { FastifyInstance, FastifyRequest } from "fastify";
 
 import { authenticate } from "../middleware/auth.middleware";
+import { Device } from "../models/device.model";
 import Patient, { IPatient } from "../models/patient.model";
+// Make sure you import your Device model
 // Assuming IPatient is exported
 import { ApiError } from "../utils/errors";
 
@@ -29,6 +31,7 @@ const PatientBaseSchema = Type.Object({
   illness: Type.Optional(Type.String()),
   age: Type.Optional(Type.Number()),
   notes: Type.Optional(Type.String()),
+  battery_level: Type.Optional(Type.Number()),
   // Add other required/optional fields from IPatient here
 });
 
@@ -38,7 +41,8 @@ type CreatePatientBodyType = Static<typeof CreatePatientBodySchema>;
 
 // Body for updating a patient (all fields optional, cannot update certain fields)
 const UpdatePatientBodySchema = Type.Partial(
-  Type.Omit(PatientBaseSchema, ["id_patient", "id_device"]),
+  Type.Omit(PatientBaseSchema, ["id_patient"]),
+  // Remove only id_patient, allow id_device and battery_level
 );
 type UpdatePatientBodyType = Static<typeof UpdatePatientBodySchema>;
 
@@ -82,18 +86,15 @@ export default async function (server: FastifyInstance) {
   );
 
   // Get all patients - PROTECTED
-  server.get<{ Querystring: GetPatientsQueryType }>( // Keep type assertion
+  server.get<{ Querystring: GetPatientsQueryType }>(
     "/",
     {
-      schema: { querystring: GetPatientsQuerySchema }, // Apply schema
+      schema: { querystring: GetPatientsQuerySchema },
       preHandler: [authenticate],
     },
     async (request, reply) => {
-      // request.query is now correctly typed by Fastify + Typebox
       const query = request.query;
 
-      // ... (rest of GET / handler remains the same) ...
-      // Validate minBattery <= maxBattery
       if (
         query.minBattery !== undefined &&
         query.maxBattery !== undefined &&
@@ -113,7 +114,19 @@ export default async function (server: FastifyInstance) {
           },
         };
         const unwindStage = { $unwind: { path: "$deviceInfo", preserveNullAndEmptyArrays: true } };
-        const projectStage = { $project: { deviceInfo: 0 } };
+        const projectStage = {
+          $project: {
+            _id: 1,
+            id_patient: 1,
+            id_device: 1,
+            name: 1,
+            room: 1,
+            illness: 1,
+            age: 1,
+            notes: 1,
+            battery_level: "$deviceInfo.battery_level",
+          },
+        };
         const matchFilter: any = {};
         if (query.name) {
           matchFilter.name = { $regex: query.name, $options: "i" };
@@ -222,6 +235,14 @@ export default async function (server: FastifyInstance) {
       // request.params and request.body are now correctly typed
       const { id } = request.params;
       const updateData = request.body;
+
+      // If assigning a device, also update battery_level from the device
+      if (updateData.id_device) {
+        const device = await Device.findOne({ id_device: updateData.id_device });
+        if (device) {
+          updateData.battery_level = device.battery_level;
+        }
+      }
 
       // Role check remains...
       if (!request.user || (request.user.role !== "admin" && request.user.role !== "user")) {

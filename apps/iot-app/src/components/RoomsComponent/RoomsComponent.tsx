@@ -13,6 +13,7 @@ interface RoomsComponentProps {
   message?: string;
   patients: Patient[];
   onPatientUpdate?: () => void;
+  setShowFilter?: (show: boolean) => void;
 }
 
 const RoomsComponent: React.FC<RoomsComponentProps> = ({
@@ -20,6 +21,7 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
   patients,
   message,
   onPatientUpdate,
+  setShowFilter,
 }) => {
   const { theme } = useTheme();
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
@@ -36,6 +38,9 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
 
   const handleRoomClick = () => {
     const roomNumber = title.replace("Pokoj ", ""); // Např. "Pokoj 102" → "102"
+    if (setShowFilter) {
+      setShowFilter(false);
+    }
     navigate(`/room-detail/${roomNumber}`);
   };
 

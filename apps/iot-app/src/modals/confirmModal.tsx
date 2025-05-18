@@ -3,7 +3,7 @@ interface ConfirmModalProps {
   onClose: () => void;
   onConfirm: () => void;
   theme: string;
-  type: "logout" | "delete";
+  type: "logout" | "delete" | "unassign-device";
   title?: string;
   message?: string;
   confirmButtonText?: string;
@@ -24,10 +24,20 @@ export default function ConfirmModal({
   if (!isOpen) return null;
 
   // Default values based on type
-  const defaultTitle = type === "logout" ? "Potvrdit Odhlášení" : "Potvrdit Smazání";
+  const defaultTitle =
+    type === "logout"
+      ? "Potvrdit Odhlášení"
+      : type === "delete"
+        ? "Potvrdit Smazání"
+        : "Potvrdit Odpojení";
   const defaultMessage =
-    type === "logout" ? "Opravdu se chcete odhlásit?" : "Opravdu chcete smazat tento záznam?";
-  const defaultConfirmText = type === "logout" ? "Odhlásit se" : "Smazat";
+    type === "logout"
+      ? "Opravdu se chcete odhlásit?"
+      : type === "delete"
+        ? "Opravdu chcete smazat tento záznam?"
+        : "Opravdu chcete odpojit zařízení od pacienta?";
+  const defaultConfirmText =
+    type === "logout" ? "Odhlásit se" : type === "delete" ? "Smazat" : "Odpojit";
   const defaultCancelText = "Zrušit";
 
   return (
@@ -62,7 +72,9 @@ export default function ConfirmModal({
             className={`px-4 py-2 text-sm font-medium text-white ${
               type === "logout"
                 ? "bg-red-600 hover:bg-red-700 focus:ring-red-500"
-                : "bg-red-600 hover:bg-red-700 focus:ring-red-500"
+                : type === "delete"
+                  ? "bg-red-600 hover:bg-red-700 focus:ring-red-500"
+                  : "bg-red-600 hover:bg-red-700 focus:ring-red-500"
             } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
           >
             {confirmButtonText || defaultConfirmText}

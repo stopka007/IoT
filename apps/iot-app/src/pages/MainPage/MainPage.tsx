@@ -1,8 +1,6 @@
 import { useCallback, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 
-import ArrowLeftIcon from "../../Icons/ArrowLeftIcon";
-import ArrowRightIcon from "../../Icons/ArrowRightIcon";
 import Alert from "../../alerts/Alert";
 import { useAuth } from "../../authentication/context/AuthContext";
 import LoadingOverlay from "../../components/LoadingOverlay";
@@ -17,8 +15,9 @@ export default function MainPage() {
   const { theme, toggleTheme } = useTheme();
   const { user, logout, isLoading } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showDetailedView, setShowDetailedView] = useState(true);
+  const [showFilter, setShowFilter] = useState(false);
 
   const [updateKey, setUpdateKey] = useState(0);
 
@@ -39,12 +38,12 @@ export default function MainPage() {
     logout();
   };
 
-  const openLogoutModal = () => {
-    setShowLogoutModal(true);
+  const openConfirmModal = () => {
+    setShowConfirmModal(true);
   };
 
-  const closeLogoutModal = () => {
-    setShowLogoutModal(false);
+  const closeConfirmModal = () => {
+    setShowConfirmModal(false);
   };
 
   if (isLoading) {
@@ -57,17 +56,14 @@ export default function MainPage() {
         isSidebarOpen={isSidebarOpen}
         sidebarWidth={sidebarWidth}
         setSidebarWidth={setSidebarWidth}
+        showFilter={showFilter}
+        setShowFilter={setShowFilter}
+        onToggle={() => setIsSidebarOpen(prev => !prev)}
       />
 
       <main className="flex-1 flex flex-col relative">
-        <button
-          onClick={() => setIsSidebarOpen(prev => !prev)}
-          className="absolute left-2 top-2 z-10 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition"
-        >
-          {isSidebarOpen ? <ArrowLeftIcon /> : <ArrowRightIcon />}
-        </button>
         <header
-          className={`p-4 pl-16 border-b ${headerClass} flex items-center justify-between relative`}
+          className={`p-4 border-b ${headerClass} flex items-center justify-between relative`}
         >
           <div>{/* Placeholder for left content if needed */}</div>
           <div className="flex items-center space-x-4 flex-shrink-0">
@@ -132,7 +128,7 @@ export default function MainPage() {
                   </Link>
                   <button
                     onClick={() => {
-                      openLogoutModal();
+                      openConfirmModal();
                       setIsDropdownOpen(false);
                     }}
                     className={`block w-full text-left px-4 py-2 text-sm ${theme === "light" ? "text-red-700 hover:bg-gray-100" : "text-red-400 hover:bg-neutral-600"}`}
@@ -144,7 +140,7 @@ export default function MainPage() {
             </div>
           </div>
         </header>
-        <Breadcrumbs />
+        <Breadcrumbs setShowFilter={setShowFilter} />
         <div className={`p-4 border-b ${headerClass} border-t-0`}>
           <Alert type="warning" title="Varování" message="Možný pád pacienta!" room="A-105" />
           <Alert
@@ -169,13 +165,15 @@ export default function MainPage() {
             patient="665656565656565656565656"
           />
         </div>
-        <Outlet context={{ onUpdate: handleUpdate, key: updateKey, showDetailedView }} />
+        <Outlet
+          context={{ onUpdate: handleUpdate, key: updateKey, showDetailedView, setShowFilter }}
+        />
       </main>
 
       {/* Logout Modal */}
       <ConfirmModal
-        isOpen={showLogoutModal}
-        onClose={closeLogoutModal}
+        isOpen={showConfirmModal}
+        onClose={closeConfirmModal}
         onConfirm={handleLogout}
         theme={theme}
         type="logout"
