@@ -67,7 +67,7 @@ apiClient.interceptors.response.use(
 
       try {
         const refreshResponse = await axios.post<{ accessToken: string }>(
-          "http://localhost:3000/api/auth/refresh",
+          `${import.meta.env.VITE_API_URL}/api/auth/refresh`,
           { refreshToken },
           {
             headers: { "Content-Type": "application/json" },
