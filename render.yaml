@@ -22,15 +22,15 @@ services:
   # Frontend static site
   - type: web
     name: iot-frontend
-    runtime: node
+    runtime: static
     rootDir: apps/iot-app
-    plan: free # Explicitly set free tier
     buildCommand: cd ../.. && pnpm install && pnpm turbo run build --filter=iot-app
-    startCommand: node .next/standalone/server.js # Assuming Next.js app
+    startCommand: serve -s dist
+    plan: free # Explicitly set free tier
     envVars:
       - key: NODE_ENV
         value: production
-      - key: NEXT_PUBLIC_API_URL
+      - key: VITE_API_URL
         fromService:
           type: web
           name: iot-backend
