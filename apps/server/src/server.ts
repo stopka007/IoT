@@ -9,16 +9,19 @@ import errorHandler from "./middleware/errorHandler";
 import { registerRoutes } from "./routes";
 
 export async function buildServer(): Promise<FastifyInstance> {
+  const isProduction = process.env.NODE_ENV === "production";
   const server = Fastify({
-    logger: {
-      transport: {
-        target: "pino-pretty",
-        options: {
-          translateTime: "HH:MM:ss Z",
-          ignore: "pid,hostname",
+    logger: isProduction
+      ? true // Use default JSON logger in production
+      : {
+          transport: {
+            target: "pino-pretty",
+            options: {
+              translateTime: "HH:MM:ss Z",
+              ignore: "pid,hostname",
+            },
+          },
         },
-      },
-    },
   });
 
   await server.register(cors, {
