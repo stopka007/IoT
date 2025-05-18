@@ -8,6 +8,7 @@ WORKDIR /usr/src/app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/server/package.json ./apps/server/package.json
+COPY my-turborepo/packages ./my-turborepo/packages
 
 RUN pnpm install --filter server --prod=false --frozen-lockfile
 
@@ -19,8 +20,10 @@ COPY --from=deps /usr/src/app/apps ./apps
 COPY --from=deps /usr/src/app/package.json ./package.json
 COPY --from=deps /usr/src/app/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=deps /usr/src/app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=deps /usr/src/app/my-turborepo/packages ./my-turborepo/packages
 
 COPY apps/server ./apps/server
+COPY my-turborepo/packages ./my-turborepo/packages
 COPY turbo.json ./turbo.json
 
 RUN pnpm --filter server run build
