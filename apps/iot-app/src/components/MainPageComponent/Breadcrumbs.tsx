@@ -6,7 +6,11 @@ import apiClient from "../../api/axiosConfig";
 import { useTheme } from "../../functions/ThemeContext";
 import { Patient } from "../../functions/patientService";
 
-const Breadcrumbs: React.FC = () => {
+interface BreadcrumbsProps {
+  setShowFilter?: (show: boolean) => void;
+}
+
+const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ setShowFilter }) => {
   const { theme } = useTheme();
   const location = useLocation();
   const { roomNumber, id } = useParams<{ roomNumber?: string; id?: string }>();
@@ -50,6 +54,18 @@ const Breadcrumbs: React.FC = () => {
   const isOnPatientDetail = location.pathname.startsWith("/patient-detail/") && patientName;
   const isOnRoomDetail = location.pathname.startsWith("/room-detail/") && roomNumber;
 
+  const handleHomeClick = () => {
+    if (setShowFilter) {
+      setShowFilter(false);
+    }
+  };
+
+  const handleRoomClick = () => {
+    if (setShowFilter) {
+      setShowFilter(false);
+    }
+  };
+
   return (
     <nav className={`flex px-5 py-3 ${headerClass}`} aria-label="Breadcrumb">
       <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
@@ -57,6 +73,7 @@ const Breadcrumbs: React.FC = () => {
           <Link
             to="/"
             className={`inline-flex items-center text-sm font-medium ${baseText} ${hoverText}`}
+            onClick={handleHomeClick}
           >
             <svg
               className="w-3 h-3 me-2.5"
@@ -74,7 +91,13 @@ const Breadcrumbs: React.FC = () => {
         {isOnRoomDetail && roomName && (
           <li className="flex items-center">
             <GreaterThanIcon />
-            <span className={`ms-1 text-sm font-medium ${baseText}`}>Pokoj {roomName}</span>
+            <Link
+              to={`/room-detail/${roomName}`}
+              className={`ms-1 text-sm font-medium ${baseText} ${hoverText}`}
+              onClick={handleRoomClick}
+            >
+              Pokoj {roomName}
+            </Link>
           </li>
         )}
 

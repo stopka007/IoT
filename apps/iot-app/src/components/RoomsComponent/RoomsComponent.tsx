@@ -13,6 +13,7 @@ interface RoomsComponentProps {
   message?: string;
   patients: Patient[];
   onPatientUpdate?: () => void;
+  setShowFilter?: (show: boolean) => void;
 }
 
 const RoomsComponent: React.FC<RoomsComponentProps> = ({
@@ -20,10 +21,10 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
   patients,
   message,
   onPatientUpdate,
+  setShowFilter,
 }) => {
   const { theme } = useTheme();
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [, setIsModalOpen] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
@@ -33,17 +34,19 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
 
   const handlePatientClick = (patient: Patient) => {
     setSelectedPatient(patient);
-    setIsModalOpen(true);
   };
 
   const handleRoomClick = () => {
     const roomNumber = title.replace("Pokoj ", ""); // Např. "Pokoj 102" → "102"
+    if (setShowFilter) {
+      setShowFilter(false);
+    }
     navigate(`/room-detail/${roomNumber}`);
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
     setSelectedPatient(null);
+    navigate("/");
   };
 
   const handlePatientUpdated = () => {

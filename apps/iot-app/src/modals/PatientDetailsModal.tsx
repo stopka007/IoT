@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 
 import CloseIcon from "../Icons/CloseIcon";
+import apiClient from "../api/axiosConfig";
 import { useTheme } from "../functions/ThemeContext";
 import { Patient } from "../functions/patientService";
 
+import AssignDeviceModal from "./assignDeviceModal";
+import ConfirmModal from "./confirmModal";
 import EditPatientModal from "./editPatientModal";
 
 interface PatientDetailsModalProps {
@@ -19,7 +22,8 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
 }) => {
   const { theme } = useTheme();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
+  const [isAssignDeviceModalOpen, setIsAssignDeviceModalOpen] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   if (!patient) return null;
 
   const modalBg = theme === "light" ? "bg-white" : "bg-neutral-700";
@@ -29,6 +33,40 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
 
   const handleEditClick = () => {
     setIsEditModalOpen(true);
+  };
+
+  const handleAssignDeviceClick = () => {
+    setIsAssignDeviceModalOpen(true);
+  };
+
+  const handleUnassignDeviceClick = () => {
+    setShowConfirmModal(true);
+  };
+
+  const unassignDevice = async () => {
+    try {
+      // Update the patient to remove device reference
+      await apiClient.patch(`/api/patients/${patient._id}`, {
+        id_device: "",
+      });
+
+      // Update the device to remove patient reference
+      if (patient.id_device) {
+        await apiClient.patch(`/api/devices/device/${patient.id_device}`, {
+          id_patient: "",
+          patient_name: "",
+          room: undefined,
+        });
+      }
+
+      // Close modal and trigger update
+      onClose();
+      if (onUpdate) {
+        onUpdate();
+      }
+    } catch (error) {
+      console.error("Error unassigning device:", error);
+    }
   };
 
   const handleEditClose = () => {
@@ -83,7 +121,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
           <div className="mt-6 flex justify-between">
             <button
               onClick={handleEditClick}
-              className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
+              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
                 theme === "light"
                   ? "text-white bg-green-500 hover:bg-green-600 focus:ring-green-300"
                   : "text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
@@ -92,8 +130,28 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
               Edit Patient
             </button>
             <button
+              onClick={handleAssignDeviceClick}
+              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
+                theme === "light"
+                  ? "text-white bg-blue-500 hover:bg-blue-700 focus:ring-blue-500"
+                  : "text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
+              } focus:outline-none focus:ring-2 transition-colors duration-200`}
+            >
+              Assign Device
+            </button>
+            <button
+              onClick={handleUnassignDeviceClick}
+              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
+                theme === "light"
+                  ? "text-gray-700 bg-yellow-300 hover:bg-yellow-400 focus:ring-yellow-300"
+                  : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
+              } focus:outline-none focus:ring-2 transition-colors duration-200`}
+            >
+              Unassign Device
+            </button>
+            <button
               onClick={onClose}
-              className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
+              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
                 theme === "light"
                   ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
                   : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
@@ -113,6 +171,23 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
           patientId={patient._id}
         />
       )}
+      {isAssignDeviceModalOpen && (
+        <AssignDeviceModal
+          isOpen={isAssignDeviceModalOpen}
+          onClose={() => setIsAssignDeviceModalOpen(false)}
+          theme={theme}
+          onUpdate={onUpdate}
+          initialPatient={patient._id}
+        />
+      )}
+      {/* Logout Modal */}
+      <ConfirmModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={unassignDevice}
+        theme={theme}
+        type="unassign-device"
+      />
     </>
   );
 };

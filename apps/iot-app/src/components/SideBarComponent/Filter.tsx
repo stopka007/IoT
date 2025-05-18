@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 
+import apiClient from "../../api/axiosConfig";
 import { useTheme } from "../../functions/ThemeContext";
 import { Patient } from "../../functions/patientService";
 
@@ -7,6 +8,7 @@ interface FilterProps {
   patients: Patient[];
   onFilterChange: (filteredPatients: Patient[]) => void;
   batteryLevels?: BatteryCache;
+  isOpen: boolean;
 }
 
 type SortOrder = "A-Z" | "Z-A";
@@ -25,6 +27,7 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
   const [batteryFilter, setBatteryFilter] = useState<BatteryFilter | null>(null);
   const [availableRooms, setAvailableRooms] = useState<number[]>([]);
   const [hasAppliedInitialFilter, setHasAppliedInitialFilter] = useState(false);
+  const [allRooms, setAllRooms] = useState<number[]>([]);
 
   const bgColor = theme === "light" ? "bg-white" : "bg-neutral-600";
   const textColor = theme === "light" ? "text-black" : "text-white";
@@ -32,11 +35,23 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
   const activeTextColor = theme === "light" ? "text-blue-600" : "text-blue-300";
 
   useEffect(() => {
-    if (patients.length > 0) {
-      const roomNumbers = [...new Set(patients.map(p => p.room))];
-      setAvailableRooms(roomNumbers.sort((a, b) => a - b));
-    }
+    const fetchRooms = async () => {
+      try {
+        const response = await apiClient.get<{ data: { name: number }[] }>("/api/rooms");
+        const roomNumbers = response.data.data.map(r => r.name);
+        setAllRooms(roomNumbers.sort((a, b) => a - b));
+      } catch {
+        // fallback: use rooms from patients if API fails
+        const roomNumbers = [...new Set(patients.map(p => p.room))];
+        setAllRooms(roomNumbers.sort((a, b) => a - b));
+      }
+    };
+    fetchRooms();
   }, [patients]);
+
+  useEffect(() => {
+    setAvailableRooms(allRooms);
+  }, [allRooms]);
 
   const applyFilter = useCallback(
     (patientsList: Patient[], rooms: number[], sort: SortOrder, battery: BatteryFilter | null) => {
@@ -46,22 +61,27 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
         filteredResults = filteredResults.filter(p => rooms.includes(p.room));
       }
 
-      if (!battery) {
+      if (battery === "Nejvyšší") {
+        filteredResults.sort((a, b) => {
+          const batteryA = typeof a.battery_level === "number" ? a.battery_level : -1;
+          const batteryB = typeof b.battery_level === "number" ? b.battery_level : -1;
+          return batteryB - batteryA;
+        });
+      } else if (battery === "Nejnižší") {
+        filteredResults.sort((a, b) => {
+          const batteryA = typeof a.battery_level === "number" ? a.battery_level : 9999;
+          const batteryB = typeof b.battery_level === "number" ? b.battery_level : 9999;
+          return batteryA - batteryB;
+        });
+      } else {
         filteredResults.sort((a, b) =>
           sort === "A-Z" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name),
         );
-      } else if (Object.keys(batteryLevels).length > 0) {
-        filteredResults.sort((a, b) => {
-          const batteryA = batteryLevels[a.id_device] || 0;
-          const batteryB = batteryLevels[b.id_device] || 0;
-
-          return battery === "Nejnižší" ? batteryA - batteryB : batteryB - batteryA;
-        });
       }
 
       onFilterChange(filteredResults);
     },
-    [batteryLevels, onFilterChange],
+    [onFilterChange],
   );
   useEffect(() => {
     applyFilter(patients, selectedRooms, sortOrder, batteryFilter);
@@ -102,17 +122,30 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
     }
   }, [patients, hasAppliedInitialFilter, applyFilter]);
 
+  // Only apply filter when filter values change
   useEffect(() => {
-    localStorage.setItem("filter_selectedRooms", JSON.stringify(selectedRooms));
-  }, [selectedRooms]);
+    if (hasAppliedInitialFilter) {
+      applyFilter(patients, selectedRooms, sortOrder, batteryFilter);
+    }
+  }, [selectedRooms, sortOrder, batteryFilter, hasAppliedInitialFilter, patients, applyFilter]);
 
   useEffect(() => {
-    localStorage.setItem("filter_batteryFilter", batteryFilter || "");
-  }, [batteryFilter]);
+    if (hasAppliedInitialFilter) {
+      localStorage.setItem("filter_selectedRooms", JSON.stringify(selectedRooms));
+    }
+  }, [selectedRooms, hasAppliedInitialFilter]);
 
   useEffect(() => {
-    localStorage.setItem("filter_sortOrder", sortOrder);
-  }, [sortOrder]);
+    if (hasAppliedInitialFilter) {
+      localStorage.setItem("filter_batteryFilter", batteryFilter || "");
+    }
+  }, [batteryFilter, hasAppliedInitialFilter]);
+
+  useEffect(() => {
+    if (hasAppliedInitialFilter) {
+      localStorage.setItem("filter_sortOrder", sortOrder);
+    }
+  }, [sortOrder, hasAppliedInitialFilter]);
 
   const toggleRoomSelection = (room: number) => {
     setSelectedRooms(prev =>
@@ -219,12 +252,18 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
   };
 
   return (
-    <div className={`rounded-md shadow border ${borderColor} ${bgColor}`}>
+    <div
+      className={`rounded-md shadow border ${borderColor} ${bgColor}`}
+      onClick={e => e.stopPropagation()}
+    >
       <div className="flex border-b border-gray-200 dark:border-neutral-600">
         {["pacienti", "mistnosti", "stav-baterie"].map(cat => (
           <button
             key={cat}
-            onClick={() => setActiveCategory(cat as FilterCategory)}
+            onClick={e => {
+              e.stopPropagation();
+              setActiveCategory(cat as FilterCategory);
+            }}
             className={`px-4 py-2 text-sm flex-1 ${
               activeCategory === cat
                 ? `${activeTextColor} font-medium border-b-2 border-blue-500 dark:border-blue-400`
@@ -247,10 +286,12 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
             {batteryFilter && <span>Baterie: {batteryFilter}</span>}
           </div>
           <button
-            onClick={() => {
+            onClick={e => {
+              e.stopPropagation();
               setSelectedRooms([]);
               setBatteryFilter(null);
               setSortOrder("A-Z");
+              setHasAppliedInitialFilter(false);
               localStorage.removeItem("filter_selectedRooms");
               localStorage.removeItem("filter_batteryFilter");
               localStorage.removeItem("filter_sortOrder");

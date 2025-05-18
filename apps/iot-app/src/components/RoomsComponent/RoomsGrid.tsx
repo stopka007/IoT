@@ -26,9 +26,10 @@ interface RoomData {
 
 interface RoomsGridProps {
   onUpdate?: () => void;
+  setShowFilter?: (show: boolean) => void;
 }
 
-const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate }) => {
+const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate, setShowFilter }) => {
   const [roomsData, setRoomsData] = useState<RoomData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -119,6 +120,7 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate }) => {
                   title={`Pokoj ${roomNumber}`}
                   patients={patients}
                   onPatientUpdate={loadData}
+                  setShowFilter={setShowFilter}
                 />
               </div>
             ))}

@@ -14,6 +14,7 @@ export interface Patient {
   illness?: string;
   age?: number;
   notes?: string;
+  battery_level?: number;
 }
 
 // --- Patient API Functions (using imported apiClient) ---

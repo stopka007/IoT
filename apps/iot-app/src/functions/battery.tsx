@@ -1,16 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
-
-import apiClient from "../api/axiosConfig";
-
-interface BatteryResponse {
-  battery_level: number;
-  id_device: string;
-}
-
-interface BatteryProps {
-  deviceId: string;
-  onBatteryUpdate?: (level: number) => void;
-}
+import React from "react";
 
 const getBatteryColor = (level: number): string => {
   if (level < 10) return "bg-red-500 animate-pulse";
@@ -27,84 +15,13 @@ const getGlowColor = (level: number): string => {
   return "0 0 8px 4px rgba(22, 163, 74, 0.6)";
 };
 
-export const getBatteryLevel = async (id_device: string): Promise<BatteryResponse> => {
-  try {
-    const response = await apiClient.get<BatteryResponse>(`/api/devices/battery/${id_device}`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching battery level for device ${id_device}:`, error);
-    throw error;
-  }
-};
+interface BatteryProps {
+  batteryLevel: number | null;
+}
 
-export const Battery: React.FC<BatteryProps> = ({ deviceId, onBatteryUpdate }) => {
-  const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Memoize onBatteryUpdate to prevent unnecessary re-renders
-  const memoizedOnBatteryUpdate = useCallback(onBatteryUpdate || (() => {}), []);
-
-  const fetchBattery = useCallback(async () => {
-    if (!deviceId) {
-      console.log("No device ID provided");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await getBatteryLevel(deviceId);
-
-      if (typeof response.battery_level === "number") {
-        setBatteryLevel(response.battery_level);
-        memoizedOnBatteryUpdate(response.battery_level);
-      } else {
-        console.error("Invalid battery level received:", response);
-        setError("Invalid battery data received");
-      }
-    } catch (err) {
-      setError("Failed to fetch battery level");
-      console.error("Battery fetch error:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [deviceId, memoizedOnBatteryUpdate]);
-
-  useEffect(() => {
-    // Reset state when deviceId changes
-    setBatteryLevel(null);
-    setError(null);
-
-    // Initial fetch immediately when deviceId changes
-    if (deviceId) {
-      fetchBattery();
-    }
-
-    // Set up periodic updates every 1 minute
-    const intervalId = setInterval(() => {
-      if (deviceId) {
-        fetchBattery();
-      }
-    }, 60 * 1000); // 60 seconds * 1000 milliseconds
-
-    // Cleanup interval on component unmount or when deviceId changes
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [deviceId, fetchBattery]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="text-red-500">{error}</div>;
-  }
-
-  if (batteryLevel === null) {
-    return <div>No battery data</div>;
+export const Battery: React.FC<BatteryProps> = ({ batteryLevel }) => {
+  if (batteryLevel === null || batteryLevel === undefined) {
+    return <div className="text-xs text-gray-400 italic">no battery data</div>;
   }
 
   const glow = getGlowColor(batteryLevel);
@@ -135,3 +52,5 @@ export const Battery: React.FC<BatteryProps> = ({ deviceId, onBatteryUpdate }) =
     </div>
   );
 };
+
+export { getBatteryColor, getGlowColor };

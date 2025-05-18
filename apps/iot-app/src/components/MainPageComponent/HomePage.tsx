@@ -6,10 +6,11 @@ import RoomsGrid from "../RoomsComponent/RoomsGrid";
 interface OutletContextType {
   onUpdate: () => void;
   key: number;
+  setShowFilter: (show: boolean) => void;
 }
 
 const HomePage = () => {
-  const { onUpdate, key } = useOutletContext<OutletContextType>();
+  const { onUpdate, key, setShowFilter } = useOutletContext<OutletContextType>();
 
   const handleUpdate = useCallback(() => {
     if (onUpdate) onUpdate();
@@ -18,7 +19,7 @@ const HomePage = () => {
   return (
     <>
       <div className="p-6">
-        <RoomsGrid key={key} onUpdate={handleUpdate} />
+        <RoomsGrid key={key} onUpdate={handleUpdate} setShowFilter={setShowFilter} />
       </div>
     </>
   );
