@@ -1,7 +1,6 @@
-import { strict } from "assert";
 import mongoose, { Document, Schema } from "mongoose";
 
-export interface IPatient extends Document {
+export interface IArchivedPatient extends Document {
   id_patient: string;
   id_device: string;
   name: string;
@@ -12,7 +11,7 @@ export interface IPatient extends Document {
   notes?: string;
 }
 
-const PatientSchema: Schema = new Schema({
+const ArchivedPatientSchema: Schema = new Schema({
   id_patient: { type: String, required: false },
   id_device: { type: String, required: false },
   name: { type: String, required: true },
@@ -23,4 +22,8 @@ const PatientSchema: Schema = new Schema({
   status: { type: String, required: false },
 });
 
-export default mongoose.model<IPatient>("Patient", PatientSchema);
+export default mongoose.model<IArchivedPatient>(
+  "ArchivedPatient",
+  ArchivedPatientSchema,
+  "archived_patients",
+);

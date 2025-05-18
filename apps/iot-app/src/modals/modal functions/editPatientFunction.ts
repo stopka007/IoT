@@ -14,6 +14,7 @@ export interface Patient {
   room: number;
   illness?: string;
   age?: number;
+  status?: string;
   notes?: string;
   id_device?: string;
 }
@@ -28,6 +29,8 @@ export interface UseEditPatientLogic {
   setIllness: (value: string) => void;
   age: string;
   setAge: (value: string) => void;
+  status: string;
+  setStatus: (value: string) => void;
   notes: string;
   setNotes: (value: string) => void;
   isLoading: boolean;
@@ -46,6 +49,7 @@ export const useEditPatientLogic = (
   const [illness, setIllness] = useState<string>("");
   const [age, setAge] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [originalPatientName, setOriginalPatientName] = useState<string>("");
@@ -75,6 +79,7 @@ export const useEditPatientLogic = (
           setIllness(patientResponse.data.illness || "");
           setAge(patientResponse.data.age?.toString() || "");
           setNotes(patientResponse.data.notes || "");
+          setStatus(patientResponse.data.status || "");
         }
       } catch (err) {
         setError("Failed to fetch data");
@@ -112,6 +117,7 @@ export const useEditPatientLogic = (
         room: Number(selectedRoom),
         illness: illness || undefined,
         age: age ? Number(age) : undefined,
+        status: status || undefined,
         notes: notes || undefined,
       });
 
@@ -153,6 +159,8 @@ export const useEditPatientLogic = (
     setIllness,
     age,
     setAge,
+    status,
+    setStatus,
     notes,
     setNotes,
     isLoading,

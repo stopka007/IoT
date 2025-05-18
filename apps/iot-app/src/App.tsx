@@ -24,6 +24,8 @@ function App() {
             <Route path="room-detail/:roomNumber" element={<RoomDetailComponent />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="archive" element={<AlertArchivePage />} />
+            <Route path="archive/alerts" element={<AlertArchivePage />} />
+            <Route path="archive/patients" element={<AlertArchivePage />} />
           </Route>
         </Route>
       </Routes>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 
 import HomeIcon from "../../Icons/HomeIcon";
 import PersonIcon from "../../Icons/UserIcon";
@@ -23,7 +23,6 @@ const RoomDetailComponent = () => {
   const [updateKey, setUpdateKey] = useState(0);
 
   const { theme } = useTheme();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,7 +60,6 @@ const RoomDetailComponent = () => {
 
   const handlePatientClick = (patient: Patient) => {
     setSelectedPatient(patient);
-    navigate(`/patient-detail/${patient._id}`);
   };
 
   if (error) {
@@ -119,9 +117,6 @@ const RoomDetailComponent = () => {
               <div>
                 <h3 className="text-xl font-bold mb-4">{selectedPatient.name}</h3>
                 <div className="space-y-2 text-lg">
-                  <p>
-                    <span className="font-semibold">ID:</span> {selectedPatient._id}
-                  </p>
                   <p>
                     <span className="font-semibold">Věk:</span> {selectedPatient.age}
                   </p>
