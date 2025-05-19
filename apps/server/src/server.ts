@@ -39,14 +39,6 @@ export async function buildServer(): Promise<FastifyInstance> {
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   });
 
-  // Global wildcard OPTIONS handler
-  server.options("/*", (request, reply) => {
-    // Headers are mostly set by the @fastify/cors plugin globally,
-    // but we ensure a 204 response for any unmatched OPTIONS.
-    // The @fastify/cors plugin should have already added necessary ACAO, ACAM, ACAH headers.
-    reply.status(204).send();
-  });
-
   await server.register(rateLimit, {
     max: 1000,
     timeWindow: "1 minute",
