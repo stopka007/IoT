@@ -12,7 +12,6 @@ interface RoomsComponentProps {
   title: string;
   message?: string;
   patients: Patient[];
-  onPatientUpdate?: () => void;
   setShowFilter?: (show: boolean) => void;
 }
 
@@ -20,7 +19,6 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
   title,
   patients,
   message,
-  onPatientUpdate,
   setShowFilter,
 }) => {
   const { theme } = useTheme();
@@ -47,12 +45,6 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
   const handleCloseModal = () => {
     setSelectedPatient(null);
     navigate("/");
-  };
-
-  const handlePatientUpdated = () => {
-    if (onPatientUpdate) {
-      onPatientUpdate();
-    }
   };
 
   return (
@@ -96,11 +88,7 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
         </ul>
       </div>
 
-      <PatientDetailsModal
-        patient={selectedPatient}
-        onClose={handleCloseModal}
-        onUpdate={handlePatientUpdated}
-      />
+      <PatientDetailsModal patient={selectedPatient} onClose={handleCloseModal} />
     </>
   );
 };

@@ -16,7 +16,11 @@ export default async function (server: FastifyInstance) {
 
   server.post("/", async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const archivedPatient = new ArchivedPatient(request.body);
+      const body = request.body as any;
+      if (!body.archivedAt) {
+        body.archivedAt = new Date();
+      }
+      const archivedPatient = new ArchivedPatient(body);
       await archivedPatient.save();
       reply.code(201).send(archivedPatient);
     } catch (error) {

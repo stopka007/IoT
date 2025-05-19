@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import apiClient from "../../api/axiosConfig";
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 
 export interface Patient {
   _id: string;
@@ -37,7 +38,6 @@ export interface UseAssignDeviceLogic {
 export const useAssignDeviceLogic = (
   isOpen: boolean,
   onClose: () => void,
-  onUpdate?: () => void,
 ): UseAssignDeviceLogic => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [devices, setDevices] = useState<Device[]>([]);
@@ -45,6 +45,7 @@ export const useAssignDeviceLogic = (
   const [selectedDevice, setSelectedDevice] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { triggerUpdate } = usePatientUpdate();
 
   const fetchData = async () => {
     try {
@@ -132,15 +133,10 @@ export const useAssignDeviceLogic = (
         setSelectedPatient("");
         setSelectedDevice("");
 
-        // Close modal first
+        // Trigger global update
+        triggerUpdate();
+        // Close modal
         onClose();
-
-        // Then trigger update after a short delay to ensure modal is closed
-        setTimeout(() => {
-          if (onUpdate) {
-            onUpdate();
-          }
-        }, 100);
       } catch (err) {
         console.error("Error assigning device:", err);
         setError("Failed to assign device");

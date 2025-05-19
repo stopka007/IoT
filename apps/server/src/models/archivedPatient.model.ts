@@ -9,6 +9,8 @@ export interface IArchivedPatient extends Document {
   age?: number;
   status?: string;
   notes?: string;
+  createdAt?: Date;
+  archivedAt?: Date;
 }
 
 const ArchivedPatientSchema: Schema = new Schema({
@@ -20,6 +22,8 @@ const ArchivedPatientSchema: Schema = new Schema({
   age: { type: Number, required: false },
   notes: { type: String, required: false },
   status: { type: String, required: false },
+  createdAt: { type: Date, required: false, default: Date.now },
+  archivedAt: { type: Date, required: false },
 });
 
 export default mongoose.model<IArchivedPatient>(

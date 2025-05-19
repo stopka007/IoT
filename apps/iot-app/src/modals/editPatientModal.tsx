@@ -55,6 +55,7 @@ export default function EditPatientModal({
       const patientRes = await apiClient.get(`/api/patients/${patientId}`);
       const updatedPatient = patientRes.data;
       // 3. Archive (POST to archive)
+      updatedPatient.archivedAt = new Date().toISOString();
       await apiClient.post("/api/archived_patients", updatedPatient);
       // 4. Delete from patients
       await apiClient.delete(`/api/patients/${patientId}`);

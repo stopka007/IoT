@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 // Důležité!
 // import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../functions/ThemeContext";
@@ -27,6 +28,7 @@ const UserList: React.FC<UserListProps> = ({ showFilter, setShowFilter }) => {
   const prevIsOpen = useRef(showFilter);
   const [hasAppliedInitialFilter, setHasAppliedInitialFilter] = useState(false);
   const [selectedRooms, setSelectedRooms] = useState<number[]>([]);
+  const { updateKey } = usePatientUpdate();
 
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
   const baseText = theme === "light" ? "text-black" : "text-white";
@@ -101,7 +103,7 @@ const UserList: React.FC<UserListProps> = ({ showFilter, setShowFilter }) => {
 
   useEffect(() => {
     loadPatients();
-  }, [loadPatients]);
+  }, [loadPatients, updateKey]);
 
   useEffect(() => {
     if (!prevIsOpen.current && showFilter) {

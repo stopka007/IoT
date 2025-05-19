@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import CloseIcon from "../Icons/CloseIcon";
 import apiClient from "../api/axiosConfig";
+import { usePatientUpdate } from "../context/PatientUpdateContext";
 import { useTheme } from "../functions/ThemeContext";
 import { Patient } from "../functions/patientService";
 
@@ -24,6 +25,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAssignDeviceModalOpen, setIsAssignDeviceModalOpen] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const { triggerUpdate } = usePatientUpdate();
   if (!patient) return null;
 
   const modalBg = theme === "light" ? "bg-white" : "bg-neutral-700";
@@ -43,7 +45,21 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
     setShowConfirmModal(true);
   };
 
-  const unassignDevice = async () => {
+  const handleEditClose = () => {
+    setIsEditModalOpen(false);
+    if (onUpdate) {
+      onUpdate();
+    }
+  };
+
+  const handleAssignDeviceClose = () => {
+    setIsAssignDeviceModalOpen(false);
+    if (onUpdate) {
+      onUpdate();
+    }
+  };
+
+  const handleUnassignDevice = async () => {
     try {
       // Update the patient to remove device reference
       await apiClient.patch(`/api/patients/${patient._id}`, {
@@ -64,15 +80,9 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
       if (onUpdate) {
         onUpdate();
       }
+      triggerUpdate();
     } catch (error) {
       console.error("Error unassigning device:", error);
-    }
-  };
-
-  const handleEditClose = () => {
-    setIsEditModalOpen(false);
-    if (onUpdate) {
-      onUpdate();
     }
   };
 
@@ -174,7 +184,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
       {isAssignDeviceModalOpen && (
         <AssignDeviceModal
           isOpen={isAssignDeviceModalOpen}
-          onClose={() => setIsAssignDeviceModalOpen(false)}
+          onClose={handleAssignDeviceClose}
           theme={theme}
           onUpdate={onUpdate}
           initialPatient={patient._id}
@@ -184,7 +194,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
       <ConfirmModal
         isOpen={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
-        onConfirm={unassignDevice}
+        onConfirm={handleUnassignDevice}
         theme={theme}
         type="unassign-device"
       />

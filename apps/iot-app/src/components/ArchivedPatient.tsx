@@ -9,6 +9,8 @@ interface ArchivedPatientProps {
   age?: number;
   status?: string;
   notes?: string;
+  createdAt?: string | Date;
+  archivedAt?: string | Date;
 }
 
 const ArchivedPatient: React.FC<ArchivedPatientProps> = ({
@@ -18,6 +20,8 @@ const ArchivedPatient: React.FC<ArchivedPatientProps> = ({
   age,
   status,
   notes,
+  createdAt,
+  archivedAt,
 }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -63,6 +67,18 @@ const ArchivedPatient: React.FC<ArchivedPatientProps> = ({
             </p>
           )}
           {status && <p className={`text-sm mb-1 ${getStatusColor(status)}`}>Status: {status}</p>}
+        </div>
+        <div className="flex flex-col items-end ml-8 min-w-[180px]">
+          {createdAt && (
+            <span className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+              Created: {new Date(createdAt).toLocaleString()}
+            </span>
+          )}
+          {archivedAt && (
+            <span className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+              Archived: {new Date(archivedAt).toLocaleString()}
+            </span>
+          )}
         </div>
       </div>
       {notes && (

@@ -20,7 +20,6 @@ interface ConnectPacientRoomComponentProps {
   onClose: () => void;
   onUpdate: () => void;
   theme: string;
-  initialRoom: number;
 }
 
 const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = ({
@@ -32,7 +31,6 @@ const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = 
   const { theme: currentTheme } = useTheme();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [, setPatients] = useState<Patient[]>([]);
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [showAssignRoomModal, setShowAssignRoomModal] = useState(isOpen);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,10 +73,7 @@ const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = 
         <div className="flex items-center justify-center flex-1">
           <button
             onClick={() => {
-              if (rooms.length > 0) {
-                setSelectedRoom(rooms[0]);
-                setShowAssignRoomModal(true);
-              }
+              setShowAssignRoomModal(true);
             }}
             className="border-2 rounded-full p-2 hover:shadow-2xl transform duration-300 shadow-black"
           >
@@ -91,19 +86,17 @@ const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = 
         </div>
       </div>
 
-      {selectedRoom && (
-        <AssignRoomModal
-          isOpen={showAssignRoomModal}
-          onClose={() => {
-            setShowAssignRoomModal(false);
-            onClose(); // Call the passed onClose function
-            handleUpdate();
-          }}
-          theme={theme}
-          onUpdate={handleUpdate}
-          initialRoom={selectedRoom.name}
-        />
-      )}
+      <AssignRoomModal
+        isOpen={showAssignRoomModal}
+        onClose={() => {
+          setShowAssignRoomModal(false);
+          onClose(); // Call the passed onClose function
+          handleUpdate();
+        }}
+        theme={theme}
+        onUpdate={handleUpdate}
+        initialRoom={null}
+      />
 
       <Outlet context={{ onUpdate: handleUpdate }} />
     </>

@@ -120,7 +120,7 @@ export default function MainPage() {
                     Profil
                   </Link>
                   <Link
-                    to="/archive" // This will navigate to the alert archive page
+                    to="/archive/alerts" // This will navigate to the alert archive page
                     onClick={() => setIsDropdownOpen(false)}
                     className={`block px-4 py-2 text-sm ${theme === "light" ? "text-gray-700 hover:bg-gray-100" : "text-gray-200 hover:bg-neutral-600"}`}
                   >

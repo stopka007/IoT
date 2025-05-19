@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import apiClient from "../../api/axiosConfig";
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 
 export interface Room {
   id: string;
@@ -8,15 +9,14 @@ export interface Room {
 }
 
 export interface Patient {
-  id: string;
-  id_patient: string;
+  _id: string;
+  id_device?: string;
   name: string;
   room: number;
   illness?: string;
   age?: number;
-  status?: string;
   notes?: string;
-  id_device?: string;
+  status?: string;
 }
 
 export interface UseEditPatientLogic {
@@ -53,6 +53,7 @@ export const useEditPatientLogic = (
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [originalPatientName, setOriginalPatientName] = useState<string>("");
+  const { triggerUpdate } = usePatientUpdate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -133,11 +134,12 @@ export const useEditPatientLogic = (
             // Don't throw error here, as patient was already updated successfully
           }
         }
-        onClose(); // This will trigger the onUpdate callback in PatientDetailsModal
+        triggerUpdate();
+        onClose();
       } else {
         setError("Failed to update patient: " + response.statusText);
       }
-    } catch (err: unknown) {
+    } catch (err) {
       if (err instanceof Error) {
         setError(err.message || "Failed to update patient");
       } else {

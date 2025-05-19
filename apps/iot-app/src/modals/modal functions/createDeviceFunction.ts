@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import apiClient from "../../api/axiosConfig";
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 
 export interface Patient {
   id: string;
@@ -30,7 +31,6 @@ export interface UseCreateDeviceLogic {
 export const useCreateDeviceLogic = (
   isOpen: boolean,
   onClose: () => void,
-  onUpdate?: () => void,
 ): UseCreateDeviceLogic => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -39,6 +39,7 @@ export const useCreateDeviceLogic = (
   const [deviceId, setDeviceId] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { triggerUpdate } = usePatientUpdate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -96,9 +97,7 @@ export const useCreateDeviceLogic = (
       });
 
       if (response.status === 201) {
-        if (onUpdate) {
-          onUpdate();
-        }
+        triggerUpdate();
         onClose();
       } else {
         setError("Failed to create device");

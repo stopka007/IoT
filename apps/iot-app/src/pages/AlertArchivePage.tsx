@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import ReloadIcon from "../Icons/ReloadIcon";
 import HistoricalAlert from "../alerts/HistoricalAlert";
@@ -33,10 +33,13 @@ interface PatientType {
   age?: number;
   status?: string;
   notes?: string;
+  createdAt?: Date;
+  archivedAt?: Date;
 }
 
 const AlertArchivePage = () => {
   const { theme } = useTheme();
+  const location = useLocation();
   const [alerts, setAlerts] = useState<AlertType[]>([]);
   const [patients, setPatients] = useState<PatientType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,6 +48,15 @@ const AlertArchivePage = () => {
   const [statusFilter, setStatusFilter] = useState<"all" | "open" | "resolved">("all");
   const [activeTab, setActiveTab] = useState<"alerts" | "patients">("alerts");
   const [devicePatientMap, setDevicePatientMap] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === "/archive/patients") {
+      setActiveTab("patients");
+    } else {
+      setActiveTab("alerts");
+    }
+  }, [location.pathname]);
 
   const fetchAlerts = async () => {
     try {
@@ -256,6 +268,8 @@ const AlertArchivePage = () => {
                   age={patient.age}
                   status={patient.status}
                   notes={patient.notes}
+                  createdAt={patient.createdAt}
+                  archivedAt={patient.archivedAt}
                 />
               ))}
             </div>

@@ -10,6 +10,7 @@ export interface IPatient extends Document {
   age?: number;
   status?: string;
   notes?: string;
+  createdAt?: Date;
 }
 
 const PatientSchema: Schema = new Schema({
@@ -21,6 +22,7 @@ const PatientSchema: Schema = new Schema({
   age: { type: Number, required: false },
   notes: { type: String, required: false },
   status: { type: String, required: false },
+  createdAt: { type: Date, required: false, default: Date.now },
 });
 
 export default mongoose.model<IPatient>("Patient", PatientSchema);
