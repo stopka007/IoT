@@ -22,10 +22,10 @@ interface ChangePasswordRequestBody {
 async function authRoutes(fastify: FastifyInstance) {
   // Example: Manually setting CORS headers for a specific route
   // This is generally not needed if you're using the @fastify/cors plugin correctly
-  fastify.addHook("onRequest", async (request, reply) => {
+  fastify.addHook("onRequest", async (request: FastifyRequest, reply: FastifyReply) => {
     // This would manually set Access-Control-Allow-Origin for all routes in this plugin
     // Only use this approach if you need different CORS settings for specific routes
-    reply.header("Access-Control-Allow-Origin", "https://iot-frontend-x8hz.onrender.com/");
+    reply.header("Access-Control-Allow-Origin", "https://iot-frontend-x8hz.onrender.com");
   });
 
   // Remove the explicit OPTIONS handler as it's handled by the global CORS plugin
@@ -92,12 +92,12 @@ async function authRoutes(fastify: FastifyInstance) {
         };
 
         fastify.log.info({ accessPayload }, "Generating access token");
-        const accessToken = jwt.sign(accessPayload, jwtAccessSecret, {
+        const accessToken = jwt.sign(accessPayload, jwtAccessSecret as jwt.Secret, {
           expiresIn: jwtAccessExpiresIn, // e.g., '15m' or seconds
         });
 
         fastify.log.info({ refreshPayload }, "Generating refresh token");
-        const refreshToken = jwt.sign(refreshPayload, jwtRefreshSecret, {
+        const refreshToken = jwt.sign(refreshPayload, jwtRefreshSecret as jwt.Secret, {
           expiresIn: jwtRefreshExpiresIn, // e.g., '7d' or seconds
         });
 
@@ -252,7 +252,7 @@ async function authRoutes(fastify: FastifyInstance) {
           userId: user._id,
           role: user.role,
         };
-        const newAccessToken = jwt.sign(accessPayload, jwtAccessSecret, {
+        const newAccessToken = jwt.sign(accessPayload, jwtAccessSecret as jwt.Secret, {
           expiresIn: jwtAccessExpiresIn,
         });
 
