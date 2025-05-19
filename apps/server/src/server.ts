@@ -36,40 +36,13 @@ export async function buildServer(): Promise<FastifyInstance> {
     "Environment configuration",
   );
 
-  // CORS configuration with more flexible origin handling
+  // Simpler CORS configuration - allow all origins during debugging
   await server.register(cors, {
-    origin: (origin, cb) => {
-      const clientUrl = process.env.CLIENT_URL;
-      server.log.info(`Request origin: ${origin}, CLIENT_URL: ${clientUrl}`);
-
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return cb(null, true);
-
-      // If CLIENT_URL is set, use it, otherwise accept all origins in development
-      if (clientUrl) {
-        // Handle multiple origins if needed
-        const allowedOrigins = [clientUrl];
-
-        // Check if the origin is in our allowed list
-        if (allowedOrigins.includes(origin)) {
-          return cb(null, true);
-        }
-
-        // Add the specific frontend domain as fallback
-        if (origin.includes("iot-frontend") && origin.includes("onrender.com")) {
-          return cb(null, true);
-        }
-
-        server.log.warn(`CORS rejected origin: ${origin}`);
-        return cb(null, false);
-      } else {
-        // In development or if CLIENT_URL is not set, accept all origins
-        return cb(null, true);
-      }
-    },
+    origin: true, // Allow all origins temporarily
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    exposedHeaders: ["Content-Range", "X-Content-Range"],
   });
 
   await server.register(rateLimit, {
@@ -105,6 +78,11 @@ export async function buildServer(): Promise<FastifyInstance> {
 
   server.setErrorHandler(errorHandler);
   registerRoutes(server);
+
+  // Add a root route handler
+  server.get("/", async (request, reply) => {
+    return { status: "ok", message: "IoT Backend API is running" };
+  });
 
   server.get("/health", async () => {
     return { status: "ok", timestamp: new Date().toISOString() };

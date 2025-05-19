@@ -13,19 +13,40 @@ if (!apiUrl) {
 // Create axios instance with proper configuration
 const apiClient = axios.create({
   baseURL: apiUrl,
-  // Enable sending cookies with requests
-  withCredentials: true,
+  // Disable withCredentials for testing since we use token auth
+  withCredentials: false,
   // Increase timeout for slower connections
-  timeout: 10000,
+  timeout: 15000,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
+// Helper function to check API health
+export const checkApiHealth = async () => {
+  try {
+    // Test if the API is reachable
+    const response = await axios.get(`${apiUrl}/health`, {
+      timeout: 5000,
+      // No credentials needed for health check
+      withCredentials: false,
+    });
+    console.log("API health check response:", response.data);
+    return true;
+  } catch (error) {
+    console.error("API health check failed:", error);
+    return false;
+  }
+};
+
 // Log all requests in development
 apiClient.interceptors.request.use(
   config => {
-    console.log(`Request: ${config.method?.toUpperCase()} ${config.url}`, config);
+    console.log(`Request: ${config.method?.toUpperCase()} ${config.url}`, {
+      headers: config.headers,
+      baseURL: config.baseURL,
+      data: config.data,
+    });
 
     const token = localStorage.getItem("accessToken");
     if (token) {
@@ -53,6 +74,30 @@ const processQueue = (error: Error | null, token: string | null = null) => {
   failedQueue = [];
 };
 
+// Direct login function that bypasses interceptors for debugging
+export const directLogin = async (email: string, password: string) => {
+  try {
+    console.log(`Attempting direct login to ${apiUrl}/api/auth/login`);
+
+    // Try with absolute URL first
+    const response = await axios.post(
+      `${apiUrl}/api/auth/login`,
+      { email, password },
+      {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: false,
+        timeout: 10000,
+      },
+    );
+
+    console.log("Direct login successful:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Direct login failed:", error);
+    throw error;
+  }
+};
+
 // Log all responses and handle errors
 apiClient.interceptors.response.use(
   response => {
@@ -60,12 +105,24 @@ apiClient.interceptors.response.use(
     return response;
   },
   async error => {
-    console.error("API Error:", error.message, error.response || "No response data");
+    console.error("API Error:", error.message);
+    console.error("Error details:", {
+      config: error.config,
+      response: error.response,
+      request: error.request,
+    });
 
     // Show specific error if it's a CORS issue
     if (error.message.includes("Network Error") || !error.response) {
       console.error("Potential CORS issue - check server CORS configuration");
-      toast.error("Network error. CORS issue or server unreachable.");
+      // Check if API is actually reachable
+      const isApiHealthy = await checkApiHealth();
+
+      if (!isApiHealthy) {
+        toast.error("Server unreachable. Please try again later.");
+      } else {
+        toast.error("Network error. Possible CORS issue.");
+      }
       return Promise.reject(error);
     }
 
@@ -108,7 +165,7 @@ apiClient.interceptors.response.use(
           { refreshToken },
           {
             headers: { "Content-Type": "application/json" },
-            withCredentials: true,
+            withCredentials: false,
           },
         );
 
