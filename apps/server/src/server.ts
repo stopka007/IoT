@@ -38,7 +38,7 @@ export async function buildServer(): Promise<FastifyInstance> {
 
   // CORS configuration
   await server.register(cors, {
-    origin: ["https://iot-frontend-x8hz.onrender.com"],
+    origin: "https://iot-frontend-x8hz.onrender.com",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
