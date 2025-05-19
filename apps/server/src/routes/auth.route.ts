@@ -20,6 +20,14 @@ interface ChangePasswordRequestBody {
 }
 
 async function authRoutes(fastify: FastifyInstance) {
+  // Example: Manually setting CORS headers for a specific route
+  // This is generally not needed if you're using the @fastify/cors plugin correctly
+  fastify.addHook("onRequest", async (request, reply) => {
+    // This would manually set Access-Control-Allow-Origin for all routes in this plugin
+    // Only use this approach if you need different CORS settings for specific routes
+    reply.header("Access-Control-Allow-Origin", "https://example.com");
+  });
+
   // Remove the explicit OPTIONS handler as it's handled by the global CORS plugin
 
   // --- POST /api/auth/login --- User Login ---

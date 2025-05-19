@@ -38,7 +38,7 @@ export async function buildServer(): Promise<FastifyInstance> {
 
   // Simpler CORS configuration - allow all origins during debugging
   await server.register(cors, {
-    origin: true, // Allow all origins temporarily
+    origin: ["https://example.com", "https://iot-frontend-x8hz.onrender.com"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
