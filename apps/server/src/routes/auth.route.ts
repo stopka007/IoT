@@ -25,7 +25,7 @@ async function authRoutes(fastify: FastifyInstance) {
   fastify.addHook("onRequest", async (request, reply) => {
     // This would manually set Access-Control-Allow-Origin for all routes in this plugin
     // Only use this approach if you need different CORS settings for specific routes
-    reply.header("Access-Control-Allow-Origin", "https://example.com");
+    reply.header("Access-Control-Allow-Origin", "https://iot-frontend-x8hz.onrender.com/");
   });
 
   // Remove the explicit OPTIONS handler as it's handled by the global CORS plugin
