@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
+import { usePatientModal } from "../../context/PatientModalContext";
 import { usePatientUpdate } from "../../context/PatientUpdateContext";
-// Důležité!
-// import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../functions/ThemeContext";
 import { Battery } from "../../functions/battery";
 import { Patient, fetchAllPatients } from "../../functions/patientService";
-import PatientDetailsModal from "../../modals/PatientDetailsModal";
 import LoadingOverlay from "../LoadingOverlay";
 
 import Filter from "./Filter";
@@ -19,16 +18,19 @@ interface UserListProps {
 }
 
 const UserList: React.FC<UserListProps> = ({ showFilter, setShowFilter }) => {
+  console.log("UserList rendered");
   const { theme } = useTheme();
   const [loading, setLoading] = useState(false);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [, setSearchResults] = useState<Patient[]>([]);
   const prevIsOpen = useRef(showFilter);
   const [hasAppliedInitialFilter, setHasAppliedInitialFilter] = useState(false);
   const [selectedRooms, setSelectedRooms] = useState<number[]>([]);
   const { updateKey } = usePatientUpdate();
+  const { openDetailsModal } = usePatientModal();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
   const baseText = theme === "light" ? "text-black" : "text-white";
@@ -119,15 +121,10 @@ const UserList: React.FC<UserListProps> = ({ showFilter, setShowFilter }) => {
   }, [selectedRooms, hasAppliedInitialFilter]);
 
   const handlePatientClick = (patient: Patient) => {
-    setSelectedPatient(patient);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedPatient(null);
-  };
-
-  const handlePatientUpdated = () => {
-    loadPatients();
+    openDetailsModal(patient);
+    const params = new URLSearchParams(location.search);
+    params.set("patient", patient._id);
+    navigate({ search: params.toString() }, { replace: false });
   };
 
   return (
@@ -148,34 +145,29 @@ const UserList: React.FC<UserListProps> = ({ showFilter, setShowFilter }) => {
       </div>
 
       <ul className={`flex-1 overflow-y-auto ${baseBg}`}>
-        {filteredPatients.map(patient => (
-          <li
-            key={patient._id}
-            onClick={() => handlePatientClick(patient)}
-            className={`border-neutral-300 border-s-stone-200 ${shadow} shadow-md px-4 py-3 flex justify-between items-center ${hoverBg} cursor-pointer ${hoverText} transition duration-400 ease-in-out ${baseText}`}
-          >
-            <div className="flex items-center gap-3">
-              <span>{patient.name}</span>
-            </div>
+        {filteredPatients.map(patient => {
+          console.log("Rendering patient:", patient.name);
+          return (
+            <li
+              key={patient._id}
+              onClick={() => handlePatientClick(patient)}
+              className={`border-neutral-300 border-s-stone-200 ${shadow} shadow-md px-4 py-3 flex justify-between items-center ${hoverBg} cursor-pointer ${hoverText} transition duration-400 ease-in-out ${baseText}`}
+            >
+              <div className="flex items-center gap-3">
+                <span>{patient.name}</span>
+              </div>
 
-            <div className="flex items-center gap-1">
-              {patient.id_device ? (
-                <Battery batteryLevel={patient.battery_level ?? null} />
-              ) : (
-                <span className="text-xs text-gray-500 ">No assigned device</span>
-              )}
-            </div>
-          </li>
-        ))}
+              <div className="flex items-center gap-1">
+                {patient.id_device ? (
+                  <Battery batteryLevel={patient.battery_level ?? null} />
+                ) : (
+                  <span className="text-xs text-gray-500 ">No assigned device</span>
+                )}
+              </div>
+            </li>
+          );
+        })}
       </ul>
-
-      {selectedPatient && (
-        <PatientDetailsModal
-          patient={selectedPatient}
-          onClose={handleCloseModal}
-          onUpdate={handlePatientUpdated}
-        />
-      )}
     </>
   );
 };

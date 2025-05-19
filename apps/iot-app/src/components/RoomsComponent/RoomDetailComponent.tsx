@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import HomeIcon from "../../Icons/HomeIcon";
 import PersonIcon from "../../Icons/UserIcon";
@@ -25,6 +25,8 @@ const RoomDetailComponent = () => {
 
   const { theme } = useTheme();
   const { updateKey: globalUpdateKey } = usePatientUpdate();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,7 +61,21 @@ const RoomDetailComponent = () => {
 
   const handlePatientClick = (patient: Patient) => {
     setSelectedPatient(patient);
+    const params = new URLSearchParams(location.search);
+    params.set("patient", patient._id);
+    navigate({ search: params.toString() }, { replace: false });
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const patientId = params.get("patient");
+    if (patientId && patients.length > 0) {
+      const found = patients.find(p => p._id === patientId);
+      setSelectedPatient(found || null);
+    } else if (!patientId) {
+      setSelectedPatient(null);
+    }
+  }, [location.search, patients]);
 
   if (error) {
     return <div className="p-6 text-center text-red-500">{error}</div>;
