@@ -76,17 +76,24 @@ export async function buildServer(): Promise<FastifyInstance> {
     transformStaticCSP: header => header,
   });
 
-  server.setErrorHandler(errorHandler);
-  registerRoutes(server);
+  // Health check endpoints - register before other routes
+  // Add to root path
+  server.get("/health", async () => {
+    return { status: "ok", timestamp: new Date().toISOString() };
+  });
+
+  // Also add to /api prefix for consistency
+  server.get("/api/health", async () => {
+    return { status: "ok", timestamp: new Date().toISOString() };
+  });
 
   // Add a root route handler
   server.get("/", async (request, reply) => {
     return { status: "ok", message: "IoT Backend API is running" };
   });
 
-  server.get("/health", async () => {
-    return { status: "ok", timestamp: new Date().toISOString() };
-  });
+  server.setErrorHandler(errorHandler);
+  registerRoutes(server);
 
   return server;
 }

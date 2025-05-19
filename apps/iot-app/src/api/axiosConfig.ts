@@ -25,16 +25,37 @@ const apiClient = axios.create({
 // Helper function to check API health
 export const checkApiHealth = async () => {
   try {
-    // Test if the API is reachable
-    const response = await axios.get(`${apiUrl}/health`, {
+    // Try the root endpoint first
+    console.log(`Checking API health at ${apiUrl}`);
+    const rootResponse = await axios.get(`${apiUrl}`, {
       timeout: 5000,
-      // No credentials needed for health check
       withCredentials: false,
     });
-    console.log("API health check response:", response.data);
+    console.log("API root endpoint response:", rootResponse.data);
+
+    // If we got here, the API is reachable
     return true;
-  } catch (error) {
-    console.error("API health check failed:", error);
+  } catch (rootError) {
+    console.error("API root check failed:", rootError);
+
+    // Try multiple health endpoints as fallbacks
+    const healthPaths = ["/health", "/api/health"];
+
+    for (const path of healthPaths) {
+      try {
+        console.log(`Trying health endpoint at ${apiUrl}${path}`);
+        const healthResponse = await axios.get(`${apiUrl}${path}`, {
+          timeout: 5000,
+          withCredentials: false,
+        });
+        console.log(`Health check at ${path} succeeded:`, healthResponse.data);
+        return true;
+      } catch (healthError) {
+        console.error(`Health check at ${path} failed:`, healthError);
+      }
+    }
+
+    // All health checks failed
     return false;
   }
 };
@@ -42,6 +63,8 @@ export const checkApiHealth = async () => {
 // Log all requests in development
 apiClient.interceptors.request.use(
   config => {
+    // Add API URL logging for debugging
+    console.log(`Full request URL: ${config.baseURL}${config.url}`);
     console.log(`Request: ${config.method?.toUpperCase()} ${config.url}`, {
       headers: config.headers,
       baseURL: config.baseURL,
@@ -77,11 +100,12 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 // Direct login function that bypasses interceptors for debugging
 export const directLogin = async (email: string, password: string) => {
   try {
-    console.log(`Attempting direct login to ${apiUrl}/api/auth/login`);
+    const fullLoginUrl = `${apiUrl}/api/auth/login`;
+    console.log(`Attempting direct login to ${fullLoginUrl}`);
 
     // Try with absolute URL first
     const response = await axios.post(
-      `${apiUrl}/api/auth/login`,
+      fullLoginUrl,
       { email, password },
       {
         headers: { "Content-Type": "application/json" },
