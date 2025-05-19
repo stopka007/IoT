@@ -26,8 +26,50 @@ export async function buildServer(): Promise<FastifyInstance> {
     trustProxy: true,
   }).withTypeProvider<TypeBoxTypeProvider>();
 
+  // Log environment variables for debugging
+  server.log.info(
+    {
+      CLIENT_URL: process.env.CLIENT_URL,
+      API_URL: process.env.API_URL,
+      NODE_ENV: process.env.NODE_ENV,
+    },
+    "Environment configuration",
+  );
+
+  // CORS configuration with more flexible origin handling
   await server.register(cors, {
-    origin: process.env.CLIENT_URL,
+    origin: (origin, cb) => {
+      const clientUrl = process.env.CLIENT_URL;
+      server.log.info(`Request origin: ${origin}, CLIENT_URL: ${clientUrl}`);
+
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return cb(null, true);
+
+      // If CLIENT_URL is set, use it, otherwise accept all origins in development
+      if (clientUrl) {
+        // Handle multiple origins if needed
+        const allowedOrigins = [clientUrl];
+
+        // Check if the origin is in our allowed list
+        if (allowedOrigins.includes(origin)) {
+          return cb(null, true);
+        }
+
+        // Add the specific frontend domain as fallback
+        if (origin.includes("iot-frontend") && origin.includes("onrender.com")) {
+          return cb(null, true);
+        }
+
+        server.log.warn(`CORS rejected origin: ${origin}`);
+        return cb(null, false);
+      } else {
+        // In development or if CLIENT_URL is not set, accept all origins
+        return cb(null, true);
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   });
 
   await server.register(rateLimit, {

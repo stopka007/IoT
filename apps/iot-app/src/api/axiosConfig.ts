@@ -2,14 +2,31 @@ import { toast } from "react-hot-toast";
 
 import axios, { InternalAxiosRequestConfig } from "axios";
 
-console.log("VITE_API_URL at runtime:", import.meta.env.VITE_API_URL);
+// Log API URL for debugging
+const apiUrl = import.meta.env.VITE_API_URL;
+console.log("VITE_API_URL at runtime:", apiUrl);
 
+if (!apiUrl) {
+  console.error("VITE_API_URL is not defined. API calls will likely fail.");
+}
+
+// Create axios instance with proper configuration
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: apiUrl,
+  // Enable sending cookies with requests
+  withCredentials: true,
+  // Increase timeout for slower connections
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
+// Log all requests in development
 apiClient.interceptors.request.use(
   config => {
+    console.log(`Request: ${config.method?.toUpperCase()} ${config.url}`, config);
+
     const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -17,6 +34,7 @@ apiClient.interceptors.request.use(
     return config;
   },
   error => {
+    console.error("Request error:", error);
     return Promise.reject(error);
   },
 );
@@ -35,9 +53,22 @@ const processQueue = (error: Error | null, token: string | null = null) => {
   failedQueue = [];
 };
 
+// Log all responses and handle errors
 apiClient.interceptors.response.use(
-  response => response,
+  response => {
+    console.log(`Response: ${response.status} ${response.config.url}`, response.data);
+    return response;
+  },
   async error => {
+    console.error("API Error:", error.message, error.response || "No response data");
+
+    // Show specific error if it's a CORS issue
+    if (error.message.includes("Network Error") || !error.response) {
+      console.error("Potential CORS issue - check server CORS configuration");
+      toast.error("Network error. CORS issue or server unreachable.");
+      return Promise.reject(error);
+    }
+
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -68,11 +99,16 @@ apiClient.interceptors.response.use(
       }
 
       try {
+        // Use the full URL for refresh token requests to avoid CORS issues
+        const fullRefreshUrl = `${apiUrl}/api/auth/refresh`;
+        console.log("Refreshing token at:", fullRefreshUrl);
+
         const refreshResponse = await axios.post<{ accessToken: string }>(
-          `${import.meta.env.VITE_API_URL}/api/auth/refresh`,
+          fullRefreshUrl,
           { refreshToken },
           {
             headers: { "Content-Type": "application/json" },
+            withCredentials: true,
           },
         );
 
@@ -83,6 +119,7 @@ apiClient.interceptors.response.use(
         processQueue(null, newAccessToken);
         return apiClient(originalRequest);
       } catch (refreshError) {
+        console.error("Token refresh failed:", refreshError);
         const errorToProcess =
           refreshError instanceof Error ? refreshError : new Error("Token refresh failed");
         processQueue(errorToProcess, null);

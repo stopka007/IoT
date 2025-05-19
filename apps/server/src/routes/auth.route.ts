@@ -20,14 +20,7 @@ interface ChangePasswordRequestBody {
 }
 
 async function authRoutes(fastify: FastifyInstance) {
-  // --- Explicit OPTIONS handler for /login ---
-  fastify.options("/login", async (request: FastifyRequest, reply: FastifyReply) => {
-    reply.header("Access-Control-Allow-Origin", "https://iot-frontend-x8hz.onrender.com"); // Specific frontend origin
-    reply.header("Access-Control-Allow-Methods", "POST, OPTIONS");
-    reply.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
-    reply.header("Access-Control-Allow-Credentials", "true");
-    return reply.status(204).send(); // 204 No Content is standard for preflight
-  });
+  // Remove the explicit OPTIONS handler as it's handled by the global CORS plugin
 
   // --- POST /api/auth/login --- User Login ---
   fastify.post(

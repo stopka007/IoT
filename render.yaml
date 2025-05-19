@@ -12,6 +12,11 @@ services:  - type: web
           type: web
           name: iot-backend
           envVarKey: RENDER_EXTERNAL_URL
+      - key: CLIENT_URL
+        fromService:
+          type: web
+          name: iot-frontend
+          envVarKey: RENDER_EXTERNAL_URL
     healthCheckPath: /health
 
   - type: web
