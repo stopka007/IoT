@@ -1,10 +1,28 @@
+// Import the TypeBoxTypeProvider to help with types
+import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
+
 import bcrypt from "bcrypt";
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import jwt from "jsonwebtoken";
+import { FastifyInstance, FastifyReply } from "fastify";
+import { FastifyRequest as BaseFastifyRequest, RouteGenericInterface } from "fastify";
+import jwt, { SignOptions } from "jsonwebtoken";
 
 import { authenticate } from "../middleware/auth.middleware";
 import User from "../models/user.model";
 import { ApiError } from "../utils/errors";
+
+// Define FastifyRequest with generics support
+type FastifyRequest<T extends RouteGenericInterface = RouteGenericInterface> = BaseFastifyRequest<
+  T,
+  TypeBoxTypeProvider
+>;
+
+// Interface for user in request
+interface RequestWithUser {
+  user?: {
+    userId: string;
+    role?: string;
+  };
+}
 
 // Copy password regex here (or move to shared util)
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -118,7 +136,7 @@ async function authRoutes(fastify: FastifyInstance) {
     {
       preHandler: [authenticate], // Requires user to be logged in
     },
-    async (request, reply: FastifyReply) => {
+    async (request: FastifyRequest<RequestWithUser>, reply: FastifyReply) => {
       const requestingUser = request.user;
 
       if (!requestingUser) {
@@ -163,9 +181,12 @@ async function authRoutes(fastify: FastifyInstance) {
       },
       preHandler: [authenticate], // Requires user to be logged in
     },
-    async (request, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<RequestWithUser & { Body: ChangePasswordRequestBody }>,
+      reply: FastifyReply,
+    ) => {
       // Assert types inside
-      const { currentPassword, newPassword } = request.body as ChangePasswordRequestBody;
+      const { currentPassword, newPassword } = request.body;
       const requestingUser = request.user; // User info from authenticate middleware
 
       // Should always have user due to preHandler, but check for safety

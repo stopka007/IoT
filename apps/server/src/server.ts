@@ -4,7 +4,7 @@ import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 
-import Fastify, { FastifyInstance } from "fastify";
+import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 import errorHandler from "./middleware/errorHandler";
 import { registerRoutes } from "./routes";
@@ -36,9 +36,9 @@ export async function buildServer(): Promise<FastifyInstance> {
     "Environment configuration",
   );
 
-  // Simpler CORS configuration - allow all origins during debugging
+  // CORS configuration
   await server.register(cors, {
-    origin: ["https://example.com", "https://iot-frontend-x8hz.onrender.com"],
+    origin: ["https://iot-frontend-x8hz.onrender.com"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
@@ -73,7 +73,7 @@ export async function buildServer(): Promise<FastifyInstance> {
       deepLinking: false,
     },
     staticCSP: true,
-    transformStaticCSP: header => header,
+    transformStaticCSP: (header: string) => header,
   });
 
   // Health check endpoints - register before other routes
@@ -88,7 +88,7 @@ export async function buildServer(): Promise<FastifyInstance> {
   });
 
   // Add a root route handler
-  server.get("/", async (request, reply) => {
+  server.get("/", async (request: FastifyRequest, reply: FastifyReply) => {
     return { status: "ok", message: "IoT Backend API is running" };
   });
 
