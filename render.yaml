@@ -1,11 +1,7 @@
-services:
-  # Backend API service
-  - type: web
+services:  - type: web
     name: iot-backend
-    runtime: node
-    rootDir: apps/server
-    buildCommand: cd ../.. && pnpm install && ./node_modules/.bin/turbo run build --filter=server
-    startCommand: node dist/index.js
+    runtime: docker
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: NODE_ENV
         value: production
@@ -18,7 +14,6 @@ services:
           envVarKey: RENDER_EXTERNAL_URL
     healthCheckPath: /health
 
-  # Frontend static site
   - type: web
     name: iot-frontend
     runtime: node
