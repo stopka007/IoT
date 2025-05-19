@@ -33,7 +33,7 @@ export async function buildServer(): Promise<FastifyInstance> {
   }).withTypeProvider<TypeBoxTypeProvider>();
 
   await server.register(cors, {
-    origin: true,
+    origin: "https://iot-frontend-x8hz.onrender.com",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
