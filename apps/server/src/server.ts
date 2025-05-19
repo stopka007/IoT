@@ -67,5 +67,18 @@ export async function buildServer(): Promise<FastifyInstance> {
     return { status: "ok", timestamp: new Date().toISOString() };
   });
 
+  // Minimal CORS test route for debugging
+  server.options("/cors-test", (req, reply) => {
+    reply.header("Access-Control-Allow-Origin", "*");
+    reply.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    reply.header("Access-Control-Allow-Headers", "Content-Type");
+    reply.send();
+  });
+
+  server.get("/cors-test", (req, reply) => {
+    reply.header("Access-Control-Allow-Origin", "*");
+    reply.send({ ok: true });
+  });
+
   return server;
 }
