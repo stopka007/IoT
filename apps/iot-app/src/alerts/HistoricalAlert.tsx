@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import AlertCanceledIcon from "../Icons/AlertCanceledIcon";
 import LostConnectionIcon from "../Icons/LostConnectionIcon";
 import LowBatteryIcon from "../Icons/LowBatteryIcon";
 import WarningIcon from "../Icons/WarningIcon";
+import apiClient from "../api/axiosConfig";
 import { useTheme } from "../functions/ThemeContext";
+import { fetchPatientByIdPatient } from "../functions/patientService";
 
 interface HistoryEntry {
   status: string;
@@ -18,7 +20,8 @@ interface HistoricalAlertProps {
   status: "open" | "resolved";
   history: HistoryEntry[];
   room?: string;
-  patient?: string;
+  patient_name?: string;
+  patient_id?: string;
 }
 
 const iconMap = {
@@ -31,14 +34,52 @@ const iconMap = {
 const HistoricalAlert: React.FC<HistoricalAlertProps> = ({
   type,
   id_device,
-  timestamp,
   status,
   history,
   room,
-  patient,
 }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
+
+  const [patientName, setPatientName] = useState<string | null>(null);
+  const [, setPatientId] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchPatientName() {
+      setLoading(true);
+      try {
+        // 1. Fetch device by id_device
+        const deviceResp = await apiClient.get(`/api/devices/device/${id_device}`);
+        const device = deviceResp.data;
+        if (device && device.id_patient) {
+          // 2. Fetch patient by id_patient
+          const patient = await fetchPatientByIdPatient(device.id_patient);
+          if (isMounted) {
+            setPatientName(patient.name);
+            setPatientId(patient.id_patient);
+          }
+        } else {
+          if (isMounted) {
+            setPatientName(null);
+            setPatientId(null);
+          }
+        }
+      } catch {
+        if (isMounted) {
+          setPatientName(null);
+          setPatientId(null);
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchPatientName();
+    return () => {
+      isMounted = false;
+    };
+  }, [id_device]);
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleString();
@@ -65,16 +106,15 @@ const HistoricalAlert: React.FC<HistoricalAlertProps> = ({
               <h3
                 className={`text-lg font-semibold mb-1 ${isDark ? "text-white" : "text-gray-900"}`}
               >
-                Device ID: {id_device}
+                {loading
+                  ? "Loading..."
+                  : patientName
+                    ? `Patient: ${patientName}`
+                    : `Device ID: ${id_device}`}
               </h3>
               {room && (
                 <p className={`text-sm mb-1 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                   Room: {room}
-                </p>
-              )}
-              {patient && (
-                <p className={`text-sm mb-1 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
-                  Patient ID: {patient}
                 </p>
               )}
             </div>

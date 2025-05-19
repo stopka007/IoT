@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
 
 import apiClient from "../../api/axiosConfig";
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 
 export interface Room {
   id: string;
   name: number;
-}
-
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
 export interface UseCreatePatientLogic {
@@ -23,15 +20,20 @@ export interface UseCreatePatientLogic {
   setAge: (value: string) => void;
   notes: string;
   setNotes: (value: string) => void;
+  status: string;
+  setStatus: (value: string) => void;
   isLoading: boolean;
   error: string | null;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
 }
 
+function generateId() {
+  return Math.random().toString(36).substr(2, 9);
+}
+
 export const useCreatePatientLogic = (
   isOpen: boolean,
   onClose: () => void,
-  onUpdate?: () => void,
 ): UseCreatePatientLogic => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [patientName, setPatientName] = useState<string>("");
@@ -39,8 +41,10 @@ export const useCreatePatientLogic = (
   const [illness, setIllness] = useState<string>("");
   const [age, setAge] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
+  const [status, setStatus] = useState<string>("Hospitalized");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { triggerUpdate } = usePatientUpdate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,12 +90,11 @@ export const useCreatePatientLogic = (
         illness: illness || undefined,
         age: age ? Number(age) : undefined,
         notes: notes || undefined,
+        status: status || undefined,
       });
 
       if (response.status === 201) {
-        if (onUpdate) {
-          onUpdate();
-        }
+        triggerUpdate();
         onClose();
       } else {
         setError("Failed to create patient");
@@ -116,6 +119,8 @@ export const useCreatePatientLogic = (
     setAge,
     notes,
     setNotes,
+    status,
+    setStatus,
     isLoading,
     error,
     handleSubmit,

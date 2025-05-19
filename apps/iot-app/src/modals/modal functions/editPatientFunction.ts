@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import apiClient from "../../api/axiosConfig";
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 
 export interface Room {
   id: string;
@@ -8,14 +9,14 @@ export interface Room {
 }
 
 export interface Patient {
-  id: string;
-  id_patient: string;
+  _id: string;
+  id_device?: string;
   name: string;
   room: number;
   illness?: string;
   age?: number;
   notes?: string;
-  id_device?: string;
+  status?: string;
 }
 
 export interface UseEditPatientLogic {
@@ -28,6 +29,8 @@ export interface UseEditPatientLogic {
   setIllness: (value: string) => void;
   age: string;
   setAge: (value: string) => void;
+  status: string;
+  setStatus: (value: string) => void;
   notes: string;
   setNotes: (value: string) => void;
   isLoading: boolean;
@@ -46,9 +49,11 @@ export const useEditPatientLogic = (
   const [illness, setIllness] = useState<string>("");
   const [age, setAge] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [originalPatientName, setOriginalPatientName] = useState<string>("");
+  const { triggerUpdate } = usePatientUpdate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -75,6 +80,7 @@ export const useEditPatientLogic = (
           setIllness(patientResponse.data.illness || "");
           setAge(patientResponse.data.age?.toString() || "");
           setNotes(patientResponse.data.notes || "");
+          setStatus(patientResponse.data.status || "");
         }
       } catch (err) {
         setError("Failed to fetch data");
@@ -112,6 +118,7 @@ export const useEditPatientLogic = (
         room: Number(selectedRoom),
         illness: illness || undefined,
         age: age ? Number(age) : undefined,
+        status: status || undefined,
         notes: notes || undefined,
       });
 
@@ -127,11 +134,12 @@ export const useEditPatientLogic = (
             // Don't throw error here, as patient was already updated successfully
           }
         }
-        onClose(); // This will trigger the onUpdate callback in PatientDetailsModal
+        triggerUpdate();
+        onClose();
       } else {
         setError("Failed to update patient: " + response.statusText);
       }
-    } catch (err: unknown) {
+    } catch (err) {
       if (err instanceof Error) {
         setError(err.message || "Failed to update patient");
       } else {
@@ -153,6 +161,8 @@ export const useEditPatientLogic = (
     setIllness,
     age,
     setAge,
+    status,
+    setStatus,
     notes,
     setNotes,
     isLoading,

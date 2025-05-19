@@ -3,6 +3,7 @@ import { Static, Type } from "@sinclair/typebox";
 import { FastifyInstance, FastifyRequest } from "fastify";
 
 import { authenticate } from "../middleware/auth.middleware";
+import ArchivedPatient from "../models/archivedPatient.model";
 import { Device } from "../models/device.model";
 import Patient, { IPatient } from "../models/patient.model";
 // Make sure you import your Device model
@@ -30,6 +31,7 @@ const PatientBaseSchema = Type.Object({
   room: Type.Optional(Type.Number()),
   illness: Type.Optional(Type.String()),
   age: Type.Optional(Type.Number()),
+  status: Type.Optional(Type.String()),
   notes: Type.Optional(Type.String()),
   battery_level: Type.Optional(Type.Number()),
   // Add other required/optional fields from IPatient here
@@ -123,6 +125,7 @@ export default async function (server: FastifyInstance) {
             room: 1,
             illness: 1,
             age: 1,
+            status: 1,
             notes: 1,
             battery_level: "$deviceInfo.battery_level",
           },
