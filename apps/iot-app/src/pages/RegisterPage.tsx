@@ -60,18 +60,7 @@ function RegisterPage() {
     };
 
     try {
-      // Temporary CORS proxy workaround until server-side CORS is fixed
-      // Using axios directly instead of apiClient to bypass baseURL
-      const apiUrl = import.meta.env.VITE_API_URL;
-      await axios.post(
-        `https://corsproxy.io/?${encodeURIComponent(`${apiUrl}/api/users`)}`,
-        registrationData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      await apiClient.post("/api/users", registrationData);
       navigate("/login?registered=true");
     } catch (err) {
       console.error("Registration failed:", err);
