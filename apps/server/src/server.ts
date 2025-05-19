@@ -33,12 +33,10 @@ export async function buildServer(): Promise<FastifyInstance> {
   }).withTypeProvider<TypeBoxTypeProvider>();
 
   await server.register(cors, {
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    origin: "https://iot-frontend-x8hz.onrender.com",
     credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   });
 
   await server.register(rateLimit, {
@@ -77,19 +75,6 @@ export async function buildServer(): Promise<FastifyInstance> {
 
   server.get("/health", async () => {
     return { status: "ok", timestamp: new Date().toISOString() };
-  });
-
-  // Minimal CORS test route for debugging
-  server.options("/cors-test", (req, reply) => {
-    reply.header("Access-Control-Allow-Origin", "*");
-    reply.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-    reply.header("Access-Control-Allow-Headers", "Content-Type");
-    reply.send();
-  });
-
-  server.get("/cors-test", (req, reply) => {
-    reply.header("Access-Control-Allow-Origin", "*");
-    reply.send({ ok: true });
   });
 
   return server;

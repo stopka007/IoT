@@ -22,7 +22,7 @@ interface ChangePasswordRequestBody {
 async function authRoutes(fastify: FastifyInstance) {
   // --- Explicit OPTIONS handler for /login ---
   fastify.options("/login", async (request: FastifyRequest, reply: FastifyReply) => {
-    reply.header("Access-Control-Allow-Origin", "*"); // Or your specific frontend origin
+    reply.header("Access-Control-Allow-Origin", "https://iot-frontend-x8hz.onrender.com"); // Specific frontend origin
     reply.header("Access-Control-Allow-Methods", "POST, OPTIONS");
     reply.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
     reply.header("Access-Control-Allow-Credentials", "true");
