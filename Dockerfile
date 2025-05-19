@@ -38,6 +38,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 serveruser
 
 # Copy server build output and package.json
+COPY --from=builder --chown=serveruser:nodejs /usr/src/app/node_modules ./node_modules
 COPY --from=builder --chown=serveruser:nodejs /usr/src/app/apps/server/dist ./dist
 COPY --from=builder --chown=serveruser:nodejs /usr/src/app/apps/server/package.json ./package.json
 
