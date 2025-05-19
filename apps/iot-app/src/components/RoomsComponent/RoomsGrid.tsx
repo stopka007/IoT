@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 
 import apiClient from "../../api/axiosConfig";
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { Patient } from "../../functions/patientService";
 import ConnectDeviceComponent from "../AdminView/ConnectDeviceComponent";
 import ConnectPacientRoomComponent from "../AdminView/ConnectPacientRoomComponent";
@@ -25,11 +26,10 @@ interface RoomData {
 }
 
 interface RoomsGridProps {
-  onUpdate?: () => void;
   setShowFilter?: (show: boolean) => void;
 }
 
-const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate, setShowFilter }) => {
+const RoomsGrid: React.FC<RoomsGridProps> = ({ setShowFilter }) => {
   const [roomsData, setRoomsData] = useState<RoomData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +38,7 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate, setShowFilter }) => {
     onUpdate: () => void;
     showDetailedView: boolean;
   }>();
+  const { updateKey: globalUpdateKey } = usePatientUpdate();
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
@@ -82,17 +83,10 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate, setShowFilter }) => {
     }
   }, []);
 
-  // Initial load
+  // Initial load and reload on global update
   useEffect(() => {
     loadData();
-  }, [loadData]);
-
-  // Separate effect for handling updates
-  useEffect(() => {
-    if (onUpdate) {
-      loadData();
-    }
-  }, [onUpdate, loadData, updateKey]);
+  }, [loadData, updateKey, globalUpdateKey]);
 
   if (isLoading) {
     return <div className="p-4 text-center">Načítám data pokojů...</div>;
@@ -119,7 +113,6 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate, setShowFilter }) => {
                 <RoomsComponent
                   title={`Pokoj ${roomNumber}`}
                   patients={patients}
-                  onPatientUpdate={loadData}
                   setShowFilter={setShowFilter}
                 />
               </div>
@@ -142,14 +135,9 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ onUpdate, setShowFilter }) => {
             <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
               <ConnectPacientRoomComponent
                 isOpen={false}
-                onClose={function (): void {
-                  throw new Error("Function not implemented.");
-                }}
-                onUpdate={function (): void {
-                  throw new Error("Function not implemented.");
-                }}
-                theme={""}
-                initialRoom={0}
+                onClose={() => {}}
+                onUpdate={loadData}
+                theme="light"
               />
             </div>
           </>

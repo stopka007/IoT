@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 import Alert from "../models/alert.model";
 import { Device } from "../models/device.model";
+import Patient from "../models/patient.model";
 import { asyncHandler } from "../utils/errorUtils";
 import { ApiError } from "../utils/errors";
 
@@ -97,9 +98,22 @@ export default async function (server: FastifyInstance) {
           });
         }
 
-        // 2. Create the alert with initial history
+        // 2. Find patient information if id_patient is provided
+        let patientInfo = {};
+        if (deviceData.id_patient) {
+          const patient = await Patient.findOne({ id_patient: deviceData.id_patient });
+          if (patient) {
+            patientInfo = {
+              patient_name: patient.name,
+              patient_id: patient.id_patient,
+            };
+          }
+        }
+
+        // 3. Create the alert with initial history and patient info
         const alert = await Alert.create({
           id_device,
+          ...patientInfo,
           ...alertData,
         });
 
@@ -107,7 +121,7 @@ export default async function (server: FastifyInstance) {
         alert.history.push({ status: "open", timestamp: alert.timestamp });
         await alert.save();
 
-        // 3. Update the device with the alert reference
+        // 4. Update the device with the alert reference
         const updatedDevice = await Device.findOneAndUpdate(
           { id_device },
           {
@@ -117,7 +131,7 @@ export default async function (server: FastifyInstance) {
           { new: true },
         );
 
-        // 4. Return both the alert and updated device
+        // 5. Return both the alert and updated device
         reply.code(201).send({
           alert,
           device: updatedDevice,
