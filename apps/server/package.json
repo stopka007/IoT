@@ -19,6 +19,7 @@
     "@fastify/rate-limit": "^8.1.1",
     "@fastify/swagger": "^8.12.0",
     "@fastify/swagger-ui": "^2.0.1",
+    "@fastify/type-provider-typebox": "^5.1.0",
     "@sinclair/typebox": "^0.34.33",
     "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
@@ -30,6 +31,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@types/bcrypt": "^5.0.2",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.9",
@@ -41,7 +43,6 @@
     "supertest": "^7.1.0",
     "ts-jest": "^29.3.2",
     "tsup": "7.2.0",
-    "typescript": "^5.3.3",
-    "@repo/eslint-config": "workspace:*"
+    "typescript": "^5.3.3"
   }
 }

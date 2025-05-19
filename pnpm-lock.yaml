@@ -150,6 +150,9 @@ importers:
       '@fastify/swagger-ui':
         specifier: ^2.0.1
         version: 2.1.0
+      '@fastify/type-provider-typebox':
+        specifier: ^5.1.0
+        version: 5.1.0(@sinclair/typebox@0.34.33)
       '@sinclair/typebox':
         specifier: ^0.34.33
         version: 0.34.33
@@ -1031,6 +1034,11 @@ packages:
 
   '@fastify/swagger@8.15.0':
     resolution: {integrity: sha512-zy+HEEKFqPMS2sFUsQU5X0MHplhKJvWeohBwTCkBAJA/GDYGLGUWQaETEhptiqxK7Hs0fQB9B4MDb3pbwIiCwA==, tarball: https://repo.plus4u.net/operatorGate/repository/public-javascript/@fastify/swagger/-/swagger-8.15.0.tgz}
+
+  '@fastify/type-provider-typebox@5.1.0':
+    resolution: {integrity: sha512-F1AQHeLiKp1hu6GMWm5W6fZ6zXQ0mTV+qHOzrptAie9AYewvFr5Q3blfy8Qmx9gUgwA3Yj+CWvQQJeTwDgTnIg==, tarball: https://repo.plus4u.net/operatorGate/repository/public-javascript/@fastify/type-provider-typebox/-/type-provider-typebox-5.1.0.tgz}
+    peerDependencies:
+      '@sinclair/typebox': '>=0.26 <=0.34'
 
   '@hookform/resolvers@5.0.1':
     resolution: {integrity: sha512-u/+Jp83luQNx9AdyW2fIPGY6Y7NG68eN2ZW8FOJYL+M0i4s49+refdJdOp/A9n9HFQtQs3HIDHQvX3ZET2o7YA==, tarball: https://repo.plus4u.net/operatorGate/repository/public-javascript/@hookform/resolvers/-/resolvers-5.0.1.tgz}
@@ -5918,6 +5926,10 @@ snapshots:
       yaml: 2.8.0
     transitivePeerDependencies:
       - supports-color
+
+  '@fastify/type-provider-typebox@5.1.0(@sinclair/typebox@0.34.33)':
+    dependencies:
+      '@sinclair/typebox': 0.34.33
 
   '@hookform/resolvers@5.0.1(react-hook-form@7.56.4(react@19.1.0))':
     dependencies:

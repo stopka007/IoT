@@ -1,16 +1,10 @@
-import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
-import formbody from "@fastify/formbody";
 import rateLimit from "@fastify/rate-limit";
-import sensible from "@fastify/sensible";
-import session from "@fastify/session";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 
-import connectRedis from "connect-redis";
 import Fastify, { FastifyInstance } from "fastify";
-import Redis from "ioredis";
 
 import errorHandler from "./middleware/errorHandler";
 import { registerRoutes } from "./routes";
