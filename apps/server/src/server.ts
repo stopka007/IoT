@@ -25,9 +25,10 @@ export async function buildServer(): Promise<FastifyInstance> {
   });
 
   await server.register(cors, {
-    origin: true,
+    origin: "https://iot-frontend-x8hz.onrender.com",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   });
 
   await server.register(rateLimit, {
