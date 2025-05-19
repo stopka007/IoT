@@ -64,7 +64,7 @@ function RegisterPage() {
       // Using axios directly instead of apiClient to bypass baseURL
       const apiUrl = import.meta.env.VITE_API_URL;
       await axios.post(
-        `https://cors-anywhere.herokuapp.com/${apiUrl}/api/users`,
+        `https://corsproxy.io/?${encodeURIComponent(`${apiUrl}/api/users`)}`,
         registrationData,
         {
           headers: {
