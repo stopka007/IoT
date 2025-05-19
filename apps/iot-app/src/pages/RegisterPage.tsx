@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { z } from "zod";
 
+// Still needed for other features and future use after CORS fix
 import apiClient from "../api/axiosConfig";
 import PasswordStrengthMeter from "../authentication/PasswordStrengthMeter";
 
@@ -59,7 +60,18 @@ function RegisterPage() {
     };
 
     try {
-      await apiClient.post("/api/users", registrationData);
+      // Temporary CORS proxy workaround until server-side CORS is fixed
+      // Using axios directly instead of apiClient to bypass baseURL
+      const apiUrl = import.meta.env.VITE_API_URL;
+      await axios.post(
+        `https://cors-anywhere.herokuapp.com/${apiUrl}/api/users`,
+        registrationData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
       navigate("/login?registered=true");
     } catch (err) {
       console.error("Registration failed:", err);
