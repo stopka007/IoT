@@ -1,9 +1,16 @@
+import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
+import formbody from "@fastify/formbody";
 import rateLimit from "@fastify/rate-limit";
+import sensible from "@fastify/sensible";
+import session from "@fastify/session";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
+import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 
+import connectRedis from "connect-redis";
 import Fastify, { FastifyInstance } from "fastify";
+import Redis from "ioredis";
 
 import errorHandler from "./middleware/errorHandler";
 import { registerRoutes } from "./routes";
@@ -22,13 +29,16 @@ export async function buildServer(): Promise<FastifyInstance> {
             },
           },
         },
-  });
+    trustProxy: true,
+  }).withTypeProvider<TypeBoxTypeProvider>();
 
   await server.register(cors, {
-    origin: "https://iot-frontend-x8hz.onrender.com",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   await server.register(rateLimit, {
