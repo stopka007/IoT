@@ -1,18 +1,15 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import DeviceIcon from "../../Icons/DeviceIcon";
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { useTheme } from "../../functions/ThemeContext";
 import DeleteDeviceModal from "../../modals/deleteDeviceModal";
 
 const DeleteDeviceComponent = () => {
   const { theme } = useTheme();
+  const { triggerUpdate } = usePatientUpdate();
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
   const [showDeleteDeviceModal, setShowDeleteDeviceModal] = useState(false);
-  const [updateKey, setUpdateKey] = useState(0);
-
-  const handleUpdate = useCallback(() => {
-    setUpdateKey(prev => prev + 1);
-  }, []);
 
   return (
     <div
@@ -32,7 +29,7 @@ const DeleteDeviceComponent = () => {
         isOpen={showDeleteDeviceModal}
         onClose={() => setShowDeleteDeviceModal(false)}
         theme={theme}
-        onUpdate={handleUpdate}
+        onUpdate={triggerUpdate}
       />
     </div>
   );
