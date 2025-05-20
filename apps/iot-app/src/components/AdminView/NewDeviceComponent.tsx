@@ -2,14 +2,12 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import DeviceIcon from "../../Icons/DeviceIcon";
-import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { useTheme } from "../../functions/ThemeContext";
 import CreateDeviceModal from "../../modals/createDeviceModal";
 import DeleteDeviceModal from "../../modals/deleteDeviceModal";
 
 const NewDeviceComponent = () => {
   const { theme } = useTheme();
-  const { triggerUpdate } = usePatientUpdate();
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
   const [showCreateDeviceModal, setShowCreateDeviceModal] = useState(false);
   const [showDeleteDeviceModal, setShowDeleteDeviceModal] = useState(false);
@@ -32,13 +30,11 @@ const NewDeviceComponent = () => {
           isOpen={showCreateDeviceModal}
           onClose={() => setShowCreateDeviceModal(false)}
           theme={theme}
-          onUpdate={triggerUpdate}
         />
         <DeleteDeviceModal
           isOpen={showDeleteDeviceModal}
           onClose={() => setShowDeleteDeviceModal(false)}
           theme={theme}
-          onUpdate={triggerUpdate}
         />
       </div>
       <Outlet />

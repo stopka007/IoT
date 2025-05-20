@@ -4,15 +4,9 @@ interface CreatePatientModalProps {
   isOpen: boolean;
   onClose: () => void;
   theme: "light" | "dark";
-  onUpdate?: () => void;
 }
 
-export default function CreatePatientModal({
-  isOpen,
-  onClose,
-  theme,
-  onUpdate,
-}: CreatePatientModalProps) {
+export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePatientModalProps) {
   const {
     rooms,
     patientName,
@@ -30,7 +24,7 @@ export default function CreatePatientModal({
     isLoading,
     error,
     handleSubmit,
-  } = useCreatePatientLogic(isOpen, onClose, onUpdate);
+  } = useCreatePatientLogic(isOpen, onClose);
 
   if (!isOpen) return null;
 

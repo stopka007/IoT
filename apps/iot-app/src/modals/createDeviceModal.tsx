@@ -4,15 +4,9 @@ interface CreateDeviceModalProps {
   isOpen: boolean;
   onClose: () => void;
   theme: "light" | "dark";
-  onUpdate?: () => void;
 }
 
-export default function CreateDeviceModal({
-  isOpen,
-  onClose,
-  theme,
-  onUpdate,
-}: CreateDeviceModalProps) {
+export default function CreateDeviceModal({ isOpen, onClose, theme }: CreateDeviceModalProps) {
   const {
     patients,
     rooms,
@@ -25,7 +19,7 @@ export default function CreateDeviceModal({
     isLoading,
     error,
     handleSubmit,
-  } = useCreateDeviceLogic(isOpen, onClose, onUpdate);
+  } = useCreateDeviceLogic(isOpen, onClose);
 
   if (!isOpen) return null;
 

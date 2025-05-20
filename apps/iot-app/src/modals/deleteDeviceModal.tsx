@@ -15,15 +15,9 @@ interface DeleteDeviceModalProps {
   isOpen: boolean;
   onClose: () => void;
   theme: "light" | "dark";
-  onUpdate?: () => void;
 }
 
-export default function DeleteDeviceModal({
-  isOpen,
-  onClose,
-  theme,
-  onUpdate,
-}: DeleteDeviceModalProps) {
+export default function DeleteDeviceModal({ isOpen, onClose, theme }: DeleteDeviceModalProps) {
   const [devices, setDevices] = useState<Device[]>([]);
   const [selectedDevice, setSelectedDevice] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -55,7 +49,6 @@ export default function DeleteDeviceModal({
     try {
       await apiClient.delete(`/api/devices/device/${selectedDevice}`);
       triggerUpdate();
-      if (onUpdate) onUpdate();
       onClose();
     } catch {
       setError("Failed to delete device.");

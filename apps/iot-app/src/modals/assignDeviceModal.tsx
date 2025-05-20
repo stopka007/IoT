@@ -1,14 +1,11 @@
 import { useEffect } from "react";
 
-import { usePatientUpdate } from "../context/PatientUpdateContext";
-
 import { useAssignDeviceLogic } from "./modal functions/assignDeviceFunction";
 
 interface AssignDeviceModalProps {
   isOpen: boolean;
   onClose: () => void;
   theme: "light" | "dark";
-  onUpdate?: () => void;
   initialPatient?: string;
 }
 
@@ -16,7 +13,6 @@ export default function AssignDeviceModal({
   isOpen,
   onClose,
   theme,
-  onUpdate,
   initialPatient,
 }: AssignDeviceModalProps) {
   const {
@@ -29,9 +25,7 @@ export default function AssignDeviceModal({
     isLoading,
     error,
     handleSubmit,
-  } = useAssignDeviceLogic(isOpen, onClose, onUpdate);
-
-  const { triggerUpdate } = usePatientUpdate();
+  } = useAssignDeviceLogic(isOpen, onClose);
 
   useEffect(() => {
     if (initialPatient) {
