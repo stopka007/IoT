@@ -146,7 +146,7 @@ export default async function (server: FastifyInstance) {
 
   // DELETE /rooms/:id - Delete a room
   server.delete(
-    "/:id",
+    "/api/room-detail/:id",
     asyncHandler(async (request: FastifyRequest, reply: FastifyReply) => {
       const { id } = request.params as RoomIdParams;
       validateMongoId(id);

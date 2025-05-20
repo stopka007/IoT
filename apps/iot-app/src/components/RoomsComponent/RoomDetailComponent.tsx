@@ -8,8 +8,13 @@ import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { useTheme } from "../../functions/ThemeContext";
 import { Patient } from "../../functions/patientService";
 import AssignRoomModal from "../../modals/assignRoomModal";
+import TrashBinIcon from "../../Icons/TrashBinIcon";
+import axios from "axios";
+
+
 
 interface Room {
+  _id: string;
   name: number;
   capacity: number;
 }
@@ -35,15 +40,24 @@ const RoomDetailComponent = () => {
           apiClient.get<{ data: Room[] }>("/api/rooms"),
           apiClient.get<{ data: Patient[] }>("/api/patients"),
         ]);
-
-        const foundRoom = roomRes.data.data.find(r => r.name.toString() === roomNumber);
+  
+        const foundRoom = roomRes.data.data.find(
+          r => r.name.toString() === roomNumber
+        );
+  
         if (!foundRoom) {
           setError("Pokoj nebyl nalezen.");
           return;
         }
-
+  
         setRoom(foundRoom);
-        const roomPatients = patientsRes.data.data.filter(p => p.room?.toString() === roomNumber);
+  
+        // ✅ Výpis do konzole pro kontrolu, že _id existuje
+        console.log("Pokoj pro smazání:", foundRoom);
+  
+        const roomPatients = patientsRes.data.data.filter(
+          p => p.room?.toString() === roomNumber
+        );
         setPatients(roomPatients);
       } catch (err) {
         console.error(err);
@@ -53,6 +67,33 @@ const RoomDetailComponent = () => {
 
     fetchData();
   }, [roomNumber, updateKey, globalUpdateKey]);
+
+  const handleDeleteRoom = async () => {
+    if (!room || !room._id) {
+      alert("Chyba: pokoj nemá ID.");
+      return;
+    }
+  
+    const confirmed = window.confirm("Opravdu chcete smazat tento pokoj?");
+    if (!confirmed) return;
+  
+    console.log("Mazané ID pokoje:", room._id); // Mongo ID
+  
+    try {
+      await apiClient.delete(`/api/room-detail/${room._id}`);
+      alert("Pokoj byl úspěšně smazán.");
+      window.location.href = "/rooms";
+    } catch (error) {
+      console.error("Chyba při mazání pokoje:", error);
+      alert("Nepodařilo se smazat pokoj.");
+    }
+  };
+  
+  
+  
+  
+  
+  
 
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
   const baseText = theme === "light" ? "text-black" : "text-white";
@@ -99,6 +140,14 @@ const RoomDetailComponent = () => {
           >
             Připojit uživatele
           </button>
+          <button
+           className="ml-auto px-4 items-end justify-end"
+           onClick={handleDeleteRoom}
+          title="Smazat pokoj"
+      >
+  <TrashBinIcon />
+</button>
+
         </div>
 
         <div className="text-lg px-4">
