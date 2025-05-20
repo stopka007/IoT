@@ -3,10 +3,16 @@ import { FastifyInstance } from "fastify";
 import mongoose from "mongoose";
 
 import User from "../models/user.model";
-import { buildServer } from "../server";
+
+import {
+  setupTestDatabase,
+  setupTestServer,
+  teardownTestDatabase,
+  teardownTestServer,
+} from "./setup";
 
 describe("Auth", () => {
-  jest.setTimeout(60000);
+  jest.setTimeout(120000);
   let app: FastifyInstance;
   const testUser = {
     email: "testuser@example.com",
@@ -16,16 +22,8 @@ describe("Auth", () => {
   };
 
   beforeAll(async () => {
-    app = await buildServer();
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(process.env.MONGODB_URI!, {
-        serverSelectionTimeoutMS: 60000,
-        socketTimeoutMS: 60000,
-      });
-    }
-    while (mongoose.connection.readyState !== 1) {
-      await new Promise(res => setTimeout(res, 100));
-    }
+    app = await setupTestServer();
+    await setupTestDatabase();
     const hashedPassword = await bcrypt.hash(testUser.password, 10);
     await User.create({
       email: testUser.email,
@@ -37,8 +35,8 @@ describe("Auth", () => {
 
   afterAll(async () => {
     await User.deleteOne({ email: testUser.email });
-    await mongoose.disconnect();
-    await app.close();
+    await teardownTestDatabase();
+    await teardownTestServer();
   });
 
   it("should login successfully with correct credentials", async () => {

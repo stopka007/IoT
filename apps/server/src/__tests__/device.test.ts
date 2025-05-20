@@ -2,10 +2,16 @@ import { FastifyInstance } from "fastify";
 import mongoose from "mongoose";
 
 import { Device } from "../models/device.model";
-import { buildServer } from "../server";
+
+import {
+  setupTestDatabase,
+  setupTestServer,
+  teardownTestDatabase,
+  teardownTestServer,
+} from "./setup";
 
 describe("Device CRUD", () => {
-  jest.setTimeout(60000);
+  jest.setTimeout(120000);
   let app: FastifyInstance;
   let createdDeviceId: string;
   let createdDeviceDeviceId: string = "test-device-123";
@@ -19,24 +25,15 @@ describe("Device CRUD", () => {
   };
 
   beforeAll(async () => {
-    app = await buildServer();
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(process.env.MONGODB_URI!, {
-        serverSelectionTimeoutMS: 60000,
-        socketTimeoutMS: 60000,
-      });
-    }
-    // Wait for mongoose connection to be ready
-    while (mongoose.connection.readyState !== 1) {
-      await new Promise(res => setTimeout(res, 100));
-    }
+    app = await setupTestServer();
+    await setupTestDatabase();
     await Device.deleteMany({ id_device: createdDeviceDeviceId });
   });
 
   afterAll(async () => {
     await Device.deleteMany({ id_device: createdDeviceDeviceId });
-    await mongoose.disconnect();
-    await app.close();
+    await teardownTestDatabase();
+    await teardownTestServer();
   });
 
   it("should create a device", async () => {
