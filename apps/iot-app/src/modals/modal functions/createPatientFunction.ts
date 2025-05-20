@@ -20,8 +20,6 @@ export interface UseCreatePatientLogic {
   setAge: (value: string) => void;
   notes: string;
   setNotes: (value: string) => void;
-  status: string;
-  setStatus: (value: string) => void;
   isLoading: boolean;
   error: string | null;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
@@ -41,7 +39,6 @@ export const useCreatePatientLogic = (
   const [illness, setIllness] = useState<string>("");
   const [age, setAge] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
-  const [status, setStatus] = useState<string>("Hospitalized");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { triggerUpdate } = usePatientUpdate();
@@ -90,7 +87,6 @@ export const useCreatePatientLogic = (
         illness: illness || undefined,
         age: age ? Number(age) : undefined,
         notes: notes || undefined,
-        status: status || undefined,
       });
 
       if (response.status === 201) {
@@ -119,8 +115,6 @@ export const useCreatePatientLogic = (
     setAge,
     notes,
     setNotes,
-    status,
-    setStatus,
     isLoading,
     error,
     handleSubmit,
