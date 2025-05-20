@@ -14,16 +14,27 @@ interface Room {
   capacity: number;
 }
 
-const ConnectPacientRoomComponent = () => {
-  const { theme } = useTheme();
+// Define the props interface
+interface ConnectPacientRoomComponentProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onUpdate: () => void;
+  theme: string;
+}
+
+const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = ({
+  isOpen,
+  onClose,
+  onUpdate,
+  theme,
+}) => {
+  const { theme: currentTheme } = useTheme();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [, setPatients] = useState<Patient[]>([]);
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const [showAssignRoomModal, setShowAssignRoomModal] = useState(false);
-  const [updateKey, setUpdateKey] = useState(0);
+  const [showAssignRoomModal, setShowAssignRoomModal] = useState(isOpen);
   const [error, setError] = useState<string | null>(null);
 
-  const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
+  const baseBg = currentTheme === "light" ? "bg-gray-200" : "bg-neutral-600";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,11 +52,11 @@ const ConnectPacientRoomComponent = () => {
     };
 
     fetchData();
-  }, [updateKey]);
+  }, []);
 
   const handleUpdate = useCallback(() => {
-    setUpdateKey(prev => prev + 1);
-  }, []);
+    onUpdate(); // Call the passed onUpdate function
+  }, [onUpdate]);
 
   if (error) {
     return <div className="text-red-500 text-center">{error}</div>;
@@ -62,10 +73,7 @@ const ConnectPacientRoomComponent = () => {
         <div className="flex items-center justify-center flex-1">
           <button
             onClick={() => {
-              if (rooms.length > 0) {
-                setSelectedRoom(rooms[0]);
-                setShowAssignRoomModal(true);
-              }
+              setShowAssignRoomModal(true);
             }}
             className="border-2 rounded-full p-2 hover:shadow-2xl transform duration-300 shadow-black"
           >
@@ -78,20 +86,19 @@ const ConnectPacientRoomComponent = () => {
         </div>
       </div>
 
-      {selectedRoom && (
-        <AssignRoomModal
-          isOpen={showAssignRoomModal}
-          onClose={() => {
-            setShowAssignRoomModal(false);
-            handleUpdate();
-          }}
-          theme={theme}
-          onUpdate={handleUpdate}
-          initialRoom={selectedRoom.name}
-        />
-      )}
+      <AssignRoomModal
+        isOpen={showAssignRoomModal}
+        onClose={() => {
+          setShowAssignRoomModal(false);
+          onClose(); // Call the passed onClose function
+          handleUpdate();
+        }}
+        theme={theme}
+        onUpdate={handleUpdate}
+        initialRoom={null}
+      />
 
-      <Outlet context={{ onUpdate: handleUpdate, key: updateKey }} />
+      <Outlet context={{ onUpdate: handleUpdate }} />
     </>
   );
 };

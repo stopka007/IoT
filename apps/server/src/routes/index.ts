@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 
 import alertRoutes from "./alert.route";
+import archivedPatientRoutes from "./archivedPatient.route";
 import authRoutes from "./auth.route";
 import deviceRoutes from "./device.route";
 import exampleRoutes from "./example.route";
@@ -16,4 +17,5 @@ export const registerRoutes = (server: FastifyInstance) => {
   server.register(roomRoutes, { prefix: "/api/rooms" });
   server.register(userRoutes, { prefix: "/api/users" });
   server.register(authRoutes, { prefix: "/api/auth" });
+  server.register(archivedPatientRoutes, { prefix: "/api/archived_patients" });
 };

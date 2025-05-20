@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import apiClient from "../../api/axiosConfig";
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 
 interface Room {
   id: string;
@@ -29,15 +30,15 @@ export interface UseAssignRoomLogic {
 export const useAssignRoomLogic = (
   isOpen: boolean,
   onClose: () => void,
-  onUpdate?: () => void,
-  initialRoom?: number | null, // Přidání argumentu pro pokoj
+  initialRoom?: number | null,
 ): UseAssignRoomLogic => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
-  const [selectedRoom, setSelectedRoom] = useState<number | null>(initialRoom || null); // Použití `initialRoom` pokud je předán
+  const [selectedRoom, setSelectedRoom] = useState<number | null>(initialRoom || null);
   const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { triggerUpdate } = usePatientUpdate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -75,11 +76,10 @@ export const useAssignRoomLogic = (
   }, [isOpen]);
 
   useEffect(() => {
-    // Pokud je pokoj předán jako argument, automaticky ho nastaví do formuláře
-    if (initialRoom && !selectedRoom) {
+    if (initialRoom && selectedRoom === null) {
       setSelectedRoom(initialRoom);
     }
-  }, [initialRoom, selectedRoom]);
+  }, [initialRoom, selectedRoom, setSelectedRoom]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,6 +91,22 @@ export const useAssignRoomLogic = (
     try {
       setIsLoading(true);
       setError(null);
+
+      // Fetch the current number of patients in the selected room
+      const patientsResponse = await apiClient.get<{ data: Patient[] }>("/api/patients");
+      const currentPatientsInRoom = patientsResponse.data.data.filter(
+        (patient: Patient) => patient.room === selectedRoom,
+      ).length;
+
+      // Fetch the room details to get its capacity
+      const roomResponse = await apiClient.get<{ data: Room[] }>("/api/rooms");
+      const roomDetails = roomResponse.data.data.find((room: Room) => room.name === selectedRoom);
+
+      if (roomDetails && currentPatientsInRoom >= roomDetails.capacity) {
+        setError("The selected room is full. Please choose another room.");
+        return;
+      }
+
       const response = await apiClient.patch(`/api/patients/${selectedPatient}`, {
         room: Number(selectedRoom),
       });
@@ -99,11 +115,7 @@ export const useAssignRoomLogic = (
         // Reset form state
         setSelectedPatient("");
         setSelectedRoom(null);
-
-        // Call onUpdate before closing the modal
-        if (onUpdate) {
-          onUpdate();
-        }
+        triggerUpdate();
         onClose();
       } else {
         setError("Failed to assign room");

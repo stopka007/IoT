@@ -4,7 +4,6 @@ interface AssignRoomModalProps {
   isOpen: boolean;
   onClose: () => void;
   theme: string;
-  onUpdate?: () => void;
   initialRoom: number | null;
 }
 
@@ -12,7 +11,7 @@ export default function AssignRoomModal({
   isOpen,
   onClose,
   theme,
-  onUpdate,
+  initialRoom,
 }: AssignRoomModalProps) {
   const {
     rooms,
@@ -24,7 +23,7 @@ export default function AssignRoomModal({
     isLoading,
     error,
     handleSubmit,
-  } = useAssignRoomLogic(isOpen, onClose, onUpdate);
+  } = useAssignRoomLogic(isOpen, onClose, initialRoom);
 
   if (!isOpen) return null;
 
@@ -69,31 +68,33 @@ export default function AssignRoomModal({
               </select>
             </div>
 
-            <div>
-              <label
-                className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
-              >
-                Room *
-              </label>
-              <select
-                value={selectedRoom || ""}
-                onChange={e => setSelectedRoom(parseInt(e.target.value))}
-                className={`w-full p-2 border rounded-md ${
-                  theme === "light"
-                    ? "bg-white border-gray-300 text-gray-900"
-                    : "bg-neutral-700 border-neutral-600 text-white"
-                }`}
-                disabled={isLoading}
-                required
-              >
-                <option value="">Select a room...</option>
-                {rooms.map(room => (
-                  <option key={room.id} value={room.name}>
-                    Room {room.name} (Capacity: {room.capacity})
-                  </option>
-                ))}
-              </select>
-            </div>
+            {!initialRoom && (
+              <div>
+                <label
+                  className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
+                >
+                  Room *
+                </label>
+                <select
+                  value={selectedRoom || ""}
+                  onChange={e => setSelectedRoom(parseInt(e.target.value))}
+                  className={`w-full p-2 border rounded-md ${
+                    theme === "light"
+                      ? "bg-white border-gray-300 text-gray-900"
+                      : "bg-neutral-700 border-neutral-600 text-white"
+                  }`}
+                  disabled={isLoading}
+                  required
+                >
+                  <option value="">Select a room...</option>
+                  {rooms.map(room => (
+                    <option key={room.id} value={room.name}>
+                      Room {room.name} (Capacity: {room.capacity})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end gap-4 mt-6">

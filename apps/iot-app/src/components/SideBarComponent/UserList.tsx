@@ -1,30 +1,36 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-// Důležité!
-// import { useNavigate } from "react-router-dom";
+import { usePatientModal } from "../../context/PatientModalContext";
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { useTheme } from "../../functions/ThemeContext";
 import { Battery } from "../../functions/battery";
-import { getBatteryLevel } from "../../functions/battery";
 import { Patient, fetchAllPatients } from "../../functions/patientService";
-import PatientDetailsModal from "../../modals/PatientDetailsModal";
 import LoadingOverlay from "../LoadingOverlay";
 
 import Filter from "./Filter";
 import FilterToggle from "./FilterToggle";
 import SearchBar from "./SearchBar";
 
-interface BatteryCache {
-  [deviceId: string]: number;
+interface UserListProps {
+  showFilter: boolean;
+  setShowFilter: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const UserList: React.FC = () => {
+const UserList: React.FC<UserListProps> = ({ showFilter, setShowFilter }) => {
+  console.log("UserList rendered");
   const { theme } = useTheme();
   const [loading, setLoading] = useState(false);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [searchResults, setSearchResults] = useState<Patient[]>([]);
-  const [batteryLevels, setBatteryLevels] = useState<BatteryCache>({});
+  const [, setSearchResults] = useState<Patient[]>([]);
+  const prevIsOpen = useRef(showFilter);
+  const [hasAppliedInitialFilter, setHasAppliedInitialFilter] = useState(false);
+  const [selectedRooms, setSelectedRooms] = useState<number[]>([]);
+  const { updateKey } = usePatientUpdate();
+  const { openDetailsModal } = usePatientModal();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
   const baseText = theme === "light" ? "text-black" : "text-white";
@@ -33,49 +39,93 @@ const UserList: React.FC = () => {
   const shadow = theme === "light" ? "shadow-neutral-400" : "shadow-black";
   const borderColor = theme === "light" ? "border-gray-400" : "border-neutral-500";
 
+  const applyInitialFilter = useCallback((patientsList: Patient[]) => {
+    // Read filter state from localStorage
+    const storedRooms = localStorage.getItem("filter_selectedRooms");
+    const storedBattery = localStorage.getItem("filter_batteryFilter");
+    const storedSortOrder = localStorage.getItem("filter_sortOrder");
+
+    let parsedRooms: number[] = [];
+    let parsedBattery: "Nejvyšší" | "Nejnižší" | null = null;
+    let parsedSortOrder: "A-Z" | "Z-A" = "A-Z";
+
+    if (storedRooms) {
+      try {
+        parsedRooms = JSON.parse(storedRooms);
+      } catch {
+        /* empty */
+      }
+    }
+    if (storedBattery === "Nejvyšší" || storedBattery === "Nejnižší") {
+      parsedBattery = storedBattery;
+    }
+    if (storedSortOrder === "A-Z" || storedSortOrder === "Z-A") {
+      parsedSortOrder = storedSortOrder;
+    }
+
+    let filteredResults = [...patientsList];
+    if (parsedRooms.length > 0) {
+      filteredResults = filteredResults.filter(p => parsedRooms.includes(p.room));
+    }
+    if (parsedBattery === "Nejvyšší") {
+      filteredResults.sort((a, b) => {
+        const batteryA = typeof a.battery_level === "number" ? a.battery_level : -1;
+        const batteryB = typeof b.battery_level === "number" ? b.battery_level : -1;
+        return batteryB - batteryA;
+      });
+    } else if (parsedBattery === "Nejnižší") {
+      filteredResults.sort((a, b) => {
+        const batteryA = typeof a.battery_level === "number" ? a.battery_level : 9999;
+        const batteryB = typeof b.battery_level === "number" ? b.battery_level : 9999;
+        return batteryA - batteryB;
+      });
+    } else {
+      filteredResults.sort((a, b) =>
+        parsedSortOrder === "A-Z" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name),
+      );
+    }
+    setFilteredPatients(filteredResults);
+    setSearchResults(filteredResults);
+    setHasAppliedInitialFilter(true);
+    setSelectedRooms(parsedRooms);
+  }, []);
+
   const loadPatients = useCallback(async () => {
     try {
       setLoading(true);
       const data = await fetchAllPatients();
       setPatients(data);
-      setFilteredPatients(data);
-      setSearchResults(data);
-
-      // Fetch battery levels once
-      const newBatteryLevels: BatteryCache = {};
-      for (const patient of data) {
-        try {
-          const response = await getBatteryLevel(patient.id_device);
-          newBatteryLevels[patient.id_device] = response.battery_level;
-        } catch (error) {
-          console.error(`Failed to fetch battery for device ${patient.id_device}:`, error);
-          newBatteryLevels[patient.id_device] = 0; // Default to 0 if fetch fails
-        }
-      }
-      setBatteryLevels(newBatteryLevels);
+      applyInitialFilter(data);
     } catch (error) {
       console.error("Error loading patients:", error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [applyInitialFilter]);
 
   useEffect(() => {
     loadPatients();
-  }, [loadPatients]);
+  }, [loadPatients, updateKey]);
+
+  useEffect(() => {
+    if (!prevIsOpen.current && showFilter) {
+      setFilteredPatients([]);
+    }
+    prevIsOpen.current = showFilter;
+  }, [showFilter]);
+
+  useEffect(() => {
+    if (hasAppliedInitialFilter) {
+      localStorage.setItem("filter_selectedRooms", JSON.stringify(selectedRooms));
+    }
+  }, [selectedRooms, hasAppliedInitialFilter]);
 
   const handlePatientClick = (patient: Patient) => {
-    setSelectedPatient(patient);
+    openDetailsModal(patient);
+    const params = new URLSearchParams(location.search);
+    params.set("patient", patient._id);
+    navigate({ search: params.toString() }, { replace: false });
   };
-
-  const handleCloseModal = () => {
-    setSelectedPatient(null);
-  };
-
-  const handlePatientUpdated = () => {
-    loadPatients();
-  };
-  const [showFilter, setShowFilter] = useState(false);
 
   return (
     <>
@@ -89,40 +139,35 @@ const UserList: React.FC = () => {
         </div>
         {showFilter && (
           <div className="mt-2">
-            <Filter
-              patients={searchResults}
-              onFilterChange={setFilteredPatients}
-              batteryLevels={batteryLevels}
-            />
+            <Filter isOpen={showFilter} patients={patients} onFilterChange={setFilteredPatients} />
           </div>
         )}
       </div>
 
       <ul className={`flex-1 overflow-y-auto ${baseBg}`}>
-        {filteredPatients.map(patient => (
-          <li
-            key={patient._id}
-            onClick={() => handlePatientClick(patient)}
-            className={`border-neutral-300 border-s-stone-200 ${shadow} shadow-md px-4 py-3 flex justify-between items-center ${hoverBg} cursor-pointer ${hoverText} transition duration-400 ease-in-out ${baseText}`}
-          >
-            <div className="flex items-center gap-3">
-              <span>{patient.name}</span>
-            </div>
+        {filteredPatients.map(patient => {
+          console.log("Rendering patient:", patient.name);
+          return (
+            <li
+              key={patient._id}
+              onClick={() => handlePatientClick(patient)}
+              className={`border-neutral-300 border-s-stone-200 ${shadow} shadow-md px-4 py-3 flex justify-between items-center ${hoverBg} cursor-pointer ${hoverText} transition duration-400 ease-in-out ${baseText}`}
+            >
+              <div className="flex items-center gap-3">
+                <span>{patient.name}</span>
+              </div>
 
-            <div className="flex items-center gap-1">
-              <Battery deviceId={patient.id_device} />
-            </div>
-          </li>
-        ))}
+              <div className="flex items-center gap-1">
+                {patient.id_device ? (
+                  <Battery batteryLevel={patient.battery_level ?? null} />
+                ) : (
+                  <span className="text-xs text-gray-500 ">No assigned device</span>
+                )}
+              </div>
+            </li>
+          );
+        })}
       </ul>
-
-      {selectedPatient && (
-        <PatientDetailsModal
-          patient={selectedPatient}
-          onClose={handleCloseModal}
-          onUpdate={handlePatientUpdated}
-        />
-      )}
     </>
   );
 };

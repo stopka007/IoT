@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
-import { Outlet, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import HomeIcon from "../../Icons/HomeIcon";
 import PersonIcon from "../../Icons/UserIcon";
 import apiClient from "../../api/axiosConfig";
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { useTheme } from "../../functions/ThemeContext";
 import { Patient } from "../../functions/patientService";
 import AssignRoomModal from "../../modals/assignRoomModal";
@@ -28,6 +29,9 @@ const RoomDetailComponent = () => {
   const [updateKey, setUpdateKey] = useState(0);
 
   const { theme } = useTheme();
+  const { updateKey: globalUpdateKey } = usePatientUpdate();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,14 +64,9 @@ const RoomDetailComponent = () => {
         setError("Nepodařilo se načíst informace o pokoji.");
       }
     };
-  
-    fetchData(); // ✅ volání funkce uvnitř useEffectu
-  }, [roomNumber]);
-  
-  
-  const handleUpdate = useCallback(() => {
-    setUpdateKey(prev => prev + 1);
-  }, []);
+
+    fetchData();
+  }, [roomNumber, updateKey, globalUpdateKey]);
 
   const handleDeleteRoom = async () => {
     if (!room || !room._id) {
@@ -101,6 +100,24 @@ const RoomDetailComponent = () => {
   const hoverBg = theme === "light" ? "hover:bg-neutral-300" : "hover:bg-neutral-500";
   const hoverText = theme === "light" ? "hover:text-black" : "hover:text-white";
 
+  const handlePatientClick = (patient: Patient) => {
+    setSelectedPatient(patient);
+    const params = new URLSearchParams(location.search);
+    params.set("patient", patient._id);
+    navigate({ search: params.toString() }, { replace: false });
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const patientId = params.get("patient");
+    if (patientId && patients.length > 0) {
+      const found = patients.find(p => p._id === patientId);
+      setSelectedPatient(found || null);
+    } else if (!patientId) {
+      setSelectedPatient(null);
+    }
+  }, [location.search, patients]);
+
   if (error) {
     return <div className="p-6 text-center text-red-500">{error}</div>;
   }
@@ -118,7 +135,7 @@ const RoomDetailComponent = () => {
           <HomeIcon />
           <h2 className="text-2xl font-bold">Pokoj {room.name}</h2>
           <button
-            className="ml-auto px-4 items-end justify-end "
+            className="ml-auto px-4 py-2 items-end justify-end bg-gray-500 text-white rounded-md hover:bg-gray-600"
             onClick={() => setShowAssignRoomModal(true)}
           >
             Připojit uživatele
@@ -138,7 +155,7 @@ const RoomDetailComponent = () => {
           <p>Obsazenost: {patients.length}</p>
         </div>
 
-        <div className="flex gap-6 mt-4 flex-1 overflow-hidden px-4">
+        <div className="flex items-start gap-4">
           <div className="w-[400px] flex flex-col border-r border-gray-300 dark:border-neutral-500 pr-2 overflow-y-auto">
             <h3 className="text-lg font-semibold mb-2">Pacienti</h3>
             <ul className="space-y-1 overflow-y-auto">
@@ -146,7 +163,7 @@ const RoomDetailComponent = () => {
                 patients.map(patient => (
                   <div
                     key={patient._id}
-                    onClick={() => setSelectedPatient(patient)}
+                    onClick={() => handlePatientClick(patient)}
                     className={`flex items-center gap-2 px-2 py-2 rounded cursor-pointer transition ${hoverBg} ${hoverText}`}
                   >
                     <PersonIcon />
@@ -158,15 +175,11 @@ const RoomDetailComponent = () => {
               )}
             </ul>
           </div>
-
           <div className="flex-1 overflow-y-auto">
             {selectedPatient ? (
               <div>
                 <h3 className="text-xl font-bold mb-4">{selectedPatient.name}</h3>
                 <div className="space-y-2 text-lg">
-                  <p>
-                    <span className="font-semibold">ID:</span> {selectedPatient._id}
-                  </p>
                   <p>
                     <span className="font-semibold">Věk:</span> {selectedPatient.age}
                   </p>
@@ -185,15 +198,13 @@ const RoomDetailComponent = () => {
           </div>
         </div>
       </div>
-      <Outlet context={{ onUpdate: handleUpdate, key: updateKey }} />
+      <Outlet context={{ onUpdate: () => setUpdateKey(prev => prev + 1), key: updateKey }} />
       <AssignRoomModal
         isOpen={showAssignRoomModal}
         onClose={() => {
           setShowAssignRoomModal(false);
-          handleUpdate();
         }}
         theme={theme}
-        onUpdate={handleUpdate}
         initialRoom={room.name}
       />
     </div>

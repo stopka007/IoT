@@ -1,3 +1,7 @@
+import { useEffect } from "react";
+
+import { usePatientUpdate } from "../context/PatientUpdateContext";
+
 import { useAssignDeviceLogic } from "./modal functions/assignDeviceFunction";
 
 interface AssignDeviceModalProps {
@@ -5,6 +9,7 @@ interface AssignDeviceModalProps {
   onClose: () => void;
   theme: "light" | "dark";
   onUpdate?: () => void;
+  initialPatient?: string;
 }
 
 export default function AssignDeviceModal({
@@ -12,6 +17,7 @@ export default function AssignDeviceModal({
   onClose,
   theme,
   onUpdate,
+  initialPatient,
 }: AssignDeviceModalProps) {
   const {
     patients,
@@ -24,6 +30,14 @@ export default function AssignDeviceModal({
     error,
     handleSubmit,
   } = useAssignDeviceLogic(isOpen, onClose, onUpdate);
+
+  const { triggerUpdate } = usePatientUpdate();
+
+  useEffect(() => {
+    if (initialPatient) {
+      setSelectedPatient(initialPatient);
+    }
+  }, [initialPatient, setSelectedPatient]);
 
   if (!isOpen) return null;
 
@@ -68,32 +82,34 @@ export default function AssignDeviceModal({
             </select>
           </div>
 
-          <div>
-            <label
-              className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
-            >
-              Select Patient
-            </label>
-            <select
-              value={selectedPatient}
-              onChange={e => setSelectedPatient(e.target.value)}
-              className={`w-full p-2 border rounded-md ${
-                theme === "light"
-                  ? "bg-white border-gray-300 text-gray-900"
-                  : "bg-neutral-700 border-neutral-600 text-white"
-              }`}
-              disabled={isLoading}
-              required
-            >
-              <option value="">Select a patient...</option>
-              {Array.isArray(patients) &&
-                patients.map(patient => (
-                  <option key={patient.id} value={patient._id}>
-                    {patient.name}
-                  </option>
-                ))}
-            </select>
-          </div>
+          {!initialPatient && (
+            <div>
+              <label
+                className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
+              >
+                Select Patient
+              </label>
+              <select
+                value={selectedPatient}
+                onChange={e => setSelectedPatient(e.target.value)}
+                className={`w-full p-2 border rounded-md ${
+                  theme === "light"
+                    ? "bg-white border-gray-300 text-gray-900"
+                    : "bg-neutral-700 border-neutral-600 text-white"
+                }`}
+                disabled={isLoading}
+                required
+              >
+                <option value="">Select a patient...</option>
+                {Array.isArray(patients) &&
+                  patients.map(patient => (
+                    <option key={patient.id} value={patient._id}>
+                      {patient.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          )}
 
           <div className="flex justify-end space-x-3 mt-6">
             <button
