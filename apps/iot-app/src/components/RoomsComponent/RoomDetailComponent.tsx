@@ -9,6 +9,7 @@ import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { useTheme } from "../../functions/ThemeContext";
 import { Patient } from "../../functions/patientService";
 import AssignRoomModal from "../../modals/assignRoomModal";
+import ConfirmModal from "../../modals/confirmModal";
 
 interface Room {
   _id: string;
@@ -23,6 +24,7 @@ const RoomDetailComponent = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [showAssignRoomModal, setShowAssignRoomModal] = useState(false);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [updateKey, setUpdateKey] = useState(0);
 
   const { theme } = useTheme();
@@ -64,12 +66,14 @@ const RoomDetailComponent = () => {
       return;
     }
 
-    const confirmed = window.confirm("Opravdu chcete smazat tento pokoj?");
-    if (!confirmed) return;
+    setShowDeleteConfirmModal(true);
+  };
+
+  const confirmDeleteRoom = async () => {
+    if (!room || !room._id) return;
 
     try {
       await apiClient.delete(`/api/rooms/${room._id}`);
-      alert("Pokoj byl úspěšně smazán.");
       triggerUpdate();
       navigate("/");
     } catch (error) {
@@ -117,19 +121,21 @@ const RoomDetailComponent = () => {
         <div className="flex items-center gap-2 p-4">
           <HomeIcon />
           <h2 className="text-2xl font-bold">Pokoj {room.name}</h2>
-          <button
-            className="ml-auto px-4 py-2 items-end justify-end bg-gray-500 text-white rounded-md hover:bg-gray-600"
-            onClick={() => setShowAssignRoomModal(true)}
-          >
-            Připojit uživatele
-          </button>
-          <button
-            className="ml-auto px-4 items-end justify-end"
-            onClick={handleDeleteRoom}
-            title="Smazat pokoj"
-          >
-            <TrashBinIcon />
-          </button>
+          <div className="flex items-center gap-2 ml-auto">
+            <button
+              className="px-4 py-2 items-end justify-end bg-gray-500 text-white rounded-md hover:bg-gray-600"
+              onClick={() => setShowAssignRoomModal(true)}
+            >
+              Připojit uživatele
+            </button>
+            <button
+              className="px-4 py-2 items-end justify-end bg-red-500 text-white rounded-md hover:bg-red-600"
+              onClick={handleDeleteRoom}
+              title="Smazat pokoj"
+            >
+              <TrashBinIcon />
+            </button>
+          </div>
         </div>
 
         <div className="text-lg px-4">
@@ -188,6 +194,15 @@ const RoomDetailComponent = () => {
         }}
         theme={theme}
         initialRoom={room.name}
+      />
+      <ConfirmModal
+        isOpen={showDeleteConfirmModal}
+        onClose={() => setShowDeleteConfirmModal(false)}
+        onConfirm={confirmDeleteRoom}
+        theme={theme}
+        type="delete"
+        title="Potvrdit smazání pokoje"
+        message={`Opravdu chcete smazat pokoj ${room.name}?`}
       />
     </div>
   );
