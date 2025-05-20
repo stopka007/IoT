@@ -98,7 +98,7 @@ export default function EditPatientModal({
                 value={patientName}
                 onChange={e => setPatientName(e.target.value)}
                 placeholder="Zadejte jméno pacienta"
-                className={`w-full p-2 border rounded-md ${
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -117,7 +117,7 @@ export default function EditPatientModal({
               <select
                 value={selectedRoom}
                 onChange={e => setSelectedRoom(Number(e.target.value))}
-                className={`w-full p-2 border rounded-md ${
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -146,7 +146,7 @@ export default function EditPatientModal({
                 value={illness}
                 onChange={e => setIllness(e.target.value)}
                 placeholder="Zadejte nemoc (volitelné)"
-                className={`w-full p-2 border rounded-md ${
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -166,7 +166,7 @@ export default function EditPatientModal({
                 value={age}
                 onChange={e => setAge(e.target.value)}
                 placeholder="Zadejte věk (volitelné)"
-                className={`w-full p-2 border rounded-md ${
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -186,7 +186,7 @@ export default function EditPatientModal({
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value)}
-                className={`w-full p-2 border rounded-md ${
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -223,14 +223,14 @@ export default function EditPatientModal({
             <button
               type="button"
               onClick={() => setShowArchiveConfirm(true)}
-              className="mr-23 px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200 disabled:opacity-50"
+              className="mr-23 px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200 disabled:opacity-50 cursor-pointer"
               disabled={isLoading || archiveLoading}
             >
               {archiveLoading ? "Archivuji..." : "Archivovat"}
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50 cursor-pointer"
               disabled={isLoading || archiveLoading}
             >
               {isLoading ? "Aktualizuji..." : "Aktualizovat Pacienta"}
@@ -238,7 +238,7 @@ export default function EditPatientModal({
             <button
               type="button"
               onClick={onClose}
-              className={`px-4 py-2 text-sm font-medium ${
+              className={`px-4 py-2 text-sm font-medium cursor-pointer ${
                 theme === "light"
                   ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
                   : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
@@ -253,27 +253,33 @@ export default function EditPatientModal({
 
       {/* Archive confirmation dialog */}
       {showArchiveConfirm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-opacity-40 z-50">
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50">
           <div
-            className={`p-6 rounded-lg shadow-lg ${theme === "light" ? "bg-gray-200" : "bg-neutral-800"}`}
+            className={`${theme === "light" ? "bg-white" : "bg-neutral-800"} rounded-lg shadow-lg p-6 max-w-sm w-full mx-4 transform transition-all duration-300 ease-in-out`}
           >
             <h3 className="text-lg font-semibold mb-4">Archivovat Pacienta?</h3>
             <p className="mb-4">
               Opravdu chcete archivovat tohoto pacienta? Tato akce přesune pacienta do archivu a
               odstraní ho z aktivního seznamu.
             </p>
-            {archiveError && <div className="mb-2 text-red-600">{archiveError}</div>}
-            <div className="flex gap-4 justify-end">
+            {archiveError && (
+              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{archiveError}</div>
+            )}
+            <div className="flex justify-end gap-4">
               <button
-                onClick={handleArchive}
-                className="px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                onClick={() => setShowArchiveConfirm(false)}
+                className={`px-4 py-2 text-sm font-medium cursor-pointer ${
+                  theme === "light"
+                    ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
+                    : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
+                } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
                 disabled={archiveLoading}
               >
                 {archiveLoading ? "Archivuji..." : "Ano, Archivovat"}
               </button>
               <button
-                onClick={() => setShowArchiveConfirm(false)}
-                className="px-4 py-2 text-sm font-medium bg-gray-200 rounded-lg hover:bg-gray-300 text-gray-800"
+                onClick={handleArchive}
+                className="px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200 cursor-pointer"
                 disabled={archiveLoading}
               >
                 Zrušit

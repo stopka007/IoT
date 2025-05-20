@@ -60,7 +60,8 @@ export const useAssignDeviceLogic = (
       // Handle patients response
       const patientsList = patientsResponse.data.data || patientsResponse.data;
       if (Array.isArray(patientsList)) {
-        setPatients(patientsList);
+        const unassignedPatients = patientsList.filter(patient => !patient.id_device);
+        setPatients(unassignedPatients);
       } else {
         console.error("Unexpected patients data format:", patientsList);
         setError("Invalid patients data format received");

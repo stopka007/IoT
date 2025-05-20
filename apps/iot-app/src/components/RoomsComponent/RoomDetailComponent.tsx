@@ -5,6 +5,7 @@ import HomeIcon from "../../Icons/HomeIcon";
 import TrashBinIcon from "../../Icons/TrashBinIcon";
 import PersonIcon from "../../Icons/UserIcon";
 import apiClient from "../../api/axiosConfig";
+import { useAuth } from "../../authentication/context/AuthContext";
 import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { useTheme } from "../../functions/ThemeContext";
 import { Patient } from "../../functions/patientService";
@@ -26,6 +27,7 @@ const RoomDetailComponent = () => {
   const [showAssignRoomModal, setShowAssignRoomModal] = useState(false);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [updateKey, setUpdateKey] = useState(0);
+  const { user } = useAuth();
 
   const { theme } = useTheme();
   const { updateKey: globalUpdateKey, triggerUpdate } = usePatientUpdate();
@@ -123,18 +125,20 @@ const RoomDetailComponent = () => {
           <h2 className="text-2xl font-bold">Pokoj {room.name}</h2>
           <div className="flex items-center gap-2 ml-auto">
             <button
-              className="px-4 py-2 items-end justify-end bg-gray-500 text-white rounded-md hover:bg-gray-600"
+              className="px-4 py-2 items-end justify-end bg-gray-500 text-white rounded-md hover:bg-gray-600 cursor-pointer"
               onClick={() => setShowAssignRoomModal(true)}
             >
               Připojit uživatele
             </button>
-            <button
-              className="px-4 py-2 items-end justify-end bg-red-500 text-white rounded-md hover:bg-red-600"
-              onClick={handleDeleteRoom}
-              title="Smazat pokoj"
-            >
-              <TrashBinIcon />
-            </button>
+            {user?.role === "admin" && (
+              <button
+                className="px-4 py-2 items-end justify-end bg-red-500 text-white rounded-md hover:bg-red-600 cursor-pointer"
+                onClick={handleDeleteRoom}
+                title="Smazat pokoj"
+              >
+                <TrashBinIcon />
+              </button>
+            )}
           </div>
         </div>
 

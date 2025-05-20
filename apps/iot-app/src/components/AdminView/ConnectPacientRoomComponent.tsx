@@ -8,15 +8,15 @@ import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { useTheme } from "../../functions/ThemeContext";
 import AssignRoomModal from "../../modals/assignRoomModal";
 
-// Define the props interface
+// Define the props interface with optional props
 interface ConnectPacientRoomComponentProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = ({
-  isOpen,
-  onClose,
+  isOpen = false,
+  onClose = () => {},
 }) => {
   const { theme } = useTheme();
   const { triggerUpdate } = usePatientUpdate();
@@ -37,7 +37,7 @@ const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = 
             onClick={() => {
               setShowAssignRoomModal(true);
             }}
-            className="border-2 rounded-full p-2 hover:shadow-2xl transform duration-300 shadow-black text-blue-500"
+            className="border-2 rounded-full p-2 hover:shadow-2xl transform duration-300 shadow-black text-blue-500 cursor-pointer"
           >
             <div className="flex justify-center items-center px-1">
               <BiggerHomeIcon />
