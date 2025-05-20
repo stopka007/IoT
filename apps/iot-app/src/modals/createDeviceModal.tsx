@@ -4,28 +4,11 @@ interface CreateDeviceModalProps {
   isOpen: boolean;
   onClose: () => void;
   theme: "light" | "dark";
-  onUpdate?: () => void;
 }
 
-export default function CreateDeviceModal({
-  isOpen,
-  onClose,
-  theme,
-  onUpdate,
-}: CreateDeviceModalProps) {
-  const {
-    patients,
-    rooms,
-    selectedPatient,
-    setSelectedPatient,
-    selectedRoom,
-    setSelectedRoom,
-    deviceId,
-    setDeviceId,
-    isLoading,
-    error,
-    handleSubmit,
-  } = useCreateDeviceLogic(isOpen, onClose, onUpdate);
+export default function CreateDeviceModal({ isOpen, onClose, theme }: CreateDeviceModalProps) {
+  const { deviceId, setDeviceId, isLoading, error, handleSubmit, battery_level, setBattery_level } =
+    useCreateDeviceLogic(onClose);
 
   if (!isOpen) return null;
 
@@ -48,58 +31,6 @@ export default function CreateDeviceModal({
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Select Patient
-              </label>
-              <select
-                value={selectedPatient}
-                onChange={e => setSelectedPatient(e.target.value)}
-                className={`w-full p-2 border rounded-md ${
-                  theme === "light"
-                    ? "bg-white border-gray-300 text-gray-900"
-                    : "bg-neutral-700 border-neutral-600 text-white"
-                }`}
-                disabled={isLoading}
-              >
-                <option value="">Select a patient...</option>
-                {Array.isArray(patients) &&
-                  patients.map(patient => (
-                    <option key={patient.id} value={patient.id}>
-                      {patient.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            <div>
-              <label
-                className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
-              >
-                Select Room
-              </label>
-              <select
-                value={selectedRoom}
-                onChange={e => setSelectedRoom(e.target.value)}
-                className={`w-full p-2 border rounded-md ${
-                  theme === "light"
-                    ? "bg-white border-gray-300 text-gray-900"
-                    : "bg-neutral-700 border-neutral-600 text-white"
-                }`}
-                disabled={isLoading}
-              >
-                <option value="">Select a room...</option>
-                {Array.isArray(rooms) &&
-                  rooms.map(room => (
-                    <option key={room.id} value={room.id}>
-                      {room.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            <div>
-              <label
-                className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
-              >
                 Device ID
               </label>
               <input
@@ -107,6 +38,25 @@ export default function CreateDeviceModal({
                 value={deviceId}
                 onChange={e => setDeviceId(e.target.value)}
                 placeholder="Enter device ID"
+                className={`w-full p-2 border rounded-md ${
+                  theme === "light"
+                    ? "bg-white border-gray-300 text-gray-900"
+                    : "bg-neutral-700 border-neutral-600 text-white"
+                }`}
+                disabled={isLoading}
+              />
+            </div>
+            <div>
+              <label
+                className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
+              >
+                Battery Level
+              </label>
+              <input
+                type="number"
+                value={battery_level === null ? "" : battery_level}
+                onChange={e => setBattery_level(e.target.value ? Number(e.target.value) : null)}
+                placeholder="Enter battery level"
                 className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"

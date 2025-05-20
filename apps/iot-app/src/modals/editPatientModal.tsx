@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import apiClient from "../api/axiosConfig";
+import { usePatientUpdate } from "../context/PatientUpdateContext";
 
 import { useEditPatientLogic } from "./modal functions/editPatientFunction";
 
@@ -9,7 +10,6 @@ interface EditPatientModalProps {
   onClose: () => void;
   theme: string;
   patientId: string;
-  onUpdate?: () => void;
 }
 
 export default function EditPatientModal({
@@ -17,7 +17,6 @@ export default function EditPatientModal({
   onClose,
   theme,
   patientId,
-  onUpdate,
 }: EditPatientModalProps) {
   const {
     rooms,
@@ -42,6 +41,8 @@ export default function EditPatientModal({
   const [archiveLoading, setArchiveLoading] = useState(false);
   const [archiveError, setArchiveError] = useState<string | null>(null);
 
+  const { triggerUpdate } = usePatientUpdate();
+
   if (!isOpen) return null;
 
   // Archive logic
@@ -61,7 +62,7 @@ export default function EditPatientModal({
       await apiClient.delete(`/api/patients/${patientId}`);
       // 5. Close modal and refresh
       onClose();
-      if (typeof onUpdate === "function") onUpdate();
+      triggerUpdate();
     } catch (err: unknown) {
       setArchiveError("Failed to archive patient");
       console.error(err);
@@ -192,7 +193,6 @@ export default function EditPatientModal({
                 }`}
                 disabled={isLoading}
               >
-                <option value="Hospitalized">Hospitalized</option>
                 <option value="Released">Released</option>
                 <option value="Deceased">Deceased</option>
               </select>
@@ -228,7 +228,6 @@ export default function EditPatientModal({
             >
               {archiveLoading ? "Archiving..." : "Archive"}
             </button>
-
             <button
               type="submit"
               className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50"

@@ -119,9 +119,7 @@ const AlertArchivePage = () => {
 
   const filteredAlerts = alerts.filter(alert => {
     const patientName = devicePatientMap[alert.id_device] || "";
-    const matchesSearch =
-      patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      alert.id_device.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = patientName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || alert.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -142,7 +140,7 @@ const AlertArchivePage = () => {
 
   return (
     <div
-      className={`overflow-y-auto h-screen flex flex-col ${isDark ? "bg-neutral-800" : "bg-white"}`}
+      className={`overflow-y-auto h-screen flex flex-col ${isDark ? "bg-neutral-900" : "bg-white"}`}
     >
       <div className="p-4 flex-none">
         <div className="max-w-6xl mx-auto">
@@ -249,6 +247,7 @@ const AlertArchivePage = () => {
                     status={alert.status}
                     history={alert.history}
                     room={alert.room}
+                    patient_name={devicePatientMap[alert.id_device] || "Unknown"}
                   />
                 ))}
               </div>

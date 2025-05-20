@@ -1,19 +1,17 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import AddHomeIcon from "../../Icons/AddHomeIcon";
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { useTheme } from "../../functions/ThemeContext";
 import CreateRoomModal from "../../modals/createRoomModal";
 
 const NewRoomComponent = () => {
   const { theme } = useTheme();
+  const { triggerUpdate } = usePatientUpdate();
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
-  const [updateKey, setUpdateKey] = useState(0);
 
-  const handleUpdate = useCallback(() => {
-    setUpdateKey(prev => prev + 1);
-  }, []);
   return (
     <>
       <div
@@ -24,7 +22,7 @@ const NewRoomComponent = () => {
         <div className="flex items-center justify-center flex-1">
           <button
             onClick={() => setShowCreateRoomModal(true)}
-            className="border-2 rounded-full p-2 hover:shadow-2xl transform duration-300 shadow-black"
+            className="border-2 rounded-full p-2 hover:shadow-2xl transform duration-300 shadow-black text-green-500"
           >
             <AddHomeIcon />
           </button>
@@ -33,10 +31,10 @@ const NewRoomComponent = () => {
           isOpen={showCreateRoomModal}
           onClose={() => setShowCreateRoomModal(false)}
           theme={theme}
-          onUpdate={handleUpdate}
+          onUpdate={triggerUpdate}
         />
       </div>
-      <Outlet context={{ onUpdate: handleUpdate, key: updateKey }} />
+      <Outlet />
     </>
   );
 };

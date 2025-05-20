@@ -4,17 +4,11 @@ interface CreateRoomModalProps {
   isOpen: boolean;
   onClose: () => void;
   theme: "light" | "dark";
-  onUpdate?: () => void;
 }
 
-export default function CreateRoomModal({
-  isOpen,
-  onClose,
-  theme,
-  onUpdate,
-}: CreateRoomModalProps) {
+export default function CreateRoomModal({ isOpen, onClose, theme }: CreateRoomModalProps) {
   const { roomNumber, setRoomNumber, capacity, setCapacity, isLoading, error, handleSubmit } =
-    useCreateRoomLogic(isOpen, onClose, onUpdate);
+    useCreateRoomLogic(isOpen, onClose);
 
   if (!isOpen) return null;
 
