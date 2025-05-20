@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { z } from "zod";
 
-import apiClient from "../api/axiosConfig";
+import apiClient, { checkApiHealth, directLogin } from "../api/axiosConfig";
 import { useAuth } from "../authentication/context/AuthContext";
 
 // Define expected login response structure
@@ -37,6 +37,17 @@ function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
+  const [apiStatus, setApiStatus] = useState<"unknown" | "online" | "offline">("unknown");
+
+  // Check API status on component mount
+  useEffect(() => {
+    const checkApiStatus = async () => {
+      const isHealthy = await checkApiHealth();
+      setApiStatus(isHealthy ? "online" : "offline");
+    };
+
+    checkApiStatus();
+  }, []);
 
   useEffect(() => {
     if (searchParams.get("registered") === "true") {
@@ -46,20 +57,44 @@ function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      // Expect response with both tokens
-      const response = await apiClient.post<AuthTokens>("/api/auth/login", data);
+      // First check if API is reachable
+      if (apiStatus === "offline") {
+        const isOnline = await checkApiHealth();
+        if (!isOnline) {
+          toast.error("Server není dostupný. Zkuste to prosím později.");
+          return;
+        } else {
+          setApiStatus("online");
+        }
+      }
+
+      let authTokens: AuthTokens;
+
+      try {
+        // Try direct login first (bypasses interceptors)
+        console.log("Attempting direct login...");
+        const directResponse = await directLogin(data.email, data.password);
+        authTokens = directResponse;
+        console.log("Direct login succeeded");
+      } catch (directErr) {
+        console.error("Direct login failed, trying regular login...", directErr);
+
+        // Fall back to regular API client
+        const response = await apiClient.post<AuthTokens>("/api/auth/login", data);
+        authTokens = response.data;
+      }
 
       // Check for both tokens
-      if (response.data && response.data.accessToken && response.data.refreshToken) {
+      if (authTokens && authTokens.accessToken && authTokens.refreshToken) {
         // Pass the full AuthTokens object to login context
         await login({
-          accessToken: response.data.accessToken,
-          refreshToken: response.data.refreshToken,
+          accessToken: authTokens.accessToken,
+          refreshToken: authTokens.refreshToken,
         });
         navigate("/");
         toast.success("Přihlášení úspěšné!");
       } else {
-        throw new Error("Odpověď serveru neobsahuje potřebné autentizační tokeny."); // Keep specific error
+        throw new Error("Odpověď serveru neobsahuje potřebné autentizační tokeny.");
       }
     } catch (err) {
       console.error("Login failed:", err);
@@ -67,7 +102,6 @@ function LoginPage() {
       if (axios.isAxiosError(err) && err.response?.data?.message) {
         errorMessage = err.response.data.message;
       } else if (err instanceof Error) {
-        // Handle other generic errors if needed, though less likely here
         // errorMessage = err.message;
       }
       toast.error(errorMessage);
@@ -78,6 +112,13 @@ function LoginPage() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="p-8 bg-white rounded-lg shadow-md w-full max-w-sm">
         <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">Přihlášení</h2>
+
+        {apiStatus === "offline" && (
+          <div className="mb-4 p-2 bg-red-100 text-red-700 rounded text-sm">
+            Server momentálně není dostupný. Zkontrolujte připojení k internetu.
+          </div>
+        )}
+
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="mb-4">
             <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
