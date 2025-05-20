@@ -66,16 +66,20 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
 
       <div className="flex-1 overflow-hidden">
         <ul className="space-y-2 max-h-[150px] overflow-y-auto pr-1">
-          {patients.map(patient => (
-            <li
-              key={patient._id}
-              onClick={() => handlePatientClick(patient)}
-              className={`flex items-center gap-2 px-2 py-2 rounded cursor-pointer transition ${hoverBg} ${hoverText}`}
-            >
-              <PersonIcon />
-              <span className="truncate">{patient.name}</span>
-            </li>
-          ))}
+          {patients.length > 0 ? (
+            patients.map(patient => (
+              <div
+                key={patient._id}
+                onClick={() => handlePatientClick(patient)}
+                className={`flex items-center gap-2 px-2 py-2 rounded cursor-pointer transition ${hoverBg} ${hoverText}`}
+              >
+                <PersonIcon />
+                <li className="truncate">{patient.name}</li>
+              </div>
+            ))
+          ) : (
+            <li className="italic opacity-70">V tomto pokoji nejsou žádní pacienti.</li>
+          )}
         </ul>
       </div>
     </div>

@@ -137,12 +137,7 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ setShowFilter }) => {
               <ConnectDeviceComponent />
             </div>
             <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
-              <ConnectPacientRoomComponent
-                isOpen={false}
-                onClose={() => {}}
-                onUpdate={loadData}
-                theme="light"
-              />
+              <ConnectPacientRoomComponent isOpen={false} onClose={() => {}} />
             </div>
           </>
         )}

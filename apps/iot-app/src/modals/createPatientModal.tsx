@@ -68,7 +68,7 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Room *
+                Room
               </label>
               <select
                 value={selectedRoom}
@@ -79,7 +79,6 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
                     : "bg-neutral-700 border-neutral-600 text-white"
                 }`}
                 disabled={isLoading}
-                required
               >
                 <option value="0">Select a room...</option>
                 {Array.isArray(rooms) &&
