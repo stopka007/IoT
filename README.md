@@ -1,84 +1,113 @@
-# Turborepo starter
+# IoT Monorepo
 
-This Turborepo starter is maintained by the Turborepo core team.
+A monorepo for an IoT project featuring a Fastify backend, a Vite React frontend, and MongoDB Atlas.
 
-## Using this example
+---
 
-Run the following command:
+## Structure
+
+- `apps/iot-app/` – Frontend (Vite + React + TypeScript)
+- `apps/server/` – Backend (Fastify + TypeScript + Mongoose)
+- `my-turborepo/packages/` – (Optional) Shared packages
+
+---
+
+## Production Deployment
+
+- **Frontend:** [iot-frontend-x8hz.onrender.com](https://iot-frontend-x8hz.onrender.com)
+- **Backend:** [iot-backend-p3d8.onrender.com](https://iot-backend-p3d8.onrender.com)
+- **Database:** MongoDB Atlas (URI configured in Render backend environment)
+
+---
+
+## Local Development Setup
+
+### 1. Clone the repository
 
 ```sh
-npx create-turbo@latest
+git clone https://github.com/stopka007/IoT.git
+cd IoT
 ```
 
-## What's inside?
+### 2. Install dependencies
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm build
+```sh
+pnpm install
 ```
 
-### Develop
+### 3. Configure environment variables
 
-To develop all apps and packages, run the following command:
+#### Backend (`apps/server/`)
+
+Create a `.env` file in `apps/server/`:
 
 ```
-cd my-turborepo
+MONGO_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+JWT_REFRESH_SECRET=your_jwt_refresh_secret
+JWT_EXPIRES_IN=1296000
+JWT_REFRESH_EXPIRES_IN=5000000000000002220
+```
+
+#### Frontend (`apps/iot-app/`)
+
+Create a `.env` file in `apps/iot-app/`:
+
+```
+VITE_API_URL=http://localhost:3000
+```
+
+> For production, `.env.production` is already set up and committed.
+
+### 4. Start the backend
+
+```sh
+cd apps/server
 pnpm dev
 ```
 
-### Remote Caching
+### 5. Start the frontend
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
+```sh
+cd apps/iot-app
+pnpm dev
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+- Frontend: [http://localhost:5173](http://localhost:5173)
+- Backend: [http://localhost:3000](http://localhost:3000)
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+---
+
+## Running Backend Tests
+
+1. Create a `.env.test` file in `apps/server/` (copy from `.env` and update as needed):
+
+```sh
+cp apps/server/.env apps/server/.env.test
+```
+
+Edit `MONGO_URI` in `.env.test` to point to your test database.
+
+Sample `.env.test`:
 
 ```
-npx turbo link
+NODE_ENV=test
+PORT=3001
+MONGO_URI=mongodb://localhost:27017/iot-test
+JWT_SECRET=your_test_jwt_secret
+JWT_REFRESH_SECRET=your_test_refresh_secret
+JWT_EXPIRES_IN=15070486486486486486
+JWT_REFRESH_EXPIRES_IN=77486486486463513516467
+API_URL=http://localhost:3001
+RATE_LIMIT_MAX=100
+RATE_LIMIT_TIME_WINDOW=60000
 ```
 
-## Useful Links
+2. Run tests:
 
-Learn more about the power of Turborepo:
+```sh
+cd apps/server
+pnpm test
+```
 
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+---
