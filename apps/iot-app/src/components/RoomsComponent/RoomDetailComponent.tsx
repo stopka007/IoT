@@ -47,9 +47,6 @@ const RoomDetailComponent = () => {
 
         setRoom(foundRoom);
 
-        // ✅ Výpis do konzole pro kontrolu, že _id existuje
-        console.log("Pokoj pro smazání:", foundRoom);
-
         const roomPatients = patientsRes.data.data.filter(p => p.room?.toString() === roomNumber);
         setPatients(roomPatients);
       } catch (err) {
@@ -69,8 +66,6 @@ const RoomDetailComponent = () => {
 
     const confirmed = window.confirm("Opravdu chcete smazat tento pokoj?");
     if (!confirmed) return;
-
-    console.log("Mazané ID pokoje:", room._id); // Mongo ID
 
     try {
       await apiClient.delete(`/api/rooms/${room._id}`);

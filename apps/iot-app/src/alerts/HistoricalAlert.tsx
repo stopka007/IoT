@@ -37,15 +37,23 @@ const HistoricalAlert: React.FC<HistoricalAlertProps> = ({
   status,
   history,
   room,
+  patient_name,
 }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
   const [patientName, setPatientName] = useState<string | null>(null);
   const [, setPatientId] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
 
+  // Only fetch patient name if not provided as prop
   useEffect(() => {
+    if (patient_name) {
+      setPatientName(patient_name);
+      setLoading(false);
+      return;
+    }
+
     let isMounted = true;
     async function fetchPatientName() {
       setLoading(true);
@@ -79,7 +87,7 @@ const HistoricalAlert: React.FC<HistoricalAlertProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [id_device]);
+  }, [id_device, patient_name]);
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleString();
@@ -108,8 +116,8 @@ const HistoricalAlert: React.FC<HistoricalAlertProps> = ({
               >
                 {loading
                   ? "Loading..."
-                  : patientName
-                    ? `Patient: ${patientName}`
+                  : patient_name || patientName
+                    ? `Patient: ${patient_name || patientName}`
                     : `Device ID: ${id_device}`}
               </h3>
               {room && (

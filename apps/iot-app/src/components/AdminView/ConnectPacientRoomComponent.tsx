@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import ArrowLeftRightIcon from "../../Icons/ArrowLeftRightIcon";
 import BiggerHomeIcon from "../../Icons/BiggerHomeIcon";
 import BiggerPersonIcon from "../../Icons/BiggerUserIcon";
 import apiClient from "../../api/axiosConfig";
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { useTheme } from "../../functions/ThemeContext";
 import { Patient } from "../../functions/patientService";
 import AssignRoomModal from "../../modals/assignRoomModal";
@@ -18,19 +19,18 @@ interface Room {
 interface ConnectPacientRoomComponentProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpdate: () => void;
   theme: string;
 }
 
 const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = ({
   isOpen,
   onClose,
-  onUpdate,
   theme,
 }) => {
   const { theme: currentTheme } = useTheme();
+  const { triggerUpdate } = usePatientUpdate();
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [, setPatients] = useState<Patient[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [showAssignRoomModal, setShowAssignRoomModal] = useState(isOpen);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,10 +53,6 @@ const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = 
 
     fetchData();
   }, []);
-
-  const handleUpdate = useCallback(() => {
-    onUpdate(); // Call the passed onUpdate function
-  }, [onUpdate]);
 
   if (error) {
     return <div className="text-red-500 text-center">{error}</div>;
@@ -91,14 +87,14 @@ const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = 
         onClose={() => {
           setShowAssignRoomModal(false);
           onClose(); // Call the passed onClose function
-          handleUpdate();
+          triggerUpdate();
         }}
         theme={theme}
-        onUpdate={handleUpdate}
+        onUpdate={triggerUpdate}
         initialRoom={null}
       />
 
-      <Outlet context={{ onUpdate: handleUpdate }} />
+      <Outlet />
     </>
   );
 };
