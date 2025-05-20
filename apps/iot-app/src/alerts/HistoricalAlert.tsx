@@ -117,7 +117,7 @@ const HistoricalAlert: React.FC<HistoricalAlertProps> = ({
                 {loading
                   ? "Loading..."
                   : patient_name || patientName
-                    ? `Patient: ${patient_name || patientName}`
+                    ? `${patient_name || patientName}`
                     : `Device ID: ${id_device}`}
               </h3>
               {room && (
