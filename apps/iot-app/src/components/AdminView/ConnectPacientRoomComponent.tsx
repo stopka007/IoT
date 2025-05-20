@@ -8,15 +8,15 @@ import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { useTheme } from "../../functions/ThemeContext";
 import AssignRoomModal from "../../modals/assignRoomModal";
 
-// Define the props interface
+// Define the props interface with optional props
 interface ConnectPacientRoomComponentProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = ({
-  isOpen,
-  onClose,
+  isOpen = false,
+  onClose = () => {},
 }) => {
   const { theme } = useTheme();
   const { triggerUpdate } = usePatientUpdate();

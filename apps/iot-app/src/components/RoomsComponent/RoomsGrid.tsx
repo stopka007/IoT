@@ -41,6 +41,9 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ setShowFilter }) => {
   }>();
   const { updateKey: globalUpdateKey } = usePatientUpdate();
 
+  // New state for admin layout (default to "grouped" now)
+  const [adminLayout, setAdminLayout] = useState<string>("grouped");
+
   const loadData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -101,8 +104,60 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ setShowFilter }) => {
     return <div className="p-4 text-center">Nebyly nalezeny žádné pokoje.</div>;
   }
 
+  // Render admin view based on selected layout
+  const renderAdminView = () => {
+    switch (adminLayout) {
+      case "compact":
+        return (
+          <div className="grid grid-cols-3 gap-4">
+            <NewRoomComponent />
+            <NewPacientComponent />
+            <NewDeviceComponent />
+            <DeleteDeviceWidget />
+            <ConnectDeviceComponent />
+            <ConnectPacientRoomComponent />
+          </div>
+        );
+      case "grouped":
+      default:
+        return (
+          <div className="grid grid-cols-1 gap-6">
+            <div>
+              <h2 className="text-xl font-semibold mb-3">Přidat</h2>
+              <div className="grid grid-cols-3 gap-4">
+                <NewRoomComponent />
+                <NewPacientComponent />
+                <NewDeviceComponent />
+              </div>
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold mb-3">Správa</h2>
+              <div className="grid grid-cols-3 gap-4">
+                <DeleteDeviceWidget />
+                <ConnectDeviceComponent />
+                <ConnectPacientRoomComponent />
+              </div>
+            </div>
+          </div>
+        );
+    }
+  };
+
   return (
     <div className="h-[calc(100vh-120px)] overflow-y-auto px-4">
+      {!showDetailedView && (
+        <div className="mb-4">
+          <label className="mr-2">Rozložení:</label>
+          <select
+            value={adminLayout}
+            onChange={e => setAdminLayout(e.target.value)}
+            className="px-3 py-2 border rounded-md dark:bg-neutral-700 dark:text-white cursor-pointer"
+          >
+            <option value="grouped">Seskupené</option>
+            <option value="compact">Kompaktní</option>
+          </select>
+        </div>
+      )}
       <div className="flex flex-wrap gap-4 py-4 overflow-y-auto pb-60">
         {showDetailedView ? (
           <>
@@ -120,26 +175,7 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ setShowFilter }) => {
             ))}
           </>
         ) : (
-          <>
-            <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
-              <NewRoomComponent />
-            </div>
-            <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
-              <NewPacientComponent />
-            </div>
-            <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
-              <NewDeviceComponent />
-            </div>
-            <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
-              <DeleteDeviceWidget />
-            </div>
-            <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
-              <ConnectDeviceComponent />
-            </div>
-            <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
-              <ConnectPacientRoomComponent isOpen={false} onClose={() => {}} />
-            </div>
-          </>
+          renderAdminView()
         )}
       </div>
     </div>
