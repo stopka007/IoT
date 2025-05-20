@@ -122,7 +122,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({ patient, onCl
               className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
                 theme === "light"
                   ? "text-white bg-green-500 hover:bg-green-600 focus:ring-green-300"
-                  : "text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
+                  : "text-white bg-green-600 hover:bg-green-700 focus:ring-green-500"
               } focus:outline-none focus:ring-2 transition-colors duration-200`}
             >
               Edit Patient
@@ -142,7 +142,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({ patient, onCl
               className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
                 theme === "light"
                   ? "text-gray-700 bg-yellow-300 hover:bg-yellow-400 focus:ring-yellow-300"
-                  : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
+                  : "text-gray-200 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500"
               } focus:outline-none focus:ring-2 transition-colors duration-200`}
             >
               Unassign Device
@@ -152,8 +152,8 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({ patient, onCl
               onClick={onClose}
               className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
                 theme === "light"
-                  ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
-                  : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
+                  ? "text-gray-700 bg-gray-300 hover:bg-gray-400 focus:ring-gray-300"
+                  : "text-gray-800 bg-neutral-300 hover:bg-neutral-400 focus:ring-neutral-500"
               } focus:outline-none focus:ring-2 transition-colors duration-200`}
             >
               Close
@@ -165,7 +165,10 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({ patient, onCl
       {isEditModalOpen && (
         <EditPatientModal
           isOpen={isEditModalOpen}
-          onClose={handleEditClose}
+          onClose={() => {
+            handleEditClose();
+            onClose();
+          }}
           theme={theme}
           patientId={patient._id}
         />
@@ -173,7 +176,10 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({ patient, onCl
       {isAssignDeviceModalOpen && (
         <AssignDeviceModal
           isOpen={isAssignDeviceModalOpen}
-          onClose={handleAssignDeviceClose}
+          onClose={() => {
+            handleAssignDeviceClose();
+            onClose();
+          }}
           theme={theme}
           initialPatient={patient._id}
         />

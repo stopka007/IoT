@@ -140,7 +140,7 @@ const AlertArchivePage = () => {
 
   return (
     <div
-      className={`overflow-y-auto h-screen flex flex-col ${isDark ? "bg-neutral-800" : "bg-white"}`}
+      className={`overflow-y-auto h-screen flex flex-col ${isDark ? "bg-neutral-900" : "bg-white"}`}
     >
       <div className="p-4 flex-none">
         <div className="max-w-6xl mx-auto">

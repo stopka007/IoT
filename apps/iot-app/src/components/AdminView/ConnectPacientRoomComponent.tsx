@@ -1,62 +1,28 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import ArrowLeftRightIcon from "../../Icons/ArrowLeftRightIcon";
 import BiggerHomeIcon from "../../Icons/BiggerHomeIcon";
 import BiggerPersonIcon from "../../Icons/BiggerUserIcon";
-import apiClient from "../../api/axiosConfig";
 import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { useTheme } from "../../functions/ThemeContext";
-import { Patient } from "../../functions/patientService";
 import AssignRoomModal from "../../modals/assignRoomModal";
-
-interface Room {
-  name: number;
-  capacity: number;
-}
 
 // Define the props interface
 interface ConnectPacientRoomComponentProps {
   isOpen: boolean;
   onClose: () => void;
-  theme: string;
 }
 
 const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = ({
   isOpen,
   onClose,
-  theme,
 }) => {
-  const { theme: currentTheme } = useTheme();
+  const { theme } = useTheme();
   const { triggerUpdate } = usePatientUpdate();
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const [patients, setPatients] = useState<Patient[]>([]);
   const [showAssignRoomModal, setShowAssignRoomModal] = useState(isOpen);
-  const [error, setError] = useState<string | null>(null);
 
-  const baseBg = currentTheme === "light" ? "bg-gray-200" : "bg-neutral-600";
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [roomsRes, patientsRes] = await Promise.all([
-          apiClient.get<{ data: Room[] }>("/api/rooms"),
-          apiClient.get<{ data: Patient[] }>("/api/patients"),
-        ]);
-        setRooms(roomsRes.data.data);
-        setPatients(patientsRes.data.data);
-      } catch (err) {
-        console.error(err);
-        setError("Nepodařilo se načíst data.");
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (error) {
-    return <div className="text-red-500 text-center">{error}</div>;
-  }
+  const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
 
   return (
     <>
@@ -90,7 +56,6 @@ const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = 
           triggerUpdate();
         }}
         theme={theme}
-        onUpdate={triggerUpdate}
         initialRoom={null}
       />
 

@@ -67,12 +67,17 @@ export default function AssignDeviceModal({
               required
             >
               <option value="">Select a device...</option>
-              {Array.isArray(devices) &&
+              {Array.isArray(devices) && devices.length > 0 ? (
                 devices.map(device => (
                   <option key={device.id} value={device.id_device}>
                     Device {device.id_device}
                   </option>
-                ))}
+                ))
+              ) : (
+                <option value="" disabled>
+                  No unassigned devices available
+                </option>
+              )}
             </select>
           </div>
 
@@ -120,12 +125,8 @@ export default function AssignDeviceModal({
             </button>
             <button
               type="submit"
-              className={`px-4 py-2 rounded-md ${
-                theme === "light"
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "bg-blue-700 text-white hover:bg-blue-600"
-              }`}
-              disabled={isLoading}
+              className="px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 disabled:opacity-50"
+              disabled={isLoading || devices.length === 0}
             >
               {isLoading ? "Assigning..." : "Assign Device"}
             </button>

@@ -74,8 +74,8 @@ export const useCreatePatientLogic = (
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!patientName || !selectedRoom) {
-      setError("Please fill in all fields");
+    if (!patientName) {
+      setError("Patient name is required");
       return;
     }
 
@@ -86,7 +86,7 @@ export const useCreatePatientLogic = (
         id_patient: generateId(),
         id_device: "",
         name: patientName,
-        room: Number(selectedRoom),
+        room: selectedRoom !== 0 ? Number(selectedRoom) : undefined,
         illness: illness || undefined,
         age: age ? Number(age) : undefined,
         notes: notes || undefined,
