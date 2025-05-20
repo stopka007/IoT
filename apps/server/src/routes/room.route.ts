@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
+import Patient from "../models/patient.model";
 import Room from "../models/room.model";
 import { IRoom } from "../models/room.model";
 import { asyncHandler, checkResourceExists, handleMongooseError } from "../utils/errorUtils";
@@ -146,13 +147,19 @@ export default async function (server: FastifyInstance) {
 
   // DELETE /rooms/:id - Delete a room
   server.delete(
-    "/api/room-detail/:id",
+    "/:id",
     asyncHandler(async (request: FastifyRequest, reply: FastifyReply) => {
       const { id } = request.params as RoomIdParams;
       validateMongoId(id);
 
+      // Najdi pokoj podle ID
       const deleted = await Room.findByIdAndDelete(id);
       checkResourceExists(deleted, "Room not found");
+
+      // Pokud pokoj existoval, nastav room=null u všech pacientů, kteří byli v tomto pokoji
+      if (deleted && deleted.name) {
+        await Patient.updateMany({ room: deleted.name }, { $set: { room: null } });
+      }
 
       return reply.send({ success: true, message: "Room deleted successfully" });
     }),

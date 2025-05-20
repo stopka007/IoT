@@ -23,7 +23,7 @@ const ConnectDeviceComponent = () => {
         <div className="flex items-center justify-center flex-1">
           <button
             onClick={() => setShowAssignDeviceModal(true)}
-            className="border-2 rounded-full p-2 hover:shadow-2xl transform duration-300 shadow-black"
+            className="border-2 rounded-full p-2 hover:shadow-2xl transform duration-300 shadow-black text-blue-500"
           >
             <ConnectIcon />
           </button>

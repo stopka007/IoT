@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import apiClient from "../api/axiosConfig";
+import { usePatientUpdate } from "../context/PatientUpdateContext";
 
 import { useEditPatientLogic } from "./modal functions/editPatientFunction";
 
@@ -42,6 +43,8 @@ export default function EditPatientModal({
   const [archiveLoading, setArchiveLoading] = useState(false);
   const [archiveError, setArchiveError] = useState<string | null>(null);
 
+  const { triggerUpdate } = usePatientUpdate();
+
   if (!isOpen) return null;
 
   // Archive logic
@@ -61,6 +64,7 @@ export default function EditPatientModal({
       await apiClient.delete(`/api/patients/${patientId}`);
       // 5. Close modal and refresh
       onClose();
+      triggerUpdate();
       if (typeof onUpdate === "function") onUpdate();
     } catch (err: unknown) {
       setArchiveError("Failed to archive patient");
@@ -228,7 +232,6 @@ export default function EditPatientModal({
             >
               {archiveLoading ? "Archiving..." : "Archive"}
             </button>
-
             <button
               type="submit"
               className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50"
