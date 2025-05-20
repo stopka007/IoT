@@ -4,15 +4,9 @@ interface CreatePatientModalProps {
   isOpen: boolean;
   onClose: () => void;
   theme: "light" | "dark";
-  onUpdate?: () => void;
 }
 
-export default function CreatePatientModal({
-  isOpen,
-  onClose,
-  theme,
-  onUpdate,
-}: CreatePatientModalProps) {
+export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePatientModalProps) {
   const {
     rooms,
     patientName,
@@ -25,12 +19,10 @@ export default function CreatePatientModal({
     setAge,
     notes,
     setNotes,
-    status,
-    setStatus,
     isLoading,
     error,
     handleSubmit,
-  } = useCreatePatientLogic(isOpen, onClose, onUpdate);
+  } = useCreatePatientLogic(isOpen, onClose);
 
   if (!isOpen) return null;
 
@@ -74,7 +66,7 @@ export default function CreatePatientModal({
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Room *
+                Room
               </label>
               <select
                 value={selectedRoom}
@@ -85,7 +77,6 @@ export default function CreatePatientModal({
                     : "bg-neutral-700 border-neutral-600 text-white"
                 }`}
                 disabled={isLoading}
-                required
               >
                 <option value="0">Select a room...</option>
                 {Array.isArray(rooms) &&
@@ -137,28 +128,6 @@ export default function CreatePatientModal({
                 min="0"
                 max="150"
               />
-            </div>
-
-            <div>
-              <label
-                className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
-              >
-                Status
-              </label>
-              <select
-                value={status}
-                onChange={e => setStatus(e.target.value)}
-                className={`w-full p-2 border rounded-md ${
-                  theme === "light"
-                    ? "bg-white border-gray-300 text-gray-900"
-                    : "bg-neutral-700 border-neutral-600 text-white"
-                }`}
-                disabled={isLoading}
-              >
-                <option value="Hospitalized">Hospitalized</option>
-                <option value="Released">Released</option>
-                <option value="Deceased">Deceased</option>
-              </select>
             </div>
 
             <div>

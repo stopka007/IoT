@@ -10,7 +10,6 @@ interface EditPatientModalProps {
   onClose: () => void;
   theme: string;
   patientId: string;
-  onUpdate?: () => void;
 }
 
 export default function EditPatientModal({
@@ -18,7 +17,6 @@ export default function EditPatientModal({
   onClose,
   theme,
   patientId,
-  onUpdate,
 }: EditPatientModalProps) {
   const {
     rooms,
@@ -65,7 +63,6 @@ export default function EditPatientModal({
       // 5. Close modal and refresh
       onClose();
       triggerUpdate();
-      if (typeof onUpdate === "function") onUpdate();
     } catch (err: unknown) {
       setArchiveError("Failed to archive patient");
       console.error(err);
@@ -196,7 +193,6 @@ export default function EditPatientModal({
                 }`}
                 disabled={isLoading}
               >
-                <option value="Hospitalized">Hospitalized</option>
                 <option value="Released">Released</option>
                 <option value="Deceased">Deceased</option>
               </select>

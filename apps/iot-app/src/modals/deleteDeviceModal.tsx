@@ -11,19 +11,19 @@ interface Device {
   patient_name?: string;
 }
 
+interface Patient {
+  _id: string;
+  id_patient: string;
+  id_device?: string;
+}
+
 interface DeleteDeviceModalProps {
   isOpen: boolean;
   onClose: () => void;
   theme: "light" | "dark";
-  onUpdate?: () => void;
 }
 
-export default function DeleteDeviceModal({
-  isOpen,
-  onClose,
-  theme,
-  onUpdate,
-}: DeleteDeviceModalProps) {
+export default function DeleteDeviceModal({ isOpen, onClose, theme }: DeleteDeviceModalProps) {
   const [devices, setDevices] = useState<Device[]>([]);
   const [selectedDevice, setSelectedDevice] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -53,11 +53,31 @@ export default function DeleteDeviceModal({
     setIsLoading(true);
     setError(null);
     try {
+      // Get the device to check if it's assigned to a patient
+      const selectedDeviceObj = devices.find(d => d.id_device === selectedDevice);
+
+      if (selectedDeviceObj && selectedDeviceObj.id_patient) {
+        // First get the associated patient
+        const patientsResponse = await apiClient.get<{ data: Patient[] }>("/api/patients");
+        const patients = patientsResponse.data.data || patientsResponse.data;
+
+        // Find patient with matching id_patient
+        const associatedPatient = patients.find(p => p.id_patient === selectedDeviceObj.id_patient);
+
+        if (associatedPatient) {
+          // Clear the id_device from the patient
+          await apiClient.patch(`/api/patients/${associatedPatient._id}`, {
+            id_device: null,
+          });
+        }
+      }
+
+      // Delete the device
       await apiClient.delete(`/api/devices/device/${selectedDevice}`);
       triggerUpdate();
-      if (onUpdate) onUpdate();
       onClose();
-    } catch {
+    } catch (err) {
+      console.error("Error deleting device:", err);
       setError("Failed to delete device.");
     } finally {
       setIsLoading(false);
@@ -102,6 +122,7 @@ export default function DeleteDeviceModal({
                 {devices.map(device => (
                   <option key={device.id} value={device.id_device}>
                     Device {device.id_device}
+                    {device.patient_name ? ` (assigned to ${device.patient_name})` : ""}
                   </option>
                 ))}
               </select>

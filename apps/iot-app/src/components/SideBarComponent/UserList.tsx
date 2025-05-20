@@ -26,6 +26,7 @@ const PatientListItem = React.memo(
     hoverBg,
     hoverText,
     shadow,
+    theme,
   }: {
     patient: Patient;
     handlePatientClick: (patient: Patient) => void;
@@ -34,6 +35,7 @@ const PatientListItem = React.memo(
     hoverBg: string;
     hoverText: string;
     shadow: string;
+    theme: "light" | "dark";
   }) => {
     return (
       <li
@@ -49,7 +51,9 @@ const PatientListItem = React.memo(
           {patient.id_device ? (
             <Battery batteryLevel={patient.battery_level ?? null} />
           ) : (
-            <span className="text-xs text-gray-500 ">No assigned device</span>
+            <span className={`text-xs ${theme === "light" ? "text-gray-500" : "text-neutral-100"}`}>
+              No assigned device
+            </span>
           )}
         </div>
       </li>
@@ -197,9 +201,10 @@ const UserList: React.FC<UserListProps> = ({ showFilter, setShowFilter }) => {
         hoverBg={hoverBg}
         hoverText={hoverText}
         shadow={shadow}
+        theme={theme}
       />
     ));
-  }, [filteredPatients, handlePatientClick, baseBg, baseText, hoverBg, hoverText, shadow]);
+  }, [filteredPatients, handlePatientClick, baseBg, baseText, hoverBg, hoverText, shadow, theme]);
 
   return (
     <>
