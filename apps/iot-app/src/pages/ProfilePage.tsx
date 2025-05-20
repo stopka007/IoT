@@ -17,13 +17,11 @@ import { useAuth } from "../authentication/context/AuthContext";
 // Re-use or import password validation logic from RegisterPage
 const passwordValidation = z
   .string()
-  .min(8, { message: "Password must be at least 8 characters long" })
-  .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
-  .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
-  .regex(/[0-9]/, { message: "Password must contain at least one number" })
-  .regex(/[@$!%*?&]/, {
-    message: "Password must contain at least one special character (@$!%*?&)",
-  });
+  .min(8, { message: "Heslo musí mít alespoň 8 znaků" })
+  .regex(/[a-z]/, { message: "Heslo musí obsahovat alespoň jedno malé písmeno" })
+  .regex(/[A-Z]/, { message: "Heslo musí obsahovat alespoň jedno velké písmeno" })
+  .regex(/[0-9]/, { message: "Heslo musí obsahovat alespoň jedno číslo" })
+  .regex(/[@$!%*?&]/, { message: "Heslo musí obsahovat alespoň jeden speciální znak (@$!%*?&)" });
 
 // Schema for the change password form
 const changePasswordSchema = z
@@ -33,7 +31,7 @@ const changePasswordSchema = z
     confirmNewPassword: z.string(),
   })
   .refine(data => data.newPassword === data.confirmNewPassword, {
-    message: "New passwords do not match",
+    message: "Nová hesla se neshodují",
     path: ["confirmNewPassword"], // Apply error to the confirmation field
   });
 
@@ -68,11 +66,11 @@ function ProfilePage() {
         currentPassword: data.currentPassword,
         newPassword: data.newPassword,
       });
-      toast.success("Password updated successfully!");
+      toast.success("Heslo bylo úspěšně aktualizováno!");
       reset();
     } catch (err) {
       console.error("Password change failed:", err);
-      let errorMessage = "Failed to update password. Please try again.";
+      let errorMessage = "Nepodařilo se aktualizovat heslo. Prosím zkuste to znovu.";
       if (axios.isAxiosError(err) && err.response?.data?.message) {
         errorMessage = err.response.data.message;
       } else if (err instanceof Error) {

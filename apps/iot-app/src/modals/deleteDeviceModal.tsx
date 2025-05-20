@@ -47,7 +47,7 @@ export default function DeleteDeviceModal({ isOpen, onClose, theme }: DeleteDevi
   const handleDelete = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDevice) {
-      setError("Please select a device to delete.");
+      setError("Vyberte zařízení k odstranění.");
       return;
     }
     setIsLoading(true);
@@ -78,7 +78,7 @@ export default function DeleteDeviceModal({ isOpen, onClose, theme }: DeleteDevi
       onClose();
     } catch (err) {
       console.error("Error deleting device:", err);
-      setError("Failed to delete device.");
+      setError("Nepodařilo se odstranit zařízení.");
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +94,7 @@ export default function DeleteDeviceModal({ isOpen, onClose, theme }: DeleteDevi
         <h2
           className={`text-xl font-semibold mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}
         >
-          Delete Device
+          Odstranit Zařízení
         </h2>
 
         {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>}
@@ -105,7 +105,7 @@ export default function DeleteDeviceModal({ isOpen, onClose, theme }: DeleteDevi
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Select Device to Delete
+                Vyberte zařízení k odstranění
               </label>
               <select
                 value={selectedDevice}
@@ -118,11 +118,11 @@ export default function DeleteDeviceModal({ isOpen, onClose, theme }: DeleteDevi
                 disabled={isLoading}
                 required
               >
-                <option value="">Select a device...</option>
+                <option value="">Vyberte zařízení...</option>
                 {devices.map(device => (
                   <option key={device.id} value={device.id_device}>
-                    Device {device.id_device}
-                    {device.patient_name ? ` (assigned to ${device.patient_name})` : ""}
+                    Zařízení {device.id_device}
+                    {device.patient_name ? ` (přiřazeno ${device.patient_name})` : ""}
                   </option>
                 ))}
               </select>
@@ -140,14 +140,14 @@ export default function DeleteDeviceModal({ isOpen, onClose, theme }: DeleteDevi
               } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
               disabled={isLoading}
             >
-              Cancel
+              Zrušit
             </button>
             <button
               type="submit"
               className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200 disabled:opacity-50 cursor-pointer"
               disabled={isLoading}
             >
-              {isLoading ? "Deleting..." : "Delete Device"}
+              {isLoading ? "Odstraňuji..." : "Odstranit Zařízení"}
             </button>
           </div>
         </form>
