@@ -64,7 +64,7 @@ export default function EditPatientModal({
       onClose();
       triggerUpdate();
     } catch (err: unknown) {
-      setArchiveError("Failed to archive patient");
+      setArchiveError("Nepodařilo se archivovat pacienta");
       console.error(err);
     } finally {
       setArchiveLoading(false);
@@ -80,7 +80,7 @@ export default function EditPatientModal({
         <h2
           className={`text-xl font-semibold mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}
         >
-          Editovat Pacienta
+          Upravit Pacienta
         </h2>
 
         {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>}
@@ -91,13 +91,13 @@ export default function EditPatientModal({
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Patient Name *
+                Jméno Pacienta *
               </label>
               <input
                 type="text"
                 value={patientName}
                 onChange={e => setPatientName(e.target.value)}
-                placeholder="Enter patient name"
+                placeholder="Zadejte jméno pacienta"
                 className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
@@ -112,7 +112,7 @@ export default function EditPatientModal({
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Room *
+                Pokoj *
               </label>
               <select
                 value={selectedRoom}
@@ -125,7 +125,7 @@ export default function EditPatientModal({
                 disabled={isLoading}
                 required
               >
-                <option value="0">Select a room...</option>
+                <option value="0">Vyberte pokoj...</option>
                 {Array.isArray(rooms) &&
                   rooms.map(room => (
                     <option key={room.id} value={room.name}>
@@ -139,13 +139,13 @@ export default function EditPatientModal({
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Illness
+                Nemoc
               </label>
               <input
                 type="text"
                 value={illness}
                 onChange={e => setIllness(e.target.value)}
-                placeholder="Enter illness (optional)"
+                placeholder="Zadejte nemoc (volitelné)"
                 className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
@@ -159,13 +159,13 @@ export default function EditPatientModal({
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Age
+                Věk
               </label>
               <input
                 type="number"
                 value={age}
                 onChange={e => setAge(e.target.value)}
-                placeholder="Enter age (optional)"
+                placeholder="Zadejte věk (volitelné)"
                 className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
@@ -181,7 +181,7 @@ export default function EditPatientModal({
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Status
+                Stav
               </label>
               <select
                 value={status}
@@ -193,8 +193,8 @@ export default function EditPatientModal({
                 }`}
                 disabled={isLoading}
               >
-                <option value="Released">Released</option>
-                <option value="Deceased">Deceased</option>
+                <option value="Released">Propuštěn</option>
+                <option value="Deceased">Zemřel</option>
               </select>
             </div>
 
@@ -202,12 +202,12 @@ export default function EditPatientModal({
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Notes
+                Poznámky
               </label>
               <textarea
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
-                placeholder="Enter notes (optional)"
+                placeholder="Zadejte poznámky (volitelné)"
                 className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
@@ -226,14 +226,14 @@ export default function EditPatientModal({
               className="mr-23 px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200 disabled:opacity-50"
               disabled={isLoading || archiveLoading}
             >
-              {archiveLoading ? "Archiving..." : "Archive"}
+              {archiveLoading ? "Archivuji..." : "Archivovat"}
             </button>
             <button
               type="submit"
               className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50"
               disabled={isLoading || archiveLoading}
             >
-              {isLoading ? "Updating..." : "Update Patient"}
+              {isLoading ? "Aktualizuji..." : "Aktualizovat Pacienta"}
             </button>
             <button
               type="button"
@@ -245,7 +245,7 @@ export default function EditPatientModal({
               } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
               disabled={isLoading || archiveLoading}
             >
-              Cancel
+              Zrušit
             </button>
           </div>
         </form>
@@ -257,10 +257,10 @@ export default function EditPatientModal({
           <div
             className={`p-6 rounded-lg shadow-lg ${theme === "light" ? "bg-gray-200" : "bg-neutral-800"}`}
           >
-            <h3 className="text-lg font-semibold mb-4">Archive Patient?</h3>
+            <h3 className="text-lg font-semibold mb-4">Archivovat Pacienta?</h3>
             <p className="mb-4">
-              Are you sure you want to archive this patient? This will move the patient to the
-              archive and remove them from the active list.
+              Opravdu chcete archivovat tohoto pacienta? Tato akce přesune pacienta do archivu a
+              odstraní ho z aktivního seznamu.
             </p>
             {archiveError && <div className="mb-2 text-red-600">{archiveError}</div>}
             <div className="flex gap-4 justify-end">
@@ -269,14 +269,14 @@ export default function EditPatientModal({
                 className="px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 disabled={archiveLoading}
               >
-                {archiveLoading ? "Archiving..." : "Yes, Archive"}
+                {archiveLoading ? "Archivuji..." : "Ano, Archivovat"}
               </button>
               <button
                 onClick={() => setShowArchiveConfirm(false)}
                 className="px-4 py-2 text-sm font-medium bg-gray-200 rounded-lg hover:bg-gray-300 text-gray-800"
                 disabled={archiveLoading}
               >
-                Cancel
+                Zrušit
               </button>
             </div>
           </div>

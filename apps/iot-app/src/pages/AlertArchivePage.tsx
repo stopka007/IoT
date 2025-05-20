@@ -158,7 +158,7 @@ const AlertArchivePage = () => {
                     : "bg-gray-400 text-white hover:bg-gray-700"
                 }`}
               >
-                Alert History
+                Historie upozornění
               </Link>
               <Link
                 to="/archive/patients"
@@ -172,7 +172,7 @@ const AlertArchivePage = () => {
                     : "bg-gray-400 text-white hover:bg-gray-700"
                 }`}
               >
-                Patients
+                Pacienti
               </Link>
             </div>
             <div className="flex space-x-4">
@@ -184,7 +184,7 @@ const AlertArchivePage = () => {
               </button>
               <input
                 type="text"
-                placeholder={`Search by ${activeTab === "alerts" ? "patient name..." : "name..."}`}
+                placeholder={`Vyhledat podle ${activeTab === "alerts" ? "jména pacienta" : "jména..."}`}
                 className={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500
                   ${
                     isDark
@@ -205,9 +205,9 @@ const AlertArchivePage = () => {
                         : "bg-white border-gray-300 text-gray-900"
                     }`}
                 >
-                  <option value="all">All</option>
-                  <option value="open">Open</option>
-                  <option value="resolved">Resolved</option>
+                  <option value="all">Všechny</option>
+                  <option value="open">Otevřené</option>
+                  <option value="resolved">Vyřešené</option>
                 </select>
               )}
             </div>
@@ -228,13 +228,13 @@ const AlertArchivePage = () => {
                 onClick={handleRetry}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
               >
-                Retry
+                Zkusit znovu
               </button>
             </div>
           ) : activeTab === "alerts" ? (
             filteredAlerts.length === 0 ? (
               <div className={`text-center py-8 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
-                No alerts found
+                Žádné upozornění nenalezeny
               </div>
             ) : (
               <div className="space-y-4">
@@ -247,14 +247,14 @@ const AlertArchivePage = () => {
                     status={alert.status}
                     history={alert.history}
                     room={alert.room}
-                    patient_name={devicePatientMap[alert.id_device] || "Unknown"}
+                    patient_name={devicePatientMap[alert.id_device] || "Neznámý"}
                   />
                 ))}
               </div>
             )
           ) : filteredPatients.length === 0 ? (
             <div className={`text-center py-8 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
-              No patients found
+              Žádní pacienti nebyli nalezeny
             </div>
           ) : (
             <div className="space-y-4">

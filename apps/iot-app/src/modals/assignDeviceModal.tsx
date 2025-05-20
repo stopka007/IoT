@@ -43,7 +43,7 @@ export default function AssignDeviceModal({
         <h2
           className={`text-xl font-semibold mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}
         >
-          Assign Existing Device
+          Přiřadit Existující Zařízení
         </h2>
 
         {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>}
@@ -53,7 +53,7 @@ export default function AssignDeviceModal({
             <label
               className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
             >
-              Select Device
+              Vyberte Zařízení
             </label>
             <select
               value={selectedDevice}
@@ -66,7 +66,7 @@ export default function AssignDeviceModal({
               disabled={isLoading}
               required
             >
-              <option value="">Select a device...</option>
+              <option value="">Vyberte zařízení...</option>
               {Array.isArray(devices) && devices.length > 0 ? (
                 devices.map(device => (
                   <option key={device.id} value={device.id_device}>
@@ -75,7 +75,7 @@ export default function AssignDeviceModal({
                 ))
               ) : (
                 <option value="" disabled>
-                  No unassigned devices available
+                  Žádné nepřiřazené zařízení k dispozici
                 </option>
               )}
             </select>
@@ -86,7 +86,7 @@ export default function AssignDeviceModal({
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Select Patient
+                Vyberte Pacienta
               </label>
               <select
                 value={selectedPatient}
@@ -99,7 +99,7 @@ export default function AssignDeviceModal({
                 disabled={isLoading}
                 required
               >
-                <option value="">Select a patient...</option>
+                <option value="">Vyberte pacienta...</option>
                 {Array.isArray(patients) &&
                   patients.map(patient => (
                     <option key={patient.id} value={patient._id}>
@@ -121,14 +121,14 @@ export default function AssignDeviceModal({
               }`}
               disabled={isLoading}
             >
-              Cancel
+              Zrušit
             </button>
             <button
               type="submit"
               className="px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 disabled:opacity-50"
               disabled={isLoading || devices.length === 0}
             >
-              {isLoading ? "Assigning..." : "Assign Device"}
+              {isLoading ? "Přiřazuji..." : "Přiřadit Zařízení"}
             </button>
           </div>
         </form>

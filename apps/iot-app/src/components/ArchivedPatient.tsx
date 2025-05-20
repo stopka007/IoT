@@ -54,29 +54,29 @@ const ArchivedPatient: React.FC<ArchivedPatientProps> = ({
             {name}
           </h3>
           <p className={`text-sm mb-1 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
-            Room: {room}
+            Pokoj: {room}
           </p>
           {age && (
             <p className={`text-sm mb-1 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
-              Age: {age}
+              Věk: {age}
             </p>
           )}
           {illness && (
             <p className={`text-sm mb-1 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
-              Illness: {illness}
+              Nemoc: {illness}
             </p>
           )}
-          {status && <p className={`text-sm mb-1 ${getStatusColor(status)}`}>Status: {status}</p>}
+          {status && <p className={`text-sm mb-1 ${getStatusColor(status)}`}>Stav: {status}</p>}
         </div>
         <div className="flex flex-col items-end ml-8 min-w-[180px]">
           {createdAt && (
             <span className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
-              Created: {new Date(createdAt).toLocaleString()}
+              Vytvořeno: {new Date(createdAt).toLocaleString()}
             </span>
           )}
           {archivedAt && (
             <span className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
-              Archived: {new Date(archivedAt).toLocaleString()}
+              Archivováno: {new Date(archivedAt).toLocaleString()}
             </span>
           )}
         </div>

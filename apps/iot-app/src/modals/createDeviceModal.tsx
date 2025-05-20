@@ -20,7 +20,7 @@ export default function CreateDeviceModal({ isOpen, onClose, theme }: CreateDevi
         <h2
           className={`text-xl font-semibold mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}
         >
-          Create New Device
+          Přidat Nové Zařízení
         </h2>
 
         {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>}
@@ -31,13 +31,13 @@ export default function CreateDeviceModal({ isOpen, onClose, theme }: CreateDevi
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Device ID
+                ID Zařízení
               </label>
               <input
                 type="text"
                 value={deviceId}
                 onChange={e => setDeviceId(e.target.value)}
-                placeholder="Enter device ID"
+                placeholder="Zadejte ID zařízení"
                 className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
@@ -50,13 +50,13 @@ export default function CreateDeviceModal({ isOpen, onClose, theme }: CreateDevi
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Battery Level
+                Úroveň Baterie
               </label>
               <input
                 type="number"
                 value={battery_level === null ? "" : battery_level}
                 onChange={e => setBattery_level(e.target.value ? Number(e.target.value) : null)}
-                placeholder="Enter battery level"
+                placeholder="Zadejte úroveň baterie"
                 className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
@@ -78,14 +78,14 @@ export default function CreateDeviceModal({ isOpen, onClose, theme }: CreateDevi
               } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
               disabled={isLoading}
             >
-              Cancel
+              Zrušit
             </button>
             <button
               type="submit"
               className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50"
               disabled={isLoading}
             >
-              {isLoading ? "Creating..." : "Create Device"}
+              {isLoading ? "Vytvářím..." : "Vytvořit Zařízení"}
             </button>
           </div>
         </form>

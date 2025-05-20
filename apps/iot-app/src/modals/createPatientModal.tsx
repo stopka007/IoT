@@ -34,7 +34,7 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
         <h2
           className={`text-xl font-semibold mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}
         >
-          Create New Patient
+          Přidat Nového Pacienta
         </h2>
 
         {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>}
@@ -45,13 +45,13 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Patient Name *
+                Jméno Pacienta *
               </label>
               <input
                 type="text"
                 value={patientName}
                 onChange={e => setPatientName(e.target.value)}
-                placeholder="Enter patient name"
+                placeholder="Zadejte jméno pacienta"
                 className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
@@ -66,7 +66,7 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Room
+                Pokoj
               </label>
               <select
                 value={selectedRoom}
@@ -78,7 +78,7 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
                 }`}
                 disabled={isLoading}
               >
-                <option value="0">Select a room...</option>
+                <option value="0">Vyberte pokoj...</option>
                 {Array.isArray(rooms) &&
                   rooms.map(room => (
                     <option key={room.id} value={room.name}>
@@ -92,13 +92,13 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Illness
+                Nemoc
               </label>
               <input
                 type="text"
                 value={illness}
                 onChange={e => setIllness(e.target.value)}
-                placeholder="Enter illness (optional)"
+                placeholder="Zadejte nemoc (volitelně)"
                 className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
@@ -112,13 +112,13 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Age
+                Věk
               </label>
               <input
                 type="number"
                 value={age}
                 onChange={e => setAge(e.target.value)}
-                placeholder="Enter age (optional)"
+                placeholder="Zadejte věk (volitelně)"
                 className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
@@ -134,12 +134,12 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Notes
+                Poznámky
               </label>
               <textarea
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
-                placeholder="Enter notes (optional)"
+                placeholder="Zadejte poznámky (volitelně)"
                 className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
@@ -162,14 +162,14 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
               } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
               disabled={isLoading}
             >
-              Cancel
+              Zrušit
             </button>
             <button
               type="submit"
               className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50"
               disabled={isLoading}
             >
-              {isLoading ? "Creating..." : "Create Patient"}
+              {isLoading ? "Vytvářím..." : "Vytvořit Pacienta"}
             </button>
           </div>
         </form>

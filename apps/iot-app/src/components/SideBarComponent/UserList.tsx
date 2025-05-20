@@ -52,7 +52,7 @@ const PatientListItem = React.memo(
             <Battery batteryLevel={patient.battery_level ?? null} />
           ) : (
             <span className={`text-xs ${theme === "light" ? "text-gray-500" : "text-neutral-100"}`}>
-              No assigned device
+              Žádné přiřazené zařízení
             </span>
           )}
         </div>
@@ -211,7 +211,7 @@ const UserList: React.FC<UserListProps> = ({ showFilter, setShowFilter }) => {
       {loading && <LoadingOverlay />}
 
       <div className={`p-4 border-b ${borderColor}`}>
-        <h2 className="text-2xl font-semibold mb-2">Personál</h2>
+        <h2 className="text-2xl font-semibold mb-2">Pacienti</h2>
         <div className="flex items-center">
           <SearchBar patients={patients} onSearchResult={setFilteredPatients} />
           <FilterToggle onToggle={() => setShowFilter(!showFilter)} isActive={showFilter} />
