@@ -98,7 +98,7 @@ export default function EditPatientModal({
                 value={patientName}
                 onChange={e => setPatientName(e.target.value)}
                 placeholder="Enter patient name"
-                className={`w-full p-2 border rounded-md ${
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -117,7 +117,7 @@ export default function EditPatientModal({
               <select
                 value={selectedRoom}
                 onChange={e => setSelectedRoom(Number(e.target.value))}
-                className={`w-full p-2 border rounded-md ${
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -146,7 +146,7 @@ export default function EditPatientModal({
                 value={illness}
                 onChange={e => setIllness(e.target.value)}
                 placeholder="Enter illness (optional)"
-                className={`w-full p-2 border rounded-md ${
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -166,7 +166,7 @@ export default function EditPatientModal({
                 value={age}
                 onChange={e => setAge(e.target.value)}
                 placeholder="Enter age (optional)"
-                className={`w-full p-2 border rounded-md ${
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -186,7 +186,7 @@ export default function EditPatientModal({
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value)}
-                className={`w-full p-2 border rounded-md ${
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -223,14 +223,14 @@ export default function EditPatientModal({
             <button
               type="button"
               onClick={() => setShowArchiveConfirm(true)}
-              className="mr-23 px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200 disabled:opacity-50"
+              className="mr-23 px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200 disabled:opacity-50 cursor-pointer"
               disabled={isLoading || archiveLoading}
             >
               {archiveLoading ? "Archiving..." : "Archive"}
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50 cursor-pointer"
               disabled={isLoading || archiveLoading}
             >
               {isLoading ? "Updating..." : "Update Patient"}
@@ -238,7 +238,7 @@ export default function EditPatientModal({
             <button
               type="button"
               onClick={onClose}
-              className={`px-4 py-2 text-sm font-medium ${
+              className={`px-4 py-2 text-sm font-medium cursor-pointer ${
                 theme === "light"
                   ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
                   : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
@@ -266,14 +266,14 @@ export default function EditPatientModal({
             <div className="flex gap-4 justify-end">
               <button
                 onClick={handleArchive}
-                className="px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                className="px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 cursor-pointer"
                 disabled={archiveLoading}
               >
                 {archiveLoading ? "Archiving..." : "Yes, Archive"}
               </button>
               <button
                 onClick={() => setShowArchiveConfirm(false)}
-                className="px-4 py-2 text-sm font-medium bg-gray-200 rounded-lg hover:bg-gray-300 text-gray-800"
+                className="px-4 py-2 text-sm font-medium bg-gray-200 rounded-lg hover:bg-gray-300 text-gray-800 cursor-pointer"
                 disabled={archiveLoading}
               >
                 Cancel

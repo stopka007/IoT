@@ -37,7 +37,7 @@ const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = 
             onClick={() => {
               setShowAssignRoomModal(true);
             }}
-            className="border-2 rounded-full p-2 hover:shadow-2xl transform duration-300 shadow-black text-blue-500"
+            className="border-2 rounded-full p-2 hover:shadow-2xl transform duration-300 shadow-black text-blue-500 cursor-pointer"
           >
             <div className="flex justify-center items-center px-1">
               <BiggerHomeIcon />

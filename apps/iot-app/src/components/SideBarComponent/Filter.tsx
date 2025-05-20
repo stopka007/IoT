@@ -171,7 +171,7 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
           <div className="flex items-center space-x-2 mb-2">
             <button
               onClick={() => handleSortOrderChange("A-Z")}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 py-1 rounded cursor-pointer ${
                 sortOrder === "A-Z" && !batteryFilter
                   ? "bg-blue-100 light:bg-blue-900 font-medium " + activeTextColor
                   : "bg-grey-100 light:bg-neutral-600"
@@ -181,7 +181,7 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
             </button>
             <button
               onClick={() => handleSortOrderChange("Z-A")}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 py-1 rounded cursor-pointer ${
                 sortOrder === "Z-A" && !batteryFilter
                   ? "bg-blue-100 light:bg-blue-900 font-medium " + activeTextColor
                   : "bg-grey-100 light:bg-neutral-600"
@@ -225,7 +225,7 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
           <div className="flex items-center space-x-2">
             <button
               onClick={() => handleBatteryFilterChange("Nejvyšší")}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 py-1 rounded cursor-pointer ${
                 batteryFilter === "Nejvyšší"
                   ? "bg-blue-100 light:bg-blue-900 font-medium " + activeTextColor
                   : "bg-grey-100 light:bg-neutral-600"
@@ -235,7 +235,7 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
             </button>
             <button
               onClick={() => handleBatteryFilterChange("Nejnižší")}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 py-1 rounded cursor-pointer ${
                 batteryFilter === "Nejnižší"
                   ? "bg-blue-100 light:bg-blue-900 font-medium " + activeTextColor
                   : "bg-grey-100 light:bg-neutral-600"
@@ -264,7 +264,7 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
               e.stopPropagation();
               setActiveCategory(cat as FilterCategory);
             }}
-            className={`px-4 py-2 text-sm flex-1 ${
+            className={`px-4 py-2 text-sm flex-1 cursor-pointer ${
               activeCategory === cat
                 ? `${activeTextColor} font-medium border-b-2 border-blue-500 dark:border-blue-400`
                 : `${textColor} hover:bg-neutral-600`
@@ -296,7 +296,7 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
               localStorage.removeItem("filter_batteryFilter");
               localStorage.removeItem("filter_sortOrder");
             }}
-            className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-300"
+            className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-300 cursor-pointer"
           >
             Vymazat filtry
           </button>

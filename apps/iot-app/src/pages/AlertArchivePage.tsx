@@ -6,6 +6,7 @@ import ReloadIcon from "../Icons/ReloadIcon";
 import HistoricalAlert from "../alerts/HistoricalAlert";
 import apiClient from "../api/axiosConfig";
 import ArchivedPatient from "../components/ArchivedPatient";
+import { usePatientUpdate } from "../context/PatientUpdateContext";
 import { useTheme } from "../functions/ThemeContext";
 import { fetchPatientByIdPatient } from "../functions/patientService";
 
@@ -48,6 +49,7 @@ const AlertArchivePage = () => {
   const [statusFilter, setStatusFilter] = useState<"all" | "open" | "resolved">("all");
   const [activeTab, setActiveTab] = useState<"alerts" | "patients">("alerts");
   const [devicePatientMap, setDevicePatientMap] = useState<Record<string, string>>({});
+  const { updateKey } = usePatientUpdate();
 
   useEffect(() => {
     const path = location.pathname;
@@ -115,7 +117,7 @@ const AlertArchivePage = () => {
     } else {
       fetchPatients();
     }
-  }, [activeTab]);
+  }, [activeTab, updateKey]);
 
   const filteredAlerts = alerts.filter(alert => {
     const patientName = devicePatientMap[alert.id_device] || "";
@@ -136,6 +138,11 @@ const AlertArchivePage = () => {
     }
   };
 
+  const handleDeletePatient = () => {
+    fetchPatients();
+    toast.success("Patient deleted successfully");
+  };
+
   const isDark = theme === "dark";
 
   return (
@@ -152,7 +159,7 @@ const AlertArchivePage = () => {
                   setActiveTab("alerts");
                   handleRetry();
                 }}
-                className={`px-4 py-2 rounded-lg transition-colors ${
+                className={`px-4 py-2 rounded-lg transition-colors cursor-pointer ${
                   activeTab === "alerts"
                     ? "bg-gray-700 text-white"
                     : "bg-gray-400 text-white hover:bg-gray-700"
@@ -166,7 +173,7 @@ const AlertArchivePage = () => {
                   setActiveTab("patients");
                   handleRetry();
                 }}
-                className={`px-4 py-2 rounded-lg transition-colors ${
+                className={`px-4 py-2 rounded-lg transition-colors cursor-pointer ${
                   activeTab === "patients"
                     ? "bg-gray-700 text-white"
                     : "bg-gray-400 text-white hover:bg-gray-700"
@@ -178,14 +185,14 @@ const AlertArchivePage = () => {
             <div className="flex space-x-4">
               <button
                 onClick={handleRetry}
-                className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-700 transition-colors cursor-pointer"
               >
                 <ReloadIcon />
               </button>
               <input
                 type="text"
                 placeholder={`Search by ${activeTab === "alerts" ? "patient name..." : "name..."}`}
-                className={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500
+                className={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer
                   ${
                     isDark
                       ? "bg-neutral-700 border-neutral-600 text-white placeholder-gray-400"
@@ -198,7 +205,7 @@ const AlertArchivePage = () => {
                 <select
                   value={statusFilter}
                   onChange={e => setStatusFilter(e.target.value as "all" | "open" | "resolved")}
-                  className={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500
+                  className={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer
                     ${
                       isDark
                         ? "bg-neutral-700 border-neutral-600 text-white"
@@ -261,6 +268,7 @@ const AlertArchivePage = () => {
               {filteredPatients.map(patient => (
                 <ArchivedPatient
                   key={patient._id}
+                  _id={patient._id}
                   name={patient.name}
                   room={patient.room}
                   illness={patient.illness}
@@ -269,6 +277,7 @@ const AlertArchivePage = () => {
                   notes={patient.notes}
                   createdAt={patient.createdAt}
                   archivedAt={patient.archivedAt}
+                  onDelete={handleDeletePatient}
                 />
               ))}
             </div>

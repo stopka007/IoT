@@ -17,7 +17,7 @@ const DeleteDeviceComponent = () => {
       <div className="flex items-center justify-center flex-1">
         <button
           onClick={() => setShowDeleteDeviceModal(true)}
-          className="border-2 rounded-full p-2 hover:shadow-2xl transform duration-300 shadow-black text-red-600"
+          className="border-2 rounded-full p-2 hover:shadow-2xl transform duration-300 shadow-black text-red-600 cursor-pointer"
           title="Smazat zařízení"
         >
           <DeviceIcon />

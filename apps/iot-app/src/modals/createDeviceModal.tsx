@@ -38,7 +38,7 @@ export default function CreateDeviceModal({ isOpen, onClose, theme }: CreateDevi
                 value={deviceId}
                 onChange={e => setDeviceId(e.target.value)}
                 placeholder="Enter device ID"
-                className={`w-full p-2 border rounded-md ${
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -57,7 +57,7 @@ export default function CreateDeviceModal({ isOpen, onClose, theme }: CreateDevi
                 value={battery_level === null ? "" : battery_level}
                 onChange={e => setBattery_level(e.target.value ? Number(e.target.value) : null)}
                 placeholder="Enter battery level"
-                className={`w-full p-2 border rounded-md ${
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -71,7 +71,7 @@ export default function CreateDeviceModal({ isOpen, onClose, theme }: CreateDevi
             <button
               type="button"
               onClick={onClose}
-              className={`px-4 py-2 text-sm font-medium ${
+              className={`px-4 py-2 text-sm font-medium cursor-pointer ${
                 theme === "light"
                   ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
                   : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
@@ -82,7 +82,7 @@ export default function CreateDeviceModal({ isOpen, onClose, theme }: CreateDevi
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50 cursor-pointer"
               disabled={isLoading}
             >
               {isLoading ? "Creating..." : "Create Device"}

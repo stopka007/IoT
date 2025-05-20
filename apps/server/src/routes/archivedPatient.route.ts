@@ -27,4 +27,20 @@ export default async function (server: FastifyInstance) {
       reply.status(500).send({ error: "Failed to archive patient" });
     }
   });
+
+  // Add the delete endpoint
+  server.delete("/:id", async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { id } = request.params as { id: string };
+      const result = await ArchivedPatient.findByIdAndDelete(id);
+
+      if (!result) {
+        return reply.status(404).send({ error: "Archived patient not found" });
+      }
+
+      reply.send({ message: "Archived patient deleted successfully" });
+    } catch (error) {
+      reply.status(500).send({ error: "Failed to delete archived patient" });
+    }
+  });
 }

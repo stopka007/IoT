@@ -16,7 +16,7 @@ const FilterToggle: React.FC<FilterToggleProps> = ({ onToggle, isActive }) => {
   return (
     <button
       onClick={onToggle}
-      className={`ml-2 w-10 h-10 flex items-center justify-center rounded ${bgColor} border ${borderColor} hover:bg-gray-200 transition ${
+      className={`ml-2 w-10 h-10 flex items-center justify-center rounded cursor-pointer ${bgColor} border ${borderColor} hover:bg-gray-200 transition ${
         isActive ? "ring-2 ring-blue-500" : ""
       }`}
       aria-label="Filter"

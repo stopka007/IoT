@@ -69,7 +69,7 @@ export default function MainPage() {
           <div className="flex items-center space-x-4 flex-shrink-0">
             <button
               onClick={handleToggleTheme}
-              className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition"
+              className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition cursor-pointer"
             >
               {theme === "light" ? "Tmavý režim" : "Světlý režim"}
             </button>
@@ -89,7 +89,7 @@ export default function MainPage() {
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen(prev => !prev)}
-                className={`${theme === "light" ? "text-black" : "text-white"} flex items-center space-x-1 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700`}
+                className={`${theme === "light" ? "text-black" : "text-white"} flex items-center space-x-1 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer`}
               >
                 <span>{user?.username || "User"}</span>
                 <svg
@@ -137,7 +137,7 @@ export default function MainPage() {
                       openConfirmModal();
                       setIsDropdownOpen(false);
                     }}
-                    className={`block w-full text-left px-4 py-2 text-sm ${theme === "light" ? "text-red-700 hover:bg-gray-100" : "text-red-400 hover:bg-neutral-600"}`}
+                    className={`block w-full text-left px-4 py-2 text-sm ${theme === "light" ? "text-red-700 hover:bg-gray-100" : "text-red-400 hover:bg-neutral-600"} cursor-pointer`}
                   >
                     Odhlásit se
                   </button>

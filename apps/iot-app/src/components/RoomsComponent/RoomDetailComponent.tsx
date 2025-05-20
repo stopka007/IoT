@@ -123,13 +123,13 @@ const RoomDetailComponent = () => {
           <h2 className="text-2xl font-bold">Pokoj {room.name}</h2>
           <div className="flex items-center gap-2 ml-auto">
             <button
-              className="px-4 py-2 items-end justify-end bg-gray-500 text-white rounded-md hover:bg-gray-600"
+              className="px-4 py-2 items-end justify-end bg-gray-500 text-white rounded-md hover:bg-gray-600 cursor-pointer"
               onClick={() => setShowAssignRoomModal(true)}
             >
               Připojit uživatele
             </button>
             <button
-              className="px-4 py-2 items-end justify-end bg-red-500 text-white rounded-md hover:bg-red-600"
+              className="px-4 py-2 items-end justify-end bg-red-500 text-white rounded-md hover:bg-red-600 cursor-pointer"
               onClick={handleDeleteRoom}
               title="Smazat pokoj"
             >
