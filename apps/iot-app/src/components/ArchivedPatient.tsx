@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import TrashBinIcon from "../Icons/TrashBinIcon";
 import apiClient from "../api/axiosConfig";
+import { useAuth } from "../authentication/context/AuthContext";
 import { usePatientUpdate } from "../context/PatientUpdateContext";
 import { useTheme } from "../functions/ThemeContext";
 import ConfirmModal from "../modals/confirmModal";
@@ -36,7 +37,7 @@ const ArchivedPatient: React.FC<ArchivedPatientProps> = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { triggerUpdate } = usePatientUpdate();
-
+  const { user } = useAuth();
   const getStatusColor = (status?: string) => {
     switch (status?.toLowerCase()) {
       case "hospitalized":
@@ -121,15 +122,17 @@ const ArchivedPatient: React.FC<ArchivedPatientProps> = ({
       )}
 
       {/* Delete button positioned in bottom right */}
-      <div className="absolute bottom-4 right-4">
-        <button
-          onClick={handleDeleteClick}
-          disabled={isDeleting}
-          className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md transition-colors duration-200 cursor-pointer"
-        >
-          {isDeleting ? "Deleting..." : <TrashBinIcon />}
-        </button>
-      </div>
+      {user?.role === "admin" && (
+        <div className="absolute bottom-4 right-4">
+          <button
+            onClick={handleDeleteClick}
+            disabled={isDeleting}
+            className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md transition-colors duration-200 cursor-pointer"
+          >
+            {isDeleting ? "Deleting..." : <TrashBinIcon />}
+          </button>
+        </div>
+      )}
 
       {/* Confirmation Modal */}
       <ConfirmModal
