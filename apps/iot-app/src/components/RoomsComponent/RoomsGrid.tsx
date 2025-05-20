@@ -6,6 +6,7 @@ import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { Patient } from "../../functions/patientService";
 import ConnectDeviceComponent from "../AdminView/ConnectDeviceComponent";
 import ConnectPacientRoomComponent from "../AdminView/ConnectPacientRoomComponent";
+import DeleteDeviceWidget from "../AdminView/DeleteDeviceWidget";
 import NewDeviceComponent from "../AdminView/NewDeviceComponent";
 import NewPacientComponent from "../AdminView/NewPatientComponent";
 import NewRoomComponent from "../AdminView/NewRoomComponent";
@@ -128,6 +129,9 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ setShowFilter }) => {
             </div>
             <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
               <NewDeviceComponent />
+            </div>
+            <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
+              <DeleteDeviceWidget />
             </div>
             <div className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]">
               <ConnectDeviceComponent />

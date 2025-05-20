@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import apiClient from "../../api/axiosConfig";
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 
 export interface UseCreateRoomLogic {
   roomNumber: string;
@@ -12,15 +13,12 @@ export interface UseCreateRoomLogic {
   handleSubmit: (e: React.FormEvent) => Promise<void>;
 }
 
-export const useCreateRoomLogic = (
-  isOpen: boolean,
-  onClose: () => void,
-  onUpdate?: () => void,
-): UseCreateRoomLogic => {
+export const useCreateRoomLogic = (isOpen: boolean, onClose: () => void): UseCreateRoomLogic => {
   const [roomNumber, setRoomNumber] = useState<string>("");
   const [capacity, setCapacity] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { triggerUpdate } = usePatientUpdate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,9 +36,7 @@ export const useCreateRoomLogic = (
       });
 
       if (response.status === 201) {
-        if (onUpdate) {
-          onUpdate();
-        }
+        triggerUpdate();
         onClose();
       } else {
         setError("Failed to create room");

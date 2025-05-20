@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 
-import axios from "axios";
-
 import HomeIcon from "../../Icons/HomeIcon";
 import TrashBinIcon from "../../Icons/TrashBinIcon";
 import PersonIcon from "../../Icons/UserIcon";
@@ -28,7 +26,7 @@ const RoomDetailComponent = () => {
   const [updateKey, setUpdateKey] = useState(0);
 
   const { theme } = useTheme();
-  const { updateKey: globalUpdateKey } = usePatientUpdate();
+  const { updateKey: globalUpdateKey, triggerUpdate } = usePatientUpdate();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -77,7 +75,8 @@ const RoomDetailComponent = () => {
     try {
       await apiClient.delete(`/api/rooms/${room._id}`);
       alert("Pokoj byl úspěšně smazán.");
-      window.location.href = "/rooms";
+      triggerUpdate();
+      navigate("/");
     } catch (error) {
       console.error("Chyba při mazání pokoje:", error);
       alert("Nepodařilo se smazat pokoj.");
