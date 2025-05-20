@@ -193,7 +193,6 @@ export default function EditPatientModal({
                 }`}
                 disabled={isLoading}
               >
-                <option value="Hospitalized">Hospitalized</option>
                 <option value="Released">Released</option>
                 <option value="Deceased">Deceased</option>
               </select>

@@ -19,8 +19,6 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
     setAge,
     notes,
     setNotes,
-    status,
-    setStatus,
     isLoading,
     error,
     handleSubmit,
@@ -130,28 +128,6 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
                 min="0"
                 max="150"
               />
-            </div>
-
-            <div>
-              <label
-                className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
-              >
-                Status
-              </label>
-              <select
-                value={status}
-                onChange={e => setStatus(e.target.value)}
-                className={`w-full p-2 border rounded-md ${
-                  theme === "light"
-                    ? "bg-white border-gray-300 text-gray-900"
-                    : "bg-neutral-700 border-neutral-600 text-white"
-                }`}
-                disabled={isLoading}
-              >
-                <option value="Hospitalized">Hospitalized</option>
-                <option value="Released">Released</option>
-                <option value="Deceased">Deceased</option>
-              </select>
             </div>
 
             <div>
