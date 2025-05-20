@@ -119,9 +119,7 @@ const AlertArchivePage = () => {
 
   const filteredAlerts = alerts.filter(alert => {
     const patientName = devicePatientMap[alert.id_device] || "";
-    const matchesSearch =
-      patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      alert.id_device.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = patientName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || alert.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -249,6 +247,7 @@ const AlertArchivePage = () => {
                     status={alert.status}
                     history={alert.history}
                     room={alert.room}
+                    patient_name={devicePatientMap[alert.id_device] || "Unknown"}
                   />
                 ))}
               </div>

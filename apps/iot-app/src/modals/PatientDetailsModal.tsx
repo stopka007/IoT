@@ -25,6 +25,9 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAssignDeviceModalOpen, setIsAssignDeviceModalOpen] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showDeleteDeviceModal, setShowDeleteDeviceModal] = useState(false);
+  const [deleteDeviceLoading, setDeleteDeviceLoading] = useState(false);
+  const [deleteDeviceError, setDeleteDeviceError] = useState<string | null>(null);
   const { triggerUpdate } = usePatientUpdate();
   if (!patient) return null;
 
@@ -83,6 +86,24 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
       triggerUpdate();
     } catch (error) {
       console.error("Error unassigning device:", error);
+    }
+  };
+
+  const handleDeleteDevice = async () => {
+    if (!patient.id_device) return;
+    setDeleteDeviceLoading(true);
+    setDeleteDeviceError(null);
+    try {
+      await apiClient.delete(`/api/devices/device/${patient.id_device}`);
+      setShowDeleteDeviceModal(false);
+      onClose();
+      if (onUpdate) onUpdate();
+      triggerUpdate();
+    } catch (err) {
+      setDeleteDeviceError("Failed to delete device");
+      console.error(err);
+    } finally {
+      setDeleteDeviceLoading(false);
     }
   };
 
@@ -159,6 +180,19 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
             >
               Unassign Device
             </button>
+            {patient.id_device && (
+              <button
+                onClick={() => setShowDeleteDeviceModal(true)}
+                className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
+                  theme === "light"
+                    ? "text-white bg-red-600 hover:bg-red-700 focus:ring-red-500"
+                    : "text-white bg-red-700 hover:bg-red-800 focus:ring-red-500"
+                } focus:outline-none focus:ring-2 transition-colors duration-200`}
+                disabled={deleteDeviceLoading}
+              >
+                {deleteDeviceLoading ? "Deleting..." : "Delete Device"}
+              </button>
+            )}
             <button
               onClick={onClose}
               className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
@@ -198,6 +232,21 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
         theme={theme}
         type="unassign-device"
       />
+      {/* Delete Device Modal */}
+      <ConfirmModal
+        isOpen={showDeleteDeviceModal}
+        onClose={() => setShowDeleteDeviceModal(false)}
+        onConfirm={handleDeleteDevice}
+        theme={theme}
+        type="delete"
+        title="Delete Device?"
+        message="Opravdu chcete smazat toto zařízení? Tato akce je nevratná."
+        confirmButtonText="Delete Device"
+        cancelButtonText="Cancel"
+      />
+      {deleteDeviceError && (
+        <div className="text-red-600 text-center mt-2">{deleteDeviceError}</div>
+      )}
     </>
   );
 };
