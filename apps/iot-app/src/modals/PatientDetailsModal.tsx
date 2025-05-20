@@ -137,7 +137,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
                   : "text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
               } focus:outline-none focus:ring-2 transition-colors duration-200`}
             >
-              Edit Patient
+              Upravit Pacienta
             </button>
             <button
               onClick={handleAssignDeviceClick}
@@ -147,7 +147,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
                   : "text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
               } focus:outline-none focus:ring-2 transition-colors duration-200`}
             >
-              Assign Device
+              Přiřadit tlačítko
             </button>
             <button
               onClick={handleUnassignDeviceClick}
@@ -157,7 +157,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
                   : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
               } focus:outline-none focus:ring-2 transition-colors duration-200`}
             >
-              Unassign Device
+              Odebrat tlačítko
             </button>
             <button
               onClick={onClose}
@@ -167,7 +167,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
                   : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
               } focus:outline-none focus:ring-2 transition-colors duration-200`}
             >
-              Close
+              Zavřít
             </button>
           </div>
         </div>
