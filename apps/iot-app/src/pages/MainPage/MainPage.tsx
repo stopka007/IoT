@@ -69,7 +69,7 @@ export default function MainPage() {
           <div className="flex items-center space-x-4 flex-shrink-0">
             <button
               onClick={handleToggleTheme}
-              className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-800 hover:shadow-xs hover:shadow-gray-600/50 transition cursor-pointer"
+              className={`${theme === "light" ? "bg-gray-200 text-black" : "bg-neutral-700 text-white"} px-3 py-1 rounded hover:shadow-xs hover:shadow-gray-600/50 transition cursor-pointer`}
             >
               {theme === "light" ? "Tmavý režim" : "Světlý režim"}
             </button>

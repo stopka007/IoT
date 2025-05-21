@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router-dom";
 
 import apiClient from "../../api/axiosConfig";
 import { usePatientUpdate } from "../../context/PatientUpdateContext";
+import { useTheme } from "../../functions/ThemeContext";
 import { Patient } from "../../functions/patientService";
 import ConnectDeviceComponent from "../AdminView/ConnectDeviceComponent";
 import ConnectPacientRoomComponent from "../AdminView/ConnectPacientRoomComponent";
@@ -40,6 +41,7 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ setShowFilter }) => {
     showDetailedView: boolean;
   }>();
   const { updateKey: globalUpdateKey } = usePatientUpdate();
+  const { theme } = useTheme();
 
   // New state for admin layout (default to "grouped" now)
   const [adminLayout, setAdminLayout] = useState<string>("grouped");
@@ -151,7 +153,9 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ setShowFilter }) => {
           <select
             value={adminLayout}
             onChange={e => setAdminLayout(e.target.value)}
-            className="px-3 py-2 border rounded-md dark:bg-neutral-700 dark:text-white cursor-pointer"
+            className={`px-3 py-2 border rounded-md ${
+              theme === "light" ? "bg-gray-100 text-black" : "bg-neutral-700 text-white"
+            } cursor-pointer`}
           >
             <option value="grouped">Seskupené</option>
             <option value="compact">Kompaktní</option>
