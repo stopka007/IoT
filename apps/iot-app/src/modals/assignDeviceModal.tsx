@@ -1,14 +1,11 @@
 import { useEffect } from "react";
 
-import { usePatientUpdate } from "../context/PatientUpdateContext";
-
 import { useAssignDeviceLogic } from "./modal functions/assignDeviceFunction";
 
 interface AssignDeviceModalProps {
   isOpen: boolean;
   onClose: () => void;
   theme: "light" | "dark";
-  onUpdate?: () => void;
   initialPatient?: string;
 }
 
@@ -16,7 +13,6 @@ export default function AssignDeviceModal({
   isOpen,
   onClose,
   theme,
-  onUpdate,
   initialPatient,
 }: AssignDeviceModalProps) {
   const {
@@ -29,9 +25,7 @@ export default function AssignDeviceModal({
     isLoading,
     error,
     handleSubmit,
-  } = useAssignDeviceLogic(isOpen, onClose, onUpdate);
-
-  const { triggerUpdate } = usePatientUpdate();
+  } = useAssignDeviceLogic(isOpen, onClose);
 
   useEffect(() => {
     if (initialPatient) {
@@ -49,7 +43,7 @@ export default function AssignDeviceModal({
         <h2
           className={`text-xl font-semibold mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}
         >
-          Assign Existing Device
+          Přiřadit Existující Zařízení
         </h2>
 
         {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>}
@@ -59,12 +53,12 @@ export default function AssignDeviceModal({
             <label
               className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
             >
-              Select Device
+              Vyberte Zařízení
             </label>
             <select
               value={selectedDevice}
               onChange={e => setSelectedDevice(e.target.value)}
-              className={`w-full p-2 border rounded-md ${
+              className={`w-full p-2 border rounded-md cursor-pointer ${
                 theme === "light"
                   ? "bg-white border-gray-300 text-gray-900"
                   : "bg-neutral-700 border-neutral-600 text-white"
@@ -72,13 +66,18 @@ export default function AssignDeviceModal({
               disabled={isLoading}
               required
             >
-              <option value="">Select a device...</option>
-              {Array.isArray(devices) &&
+              <option value="">Vyberte zařízení...</option>
+              {Array.isArray(devices) && devices.length > 0 ? (
                 devices.map(device => (
                   <option key={device.id} value={device.id_device}>
                     Device {device.id_device}
                   </option>
-                ))}
+                ))
+              ) : (
+                <option value="" disabled>
+                  Žádné nepřiřazené zařízení k dispozici
+                </option>
+              )}
             </select>
           </div>
 
@@ -87,12 +86,12 @@ export default function AssignDeviceModal({
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Select Patient
+                Vyberte Pacienta
               </label>
               <select
                 value={selectedPatient}
                 onChange={e => setSelectedPatient(e.target.value)}
-                className={`w-full p-2 border rounded-md ${
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -100,13 +99,18 @@ export default function AssignDeviceModal({
                 disabled={isLoading}
                 required
               >
-                <option value="">Select a patient...</option>
-                {Array.isArray(patients) &&
+                <option value="">Vyberte pacienta...</option>
+                {Array.isArray(patients) && patients.length > 0 ? (
                   patients.map(patient => (
                     <option key={patient.id} value={patient._id}>
                       {patient.name}
                     </option>
-                  ))}
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    No unassigned patients available
+                  </option>
+                )}
               </select>
             </div>
           )}
@@ -115,25 +119,21 @@ export default function AssignDeviceModal({
             <button
               type="button"
               onClick={onClose}
-              className={`px-4 py-2 rounded-md ${
+              className={`px-4 py-2 rounded-md cursor-pointer ${
                 theme === "light"
                   ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
                   : "bg-neutral-600 text-white hover:bg-neutral-500"
               }`}
               disabled={isLoading}
             >
-              Cancel
+              Zrušit
             </button>
             <button
               type="submit"
-              className={`px-4 py-2 rounded-md ${
-                theme === "light"
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "bg-blue-700 text-white hover:bg-blue-600"
-              }`}
-              disabled={isLoading}
+              className="px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 disabled:opacity-50 cursor-pointer"
+              disabled={isLoading || devices.length === 0}
             >
-              {isLoading ? "Assigning..." : "Assign Device"}
+              {isLoading ? "Přiřazuji..." : "Přiřadit Zařízení"}
             </button>
           </div>
         </form>

@@ -4,28 +4,11 @@ interface CreateDeviceModalProps {
   isOpen: boolean;
   onClose: () => void;
   theme: "light" | "dark";
-  onUpdate?: () => void;
 }
 
-export default function CreateDeviceModal({
-  isOpen,
-  onClose,
-  theme,
-  onUpdate,
-}: CreateDeviceModalProps) {
-  const {
-    patients,
-    rooms,
-    selectedPatient,
-    setSelectedPatient,
-    selectedRoom,
-    setSelectedRoom,
-    deviceId,
-    setDeviceId,
-    isLoading,
-    error,
-    handleSubmit,
-  } = useCreateDeviceLogic(isOpen, onClose, onUpdate);
+export default function CreateDeviceModal({ isOpen, onClose, theme }: CreateDeviceModalProps) {
+  const { deviceId, setDeviceId, isLoading, error, handleSubmit, battery_level, setBattery_level } =
+    useCreateDeviceLogic(onClose);
 
   if (!isOpen) return null;
 
@@ -37,7 +20,7 @@ export default function CreateDeviceModal({
         <h2
           className={`text-xl font-semibold mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}
         >
-          Create New Device
+          Přidat Nové Zařízení
         </h2>
 
         {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>}
@@ -48,66 +31,33 @@ export default function CreateDeviceModal({
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Select Patient
-              </label>
-              <select
-                value={selectedPatient}
-                onChange={e => setSelectedPatient(e.target.value)}
-                className={`w-full p-2 border rounded-md ${
-                  theme === "light"
-                    ? "bg-white border-gray-300 text-gray-900"
-                    : "bg-neutral-700 border-neutral-600 text-white"
-                }`}
-                disabled={isLoading}
-              >
-                <option value="">Select a patient...</option>
-                {Array.isArray(patients) &&
-                  patients.map(patient => (
-                    <option key={patient.id} value={patient.id}>
-                      {patient.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            <div>
-              <label
-                className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
-              >
-                Select Room
-              </label>
-              <select
-                value={selectedRoom}
-                onChange={e => setSelectedRoom(e.target.value)}
-                className={`w-full p-2 border rounded-md ${
-                  theme === "light"
-                    ? "bg-white border-gray-300 text-gray-900"
-                    : "bg-neutral-700 border-neutral-600 text-white"
-                }`}
-                disabled={isLoading}
-              >
-                <option value="">Select a room...</option>
-                {Array.isArray(rooms) &&
-                  rooms.map(room => (
-                    <option key={room.id} value={room.id}>
-                      {room.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            <div>
-              <label
-                className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
-              >
-                Device ID
+                ID Zařízení
               </label>
               <input
                 type="text"
                 value={deviceId}
                 onChange={e => setDeviceId(e.target.value)}
-                placeholder="Enter device ID"
-                className={`w-full p-2 border rounded-md ${
+                placeholder="Zadejte ID zařízení"
+                className={`w-full p-2 border rounded-md cursor-pointer ${
+                  theme === "light"
+                    ? "bg-white border-gray-300 text-gray-900"
+                    : "bg-neutral-700 border-neutral-600 text-white"
+                }`}
+                disabled={isLoading}
+              />
+            </div>
+            <div>
+              <label
+                className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
+              >
+                Úroveň Baterie
+              </label>
+              <input
+                type="number"
+                value={battery_level === null ? "" : battery_level}
+                onChange={e => setBattery_level(e.target.value ? Number(e.target.value) : null)}
+                placeholder="Zadejte úroveň baterie"
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -121,21 +71,21 @@ export default function CreateDeviceModal({
             <button
               type="button"
               onClick={onClose}
-              className={`px-4 py-2 text-sm font-medium ${
+              className={`px-4 py-2 text-sm font-medium cursor-pointer ${
                 theme === "light"
                   ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
                   : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
               } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
               disabled={isLoading}
             >
-              Cancel
+              Zrušit
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50 cursor-pointer"
               disabled={isLoading}
             >
-              {isLoading ? "Creating..." : "Create Device"}
+              {isLoading ? "Vytvářím..." : "Vytvořit Zařízení"}
             </button>
           </div>
         </form>

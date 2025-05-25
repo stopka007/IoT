@@ -56,7 +56,7 @@ export default function ConfirmModal({
         <div className="flex justify-end gap-4">
           <button
             onClick={onClose}
-            className={`px-4 py-2 text-sm font-medium ${
+            className={`px-4 py-2 text-sm font-medium cursor-pointer ${
               theme === "light"
                 ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
                 : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
@@ -69,7 +69,7 @@ export default function ConfirmModal({
               onConfirm();
               onClose();
             }}
-            className={`px-4 py-2 text-sm font-medium text-white ${
+            className={`px-4 py-2 text-sm font-medium text-white cursor-pointer ${
               type === "logout"
                 ? "bg-red-600 hover:bg-red-700 focus:ring-red-500"
                 : type === "delete"

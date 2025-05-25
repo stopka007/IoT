@@ -11,11 +11,11 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({ password 
   const score = result.score;
 
   const strengthLevels = [
-    { label: "Very Weak", color: "bg-red-500", width: "w-1/5" },
-    { label: "Weak", color: "bg-orange-500", width: "w-2/5" },
-    { label: "Fair", color: "bg-yellow-500", width: "w-3/5" },
-    { label: "Good", color: "bg-lime-500", width: "w-4/5" },
-    { label: "Strong", color: "bg-green-500", width: "w-full" },
+    { label: "Velmi slabé", color: "bg-red-500", width: "w-1/5" },
+    { label: "Slabé", color: "bg-orange-500", width: "w-2/5" },
+    { label: "Průměrné", color: "bg-yellow-500", width: "w-3/5" },
+    { label: "Dobré", color: "bg-lime-500", width: "w-4/5" },
+    { label: "Silné", color: "bg-green-500", width: "w-full" },
   ];
 
   const currentStrength = strengthLevels[score];
@@ -32,7 +32,7 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({ password 
       </div>
       {password && (
         <p className="text-xs text-right mt-1" aria-live="polite">
-          Strength: <span className={`font-semibold`}>{currentStrength.label}</span>
+          Síla hesla: <span className={`font-semibold`}>{currentStrength.label}</span>
         </p>
       )}
     </div>

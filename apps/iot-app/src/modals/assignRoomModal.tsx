@@ -3,7 +3,7 @@ import { useAssignRoomLogic } from "./modal functions/assignRoomFunction";
 interface AssignRoomModalProps {
   isOpen: boolean;
   onClose: () => void;
-  theme: string;
+  theme: "light" | "dark";
   initialRoom: number | null;
 }
 
@@ -35,7 +35,7 @@ export default function AssignRoomModal({
         <h2
           className={`text-xl font-semibold mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}
         >
-          Assign Room to Patient
+          Přiřadit pokoj pacientovi
         </h2>
 
         {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>}
@@ -46,12 +46,12 @@ export default function AssignRoomModal({
               <label
                 className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
               >
-                Patient *
+                Pacient *
               </label>
               <select
                 value={selectedPatient}
                 onChange={e => setSelectedPatient(e.target.value)}
-                className={`w-full p-2 border rounded-md ${
+                className={`w-full p-2 border rounded-md cursor-pointer ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -59,10 +59,11 @@ export default function AssignRoomModal({
                 disabled={isLoading}
                 required
               >
-                <option value="">Select a patient...</option>
+                <option value="">Vyberte pacienta</option>
                 {patients.map(patient => (
                   <option key={patient._id} value={patient._id}>
-                    {patient.name} {patient.room ? `(Current Room: ${patient.room})` : "(No Room)"}
+                    {patient.name}{" "}
+                    {patient.room ? `(Aktuální Pokoj: ${patient.room})` : "(Žádný Pokoj)"}
                   </option>
                 ))}
               </select>
@@ -73,12 +74,12 @@ export default function AssignRoomModal({
                 <label
                   className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
                 >
-                  Room *
+                  Pokoj *
                 </label>
                 <select
                   value={selectedRoom || ""}
                   onChange={e => setSelectedRoom(parseInt(e.target.value))}
-                  className={`w-full p-2 border rounded-md ${
+                  className={`w-full p-2 border rounded-md cursor-pointer ${
                     theme === "light"
                       ? "bg-white border-gray-300 text-gray-900"
                       : "bg-neutral-700 border-neutral-600 text-white"
@@ -86,10 +87,10 @@ export default function AssignRoomModal({
                   disabled={isLoading}
                   required
                 >
-                  <option value="">Select a room...</option>
+                  <option value="">Vyberte pokoj...</option>
                   {rooms.map(room => (
                     <option key={room.id} value={room.name}>
-                      Room {room.name} (Capacity: {room.capacity})
+                      Pokoj {room.name} (Kapacita: {room.capacity})
                     </option>
                   ))}
                 </select>
@@ -101,21 +102,21 @@ export default function AssignRoomModal({
             <button
               type="button"
               onClick={onClose}
-              className={`px-4 py-2 text-sm font-medium ${
+              className={`px-4 py-2 text-sm font-medium cursor-pointer ${
                 theme === "light"
                   ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
                   : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
               } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
               disabled={isLoading}
             >
-              Cancel
+              Zrušit
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50"
+              className="px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 disabled:opacity-50 cursor-pointer"
               disabled={isLoading}
             >
-              {isLoading ? "Assigning..." : "Assign Room"}
+              {isLoading ? "Přiřazuji..." : "Přiřadit Pokoj"}
             </button>
           </div>
         </form>

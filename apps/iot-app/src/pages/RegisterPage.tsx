@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { z } from "zod";
 
+// Still needed for other features and future use after CORS fix
 import apiClient from "../api/axiosConfig";
 import PasswordStrengthMeter from "../authentication/PasswordStrengthMeter";
 

@@ -13,14 +13,9 @@ import EditPatientModal from "./editPatientModal";
 interface PatientDetailsModalProps {
   patient: Patient | null;
   onClose: () => void;
-  onUpdate?: () => void;
 }
 
-const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
-  patient,
-  onClose,
-  onUpdate,
-}) => {
+const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({ patient, onClose }) => {
   const { theme } = useTheme();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAssignDeviceModalOpen, setIsAssignDeviceModalOpen] = useState(false);
@@ -47,16 +42,12 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
 
   const handleEditClose = () => {
     setIsEditModalOpen(false);
-    if (onUpdate) {
-      onUpdate();
-    }
+    triggerUpdate();
   };
 
   const handleAssignDeviceClose = () => {
     setIsAssignDeviceModalOpen(false);
-    if (onUpdate) {
-      onUpdate();
-    }
+    triggerUpdate();
   };
 
   const handleUnassignDevice = async () => {
@@ -77,9 +68,6 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
 
       // Close modal and trigger update
       onClose();
-      if (onUpdate) {
-        onUpdate();
-      }
       triggerUpdate();
     } catch (error) {
       console.error("Error unassigning device:", error);
@@ -131,43 +119,44 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
           <div className="mt-6 flex justify-between">
             <button
               onClick={handleEditClick}
-              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
+              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
                 theme === "light"
                   ? "text-white bg-green-500 hover:bg-green-600 focus:ring-green-300"
-                  : "text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
+                  : "text-white bg-green-600 hover:bg-green-700 focus:ring-green-500"
               } focus:outline-none focus:ring-2 transition-colors duration-200`}
             >
-              Edit Patient
+              Upravit Pacienta
             </button>
             <button
               onClick={handleAssignDeviceClick}
-              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
+              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
                 theme === "light"
                   ? "text-white bg-blue-500 hover:bg-blue-700 focus:ring-blue-500"
                   : "text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
               } focus:outline-none focus:ring-2 transition-colors duration-200`}
             >
-              Assign Device
+              Přiřadit tlačítko
             </button>
             <button
               onClick={handleUnassignDeviceClick}
-              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
+              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
                 theme === "light"
                   ? "text-gray-700 bg-yellow-300 hover:bg-yellow-400 focus:ring-yellow-300"
-                  : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
+                  : "text-gray-200 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500"
               } focus:outline-none focus:ring-2 transition-colors duration-200`}
             >
-              Unassign Device
+              Odebrat tlačítko
             </button>
+
             <button
               onClick={onClose}
-              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
+              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
                 theme === "light"
-                  ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
-                  : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
+                  ? "text-gray-700 bg-gray-300 hover:bg-gray-400 focus:ring-gray-300"
+                  : "text-gray-800 bg-neutral-300 hover:bg-neutral-400 focus:ring-neutral-500"
               } focus:outline-none focus:ring-2 transition-colors duration-200`}
             >
-              Close
+              Zavřít
             </button>
           </div>
         </div>
@@ -176,7 +165,10 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
       {isEditModalOpen && (
         <EditPatientModal
           isOpen={isEditModalOpen}
-          onClose={handleEditClose}
+          onClose={() => {
+            handleEditClose();
+            onClose();
+          }}
           theme={theme}
           patientId={patient._id}
         />
@@ -184,9 +176,11 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
       {isAssignDeviceModalOpen && (
         <AssignDeviceModal
           isOpen={isAssignDeviceModalOpen}
-          onClose={handleAssignDeviceClose}
+          onClose={() => {
+            handleAssignDeviceClose();
+            onClose();
+          }}
           theme={theme}
-          onUpdate={onUpdate}
           initialPatient={patient._id}
         />
       )}

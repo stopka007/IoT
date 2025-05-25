@@ -51,13 +51,13 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
       className={`max-w-sm w-full p-4 border rounded-lg shadow-md ${baseBg} border-gray-300 dark:border-neutral-500 h-[250px] flex flex-col justify-between hover:shadow-lg hover:shadow-neutral-500/50 dark:hover:shadow-black/50 transition duration-300 ease-in-out`}
     >
       <div>
-        <div className="flex items-center gap-2 mb-4" onClick={handleRoomClick}>
+        <div className="flex items-center gap-2 mb-4 cursor-pointer" onClick={handleRoomClick}>
           <HomeIcon />
           <h2 className={`text-2xl font-bold ${baseText}`}>{title}</h2>
         </div>
 
         {message && (
-          <div className="flex items-center gap-2 mb-4 underline underline-offset-4 decoration-gray-400 dark:decoration-gray-500">
+          <div className="flex items-center gap-2 mb-4 underline underline-offset-4 decoration-gray-400 dark:decoration-gray-500 ">
             <MessageSquareIcon />
             <p className={`text-sm font-semibold ${baseText}`}>{message}</p>
           </div>
@@ -66,16 +66,20 @@ const RoomsComponent: React.FC<RoomsComponentProps> = ({
 
       <div className="flex-1 overflow-hidden">
         <ul className="space-y-2 max-h-[150px] overflow-y-auto pr-1">
-          {patients.map(patient => (
-            <li
-              key={patient._id}
-              onClick={() => handlePatientClick(patient)}
-              className={`flex items-center gap-2 px-2 py-2 rounded cursor-pointer transition ${hoverBg} ${hoverText}`}
-            >
-              <PersonIcon />
-              <span className="truncate">{patient.name}</span>
-            </li>
-          ))}
+          {patients.length > 0 ? (
+            patients.map(patient => (
+              <div
+                key={patient._id}
+                onClick={() => handlePatientClick(patient)}
+                className={`flex items-center gap-2 px-2 py-2 rounded cursor-pointer transition ${hoverBg} ${hoverText}`}
+              >
+                <PersonIcon />
+                <li className="truncate">{patient.name}</li>
+              </div>
+            ))
+          ) : (
+            <li className="italic opacity-70">V tomto pokoji nejsou žádní pacienti.</li>
+          )}
         </ul>
       </div>
     </div>

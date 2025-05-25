@@ -1,19 +1,17 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import ConnectIcon from "../../Icons/ConnectIcon";
+import { usePatientUpdate } from "../../context/PatientUpdateContext";
 import { useTheme } from "../../functions/ThemeContext";
 import AssignDeviceModal from "../../modals/assignDeviceModal";
 
 const ConnectDeviceComponent = () => {
   const { theme } = useTheme();
+  const { triggerUpdate } = usePatientUpdate();
   const baseBg = theme === "light" ? "bg-gray-200" : "bg-neutral-600";
   const [showAssignDeviceModal, setShowAssignDeviceModal] = useState(false);
-  const [updateKey, setUpdateKey] = useState(0);
 
-  const handleUpdate = useCallback(() => {
-    setUpdateKey(prev => prev + 1);
-  }, []);
   return (
     <>
       <div
@@ -23,7 +21,7 @@ const ConnectDeviceComponent = () => {
         <div className="flex items-center justify-center flex-1">
           <button
             onClick={() => setShowAssignDeviceModal(true)}
-            className="border-2 rounded-full p-2 hover:shadow-2xl transform duration-300 shadow-black"
+            className="border-2 rounded-full p-2 hover:shadow-2xl transform duration-300 shadow-black text-blue-500 cursor-pointer "
           >
             <ConnectIcon />
           </button>
@@ -32,10 +30,10 @@ const ConnectDeviceComponent = () => {
           isOpen={showAssignDeviceModal}
           onClose={() => setShowAssignDeviceModal(false)}
           theme={theme}
-          onUpdate={handleUpdate}
+          onUpdate={triggerUpdate}
         />
       </div>
-      <Outlet context={{ onUpdate: handleUpdate, key: updateKey }} />
+      <Outlet />
     </>
   );
 };
