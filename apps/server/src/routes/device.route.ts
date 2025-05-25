@@ -112,6 +112,15 @@ export default async function (server: FastifyInstance) {
           { new: true, runValidators: true },
         );
         if (!device) throw ApiError.notFound("Device not found");
+        
+        if (server.broadcastDeviceUpdate) {
+        server.broadcastDeviceUpdate({
+        id: request.params.id,
+        help_needed: request.body.help_needed,
+        updatedAt: new Date().toISOString(),
+        });
+        }
+        
         reply.send(device);
       } catch (error) {
         throw ApiError.badRequest("Failed to update help status", error);

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
-
-import HomeIcon from "../../Icons/HomeIcon";
+import LiveDeviceAlert from "../Monitoring/LiveDeviceAlert";
 import TrashBinIcon from "../../Icons/TrashBinIcon";
 import PersonIcon from "../../Icons/UserIcon";
 import apiClient from "../../api/axiosConfig";
@@ -146,6 +145,9 @@ const RoomDetailComponent = () => {
           <p>Kapacita pokoje: {room.capacity}</p>
           <p>Obsazenost: {patients.length}</p>
         </div>
+
+        {/* ✅ Live alerty z WebSocketu */}
+        <LiveDeviceAlert />
 
         <div className="flex items-start gap-4">
           <div className="w-[400px] flex flex-col border-r border-gray-300 dark:border-neutral-500 pr-2 overflow-y-auto">

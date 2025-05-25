@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-
+import wsRoutes from "./ws.route";
 import alertRoutes from "./alert.route";
 import archivedPatientRoutes from "./archivedPatient.route";
 import authRoutes from "./auth.route";
@@ -18,4 +18,5 @@ export const registerRoutes = (server: FastifyInstance) => {
   server.register(userRoutes, { prefix: "/api/users" });
   server.register(authRoutes, { prefix: "/api/auth" });
   server.register(archivedPatientRoutes, { prefix: "/api/archived_patients" });
+  server.register(wsRoutes, { prefix: "/api/ws" });
 };
