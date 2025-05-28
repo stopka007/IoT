@@ -38,7 +38,7 @@ export default function CreateDeviceModal({ isOpen, onClose, theme }: CreateDevi
                 value={deviceId}
                 onChange={e => setDeviceId(e.target.value)}
                 placeholder="Zadejte ID zařízení"
-                className={`w-full p-2 border rounded-md cursor-pointer ${
+                className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -57,7 +57,7 @@ export default function CreateDeviceModal({ isOpen, onClose, theme }: CreateDevi
                 value={battery_level === null ? "" : battery_level}
                 onChange={e => setBattery_level(e.target.value ? Number(e.target.value) : null)}
                 placeholder="Zadejte úroveň baterie"
-                className={`w-full p-2 border rounded-md cursor-pointer ${
+                className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"

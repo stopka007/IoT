@@ -116,10 +116,10 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({ patient, onCl
             )}
           </div>
 
-          <div className="mt-6 flex justify-between">
+          <div className="mt-6 flex justify-between flex-wrap gap-0.5 py-0.5 overflow-y-auto">
             <button
               onClick={handleEditClick}
-              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
+              className={`px-2 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
                 theme === "light"
                   ? "text-white bg-green-500 hover:bg-green-600 focus:ring-green-300"
                   : "text-white bg-green-600 hover:bg-green-700 focus:ring-green-500"
@@ -129,7 +129,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({ patient, onCl
             </button>
             <button
               onClick={handleAssignDeviceClick}
-              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
+              className={`px-2 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
                 theme === "light"
                   ? "text-white bg-blue-500 hover:bg-blue-700 focus:ring-blue-500"
                   : "text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
@@ -139,7 +139,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({ patient, onCl
             </button>
             <button
               onClick={handleUnassignDeviceClick}
-              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
+              className={`px-2 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
                 theme === "light"
                   ? "text-gray-700 bg-yellow-300 hover:bg-yellow-400 focus:ring-yellow-300"
                   : "text-gray-200 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500"
@@ -150,7 +150,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({ patient, onCl
 
             <button
               onClick={onClose}
-              className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
+              className={`px-2 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
                 theme === "light"
                   ? "text-gray-700 bg-gray-300 hover:bg-gray-400 focus:ring-gray-300"
                   : "text-gray-800 bg-neutral-300 hover:bg-neutral-400 focus:ring-neutral-500"

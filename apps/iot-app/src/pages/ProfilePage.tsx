@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 // Import form handling, validation, icons, api, toast, strength meter
 import { useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -85,7 +85,7 @@ function ProfilePage() {
   }
 
   return (
-    <div className={`p-6 max-w-4xl mx-auto min-h-full`}>
+    <div className={`p-6 max-w-4xl mx-auto min-h-full overflow-y-auto h-[1000px]`}>
       <h1 className="text-3xl font-bold mb-6 border-b pb-2">Uživatelský Profil</h1>
 
       {/* Display User Info */}

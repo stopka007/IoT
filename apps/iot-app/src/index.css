@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+/* Prevent text selection when resizing sidebar */
+.sidebar-resizing {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}

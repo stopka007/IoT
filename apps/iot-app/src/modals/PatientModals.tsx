@@ -22,11 +22,17 @@ const PatientModals: React.FC = () => {
   return (
     <>
       {isCreateModalOpen && (
-        <CreatePatientModal isOpen={isCreateModalOpen} onClose={closeAllModals} theme={theme} />
+        <CreatePatientModal
+          key="create-patient-modal"
+          isOpen={isCreateModalOpen}
+          onClose={closeAllModals}
+          theme={theme}
+        />
       )}
 
       {isEditModalOpen && selectedPatient && (
         <EditPatientModal
+          key={`edit-patient-${selectedPatient._id}`}
           isOpen={isEditModalOpen}
           onClose={closeAllModals}
           theme={theme}
@@ -35,11 +41,16 @@ const PatientModals: React.FC = () => {
       )}
 
       {isDetailsModalOpen && selectedPatient && (
-        <PatientDetailsModal patient={selectedPatient} onClose={closeAllModals} />
+        <PatientDetailsModal
+          key={`patient-details-${selectedPatient._id}`}
+          patient={selectedPatient}
+          onClose={closeAllModals}
+        />
       )}
 
       {isAssignDeviceModalOpen && selectedPatient && (
         <AssignDeviceModal
+          key={`assign-device-${selectedPatient._id}`}
           isOpen={isAssignDeviceModalOpen}
           onClose={closeAllModals}
           theme={theme}

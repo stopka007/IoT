@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 
 import apiClient from "../../api/axiosConfig";
@@ -46,9 +46,28 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ setShowFilter }) => {
   // New state for admin layout (default to "grouped" now)
   const [adminLayout, setAdminLayout] = useState<string>("grouped");
 
-  const loadData = useCallback(async () => {
+  // Add a loading flag ref to prevent duplicate requests
+  const isLoadingRef = useRef(false);
+  // Add a data cache timestamp
+  const lastLoadTime = useRef(0);
+  // Cache expiry time (30 seconds)
+  const CACHE_EXPIRY = 30000;
+
+  const loadData = useCallback(async (forceRefresh = false) => {
+    // Return if already loading
+    if (isLoadingRef.current) return;
+
+    // Check if cache is still valid
+    const now = Date.now();
+    if (!forceRefresh && now - lastLoadTime.current < CACHE_EXPIRY) {
+      return;
+    }
+
+    // Set loading flags
+    isLoadingRef.current = true;
     setIsLoading(true);
     setError(null);
+
     try {
       // Fetch both rooms and patients data
       const [roomsResponse, patientsResponse] = await Promise.all([
@@ -81,29 +100,39 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ setShowFilter }) => {
       formattedRoomsData.sort((a, b) => a.roomNumber - b.roomNumber);
 
       setRoomsData(formattedRoomsData);
+      // Update cache timestamp
+      lastLoadTime.current = now;
     } catch (err) {
       console.error("Failed to fetch data:", err);
       setError("Nepodařilo se načíst data pokojů.");
     } finally {
       setIsLoading(false);
+      isLoadingRef.current = false;
     }
   }, []);
 
-  // Initial load and reload on global update
+  // Initial load
   useEffect(() => {
     loadData();
+  }, []);
+
+  // Reload on updates - but with a debounce
+  useEffect(() => {
+    if (updateKey || globalUpdateKey) {
+      const timeoutId = setTimeout(() => {
+        loadData(true); // Force refresh
+      }, 500); // Debounce for 500ms
+
+      return () => clearTimeout(timeoutId);
+    }
   }, [loadData, updateKey, globalUpdateKey]);
 
-  if (isLoading) {
+  if (isLoading && roomsData.length === 0) {
     return <div className="p-4 text-center">Načítám data pokojů...</div>;
   }
 
   if (error) {
     return <div className="p-4 text-center text-red-500">{error}</div>;
-  }
-
-  if (roomsData.length === 0) {
-    return <div className="p-4 text-center">Nebyly nalezeny žádné pokoje.</div>;
   }
 
   // Render admin view based on selected layout
@@ -164,20 +193,24 @@ const RoomsGrid: React.FC<RoomsGridProps> = ({ setShowFilter }) => {
       )}
       <div className="flex flex-wrap gap-4 py-4 overflow-y-auto pb-60">
         {showDetailedView ? (
-          <>
-            {roomsData.map(({ roomNumber, patients }) => (
-              <div
-                key={roomNumber}
-                className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]"
-              >
-                <RoomsComponent
-                  title={`Pokoj ${roomNumber}`}
-                  patients={patients}
-                  setShowFilter={setShowFilter}
-                />
-              </div>
-            ))}
-          </>
+          roomsData.length > 0 ? (
+            <>
+              {roomsData.map(({ roomNumber, patients }) => (
+                <div
+                  key={roomNumber}
+                  className="p-2 min-w-[250px] min-h-[200px] flex-shrink-0 basis-[300px]"
+                >
+                  <RoomsComponent
+                    title={`Pokoj ${roomNumber}`}
+                    patients={patients}
+                    setShowFilter={setShowFilter}
+                  />
+                </div>
+              ))}
+            </>
+          ) : (
+            <div className="w-full p-4 text-center">Nebyly nalezeny žádné pokoje.</div>
+          )
         ) : (
           renderAdminView()
         )}

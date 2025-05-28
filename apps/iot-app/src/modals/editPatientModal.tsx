@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 import apiClient from "../api/axiosConfig";
 import { usePatientUpdate } from "../context/PatientUpdateContext";
@@ -50,22 +51,26 @@ export default function EditPatientModal({
     setArchiveLoading(true);
     setArchiveError(null);
     try {
-      // 1. Update patient first
-      await handleSubmit(new Event("submit") as unknown as React.FormEvent<HTMLFormElement>); // true = silent, don't close modal
-      // 2. Get updated patient data
-      const patientRes = await apiClient.get(`/api/patients/${patientId}`);
-      const updatedPatient = patientRes.data;
-      // 3. Archive (POST to archive)
-      updatedPatient.archivedAt = new Date().toISOString();
-      await apiClient.post("/api/archived_patients", updatedPatient);
-      // 4. Delete from patients
-      await apiClient.delete(`/api/patients/${patientId}`);
-      // 5. Close modal and refresh
+      // First update patient with current form values including status
+      await apiClient.patch(`/api/patients/${patientId}`, {
+        name: patientName,
+        room: Number(selectedRoom),
+        illness: illness || undefined,
+        age: age ? Number(age) : undefined,
+        status: status || undefined,
+        notes: notes || undefined,
+      });
+
+      // Use the server's archive endpoint
+      await apiClient.post(`/api/patients/${patientId}/archive`);
+
+      // Close modal and refresh UI
       onClose();
       triggerUpdate();
+      toast.success("Pacient byl úspěšně archivován");
     } catch (err: unknown) {
+      console.error("Archive error:", err);
       setArchiveError("Nepodařilo se archivovat pacienta");
-      console.error(err);
     } finally {
       setArchiveLoading(false);
       setShowArchiveConfirm(false);
@@ -98,7 +103,7 @@ export default function EditPatientModal({
                 value={patientName}
                 onChange={e => setPatientName(e.target.value)}
                 placeholder="Zadejte jméno pacienta"
-                className={`w-full p-2 border rounded-md cursor-pointer ${
+                className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -117,7 +122,7 @@ export default function EditPatientModal({
               <select
                 value={selectedRoom}
                 onChange={e => setSelectedRoom(Number(e.target.value))}
-                className={`w-full p-2 border rounded-md cursor-pointer ${
+                className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -146,7 +151,7 @@ export default function EditPatientModal({
                 value={illness}
                 onChange={e => setIllness(e.target.value)}
                 placeholder="Zadejte nemoc (volitelné)"
-                className={`w-full p-2 border rounded-md cursor-pointer ${
+                className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -166,7 +171,7 @@ export default function EditPatientModal({
                 value={age}
                 onChange={e => setAge(e.target.value)}
                 placeholder="Zadejte věk (volitelné)"
-                className={`w-full p-2 border rounded-md cursor-pointer ${
+                className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -186,7 +191,7 @@ export default function EditPatientModal({
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value)}
-                className={`w-full p-2 border rounded-md cursor-pointer ${
+                className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -219,11 +224,11 @@ export default function EditPatientModal({
             </div>
           </div>
 
-          <div className="flex justify-end gap-4 mt-6">
+          <div className="flex justify-between mt-6 flex-wrap gap-0.5 py-0.5 overflow-y-auto">
             <button
               type="button"
               onClick={() => setShowArchiveConfirm(true)}
-              className="mr-23 px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200 disabled:opacity-50 cursor-pointer"
+              className="mr-15 px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200 disabled:opacity-50 cursor-pointer"
               disabled={isLoading || archiveLoading}
             >
               {archiveLoading ? "Archivuji..." : "Archivovat"}
@@ -262,10 +267,39 @@ export default function EditPatientModal({
               Opravdu chcete archivovat tohoto pacienta? Tato akce přesune pacienta do archivu a
               odstraní ho z aktivního seznamu.
             </p>
+
+            <div className="mb-4">
+              <label
+                className={`block mb-2 text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-200"}`}
+              >
+                Stav pacienta
+              </label>
+              <select
+                value={status}
+                onChange={e => setStatus(e.target.value)}
+                className={`w-full p-2 border rounded-md ${
+                  theme === "light"
+                    ? "bg-white border-gray-300 text-gray-900"
+                    : "bg-neutral-700 border-neutral-600 text-white"
+                }`}
+                disabled={archiveLoading}
+              >
+                <option value="Released">Propuštěn</option>
+                <option value="Deceased">Zemřel</option>
+              </select>
+            </div>
+
             {archiveError && (
               <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{archiveError}</div>
             )}
             <div className="flex justify-end gap-4">
+              <button
+                onClick={handleArchive}
+                className={`px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200 cursor-pointer`}
+                disabled={archiveLoading}
+              >
+                {archiveLoading ? "Archivuji..." : "Ano, Archivovat"}
+              </button>
               <button
                 onClick={() => setShowArchiveConfirm(false)}
                 className={`px-4 py-2 text-sm font-medium cursor-pointer ${
@@ -273,13 +307,6 @@ export default function EditPatientModal({
                     ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
                     : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
                 } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
-                disabled={archiveLoading}
-              >
-                {archiveLoading ? "Archivuji..." : "Ano, Archivovat"}
-              </button>
-              <button
-                onClick={handleArchive}
-                className="px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200 cursor-pointer"
                 disabled={archiveLoading}
               >
                 Zrušit

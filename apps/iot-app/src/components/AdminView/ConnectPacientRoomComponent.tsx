@@ -27,7 +27,7 @@ const ConnectPacientRoomComponent: React.FC<ConnectPacientRoomComponentProps> = 
   return (
     <>
       <div
-        className={`max-w-sm w-full p-4 border rounded-lg shadow-md ${baseBg} border-gray-300 dark:border-neutral-500 h-[250px] flex flex-col justify-between hover:shadow-lg transition duration-300 ease-in-out`}
+        className={`max-w-sm w-full p-4 border rounded-lg shadow-md ${baseBg} border-gray-300 dark:border-neutral-500 h-[250px] flex flex-col justify-between hover:shadow-lg hover:shadow-neutral-500/50 dark:hover:shadow-black/50 transition duration-300 ease-in-out`}
       >
         <span className="flex items-center justify-center text-2xl">
           Přiřadit pacienta do pokoje

@@ -52,7 +52,7 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
                 value={patientName}
                 onChange={e => setPatientName(e.target.value)}
                 placeholder="Zadejte jméno pacienta"
-                className={`w-full p-2 border rounded-md cursor-pointer ${
+                className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -71,7 +71,7 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
               <select
                 value={selectedRoom}
                 onChange={e => setSelectedRoom(Number(e.target.value))}
-                className={`w-full p-2 border rounded-md cursor-pointer ${
+                className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -99,7 +99,7 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
                 value={illness}
                 onChange={e => setIllness(e.target.value)}
                 placeholder="Zadejte nemoc (volitelně)"
-                className={`w-full p-2 border rounded-md cursor-pointer ${
+                className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -119,7 +119,7 @@ export default function CreatePatientModal({ isOpen, onClose, theme }: CreatePat
                 value={age}
                 onChange={e => setAge(e.target.value)}
                 placeholder="Zadejte věk (volitelně)"
-                className={`w-full p-2 border rounded-md cursor-pointer ${
+                className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"

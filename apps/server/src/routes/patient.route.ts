@@ -5,7 +5,7 @@ import { FastifyInstance, FastifyRequest } from "fastify";
 import { authenticate } from "../middleware/auth.middleware";
 import ArchivedPatient from "../models/archivedPatient.model";
 import { Device } from "../models/device.model";
-import Patient, { IPatient } from "../models/patient.model";
+import Patient from "../models/patient.model";
 // Make sure you import your Device model
 // Assuming IPatient is exported
 import { ApiError } from "../utils/errors";
@@ -72,9 +72,9 @@ export default async function (server: FastifyInstance) {
       preHandler: [authenticate],
     },
     async (request, reply) => {
-      // Role check remains...
-      if (!request.user || request.user.role !== "admin") {
-        throw ApiError.forbidden("Admin permission required to create patients.");
+      // Modified to allow both admin and regular users
+      if (!request.user) {
+        throw ApiError.forbidden("Authentication required to create patients.");
       }
       try {
         // request.body is now correctly typed by Fastify + Typebox
@@ -239,6 +239,15 @@ export default async function (server: FastifyInstance) {
       const { id } = request.params;
       const updateData = request.body;
 
+      console.log("Received update data:", JSON.stringify(updateData, null, 2));
+      console.log("Status value:", updateData.status);
+
+      // Ensure status is set
+      if (updateData.status === undefined || updateData.status === "") {
+        updateData.status = "Released";
+        console.log("Forcing default status: Released");
+      }
+
       // If assigning a device, also update battery_level from the device
       if (updateData.id_device) {
         const device = await Device.findOne({ id_device: updateData.id_device });
@@ -258,9 +267,11 @@ export default async function (server: FastifyInstance) {
           new: true,
           runValidators: true,
         });
+
         if (!patient) {
           throw ApiError.notFound("Patient not found");
         }
+
         reply.send(patient);
       } catch (error) {
         if (error instanceof ApiError) throw error;
@@ -280,9 +291,9 @@ export default async function (server: FastifyInstance) {
     async (request, reply) => {
       // request.params is now correctly typed
 
-      // Role check remains...
-      if (!request.user || request.user.role !== "admin") {
-        throw ApiError.forbidden("Admin permission required to delete patients.");
+      // Modified to allow both admin and regular users
+      if (!request.user) {
+        throw ApiError.forbidden("Authentication required to delete patients.");
       }
       try {
         const deleted = await Patient.findByIdAndDelete(request.params.id);
@@ -292,6 +303,60 @@ export default async function (server: FastifyInstance) {
         if (error instanceof ApiError) throw error;
         server.log.error(error, "Error deleting patient");
         throw ApiError.internal("Failed to delete patient", error);
+      }
+    },
+  );
+
+  // Archive patient (move to archived_patients) - PROTECTED for both admin and users
+  server.post<{ Params: ParamsType }>(
+    "/:id/archive",
+    {
+      schema: { params: ParamsSchema },
+      preHandler: [authenticate],
+    },
+    async (request, reply) => {
+      try {
+        // Find the patient to archive
+        const patient = await Patient.findById(request.params.id);
+        if (!patient) throw ApiError.notFound("Patient not found");
+
+        // Check if patient has a device assigned
+        if (patient.id_device) {
+          // Clear the id_patient reference from the associated device
+          await Device.updateOne({ id_device: patient.id_device }, { $unset: { id_patient: "" } });
+          server.log.info(`Cleared patient reference from device ${patient.id_device}`);
+        }
+
+        // Create archived version with timestamp
+        const archiveData = patient.toObject();
+        // Type assertion to avoid TypeScript error
+        (archiveData as any).archivedAt = new Date();
+        delete archiveData._id; // Remove MongoDB ID so a new one is generated
+
+        // Clear device reference in archived record
+        (archiveData as any).id_device = null;
+
+        // Set the status field if not already set
+        if (!archiveData.status) {
+          // Default to "Released" if status is not specified
+          (archiveData as any).status = "Released";
+        }
+
+        // Save to archived_patients collection
+        const archivedPatient = new ArchivedPatient(archiveData);
+        await archivedPatient.save();
+
+        // Delete the original patient
+        await Patient.findByIdAndDelete(request.params.id);
+
+        reply.send({
+          message: "Patient archived successfully",
+          archivedPatient,
+        });
+      } catch (error) {
+        if (error instanceof ApiError) throw error;
+        server.log.error(error, "Error archiving patient");
+        throw ApiError.internal("Failed to archive patient", error);
       }
     },
   );

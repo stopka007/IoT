@@ -66,7 +66,6 @@ PatientListItem.displayName = "PatientListItem";
 const UserList: React.FC<UserListProps> = ({ showFilter, setShowFilter }) => {
   // Only console.log in development
   if (process.env.NODE_ENV !== "production") {
-    console.log("UserList rendered");
   }
 
   const { theme } = useTheme();
@@ -96,55 +95,10 @@ const UserList: React.FC<UserListProps> = ({ showFilter, setShowFilter }) => {
 
   const { baseBg, baseText, hoverBg, hoverText, shadow, borderColor } = themeColors;
 
-  const applyInitialFilter = useCallback((patientsList: Patient[]) => {
-    // Read filter state from localStorage
-    const storedRooms = localStorage.getItem("filter_selectedRooms");
-    const storedBattery = localStorage.getItem("filter_batteryFilter");
-    const storedSortOrder = localStorage.getItem("filter_sortOrder");
-
-    let parsedRooms: number[] = [];
-    let parsedBattery: "Nejvyšší" | "Nejnižší" | null = null;
-    let parsedSortOrder: "A-Z" | "Z-A" = "A-Z";
-
-    if (storedRooms) {
-      try {
-        parsedRooms = JSON.parse(storedRooms);
-      } catch {
-        /* empty */
-      }
-    }
-    if (storedBattery === "Nejvyšší" || storedBattery === "Nejnižší") {
-      parsedBattery = storedBattery;
-    }
-    if (storedSortOrder === "A-Z" || storedSortOrder === "Z-A") {
-      parsedSortOrder = storedSortOrder;
-    }
-
-    let filteredResults = [...patientsList];
-    if (parsedRooms.length > 0) {
-      filteredResults = filteredResults.filter(p => parsedRooms.includes(p.room));
-    }
-    if (parsedBattery === "Nejvyšší") {
-      filteredResults.sort((a, b) => {
-        const batteryA = typeof a.battery_level === "number" ? a.battery_level : -1;
-        const batteryB = typeof b.battery_level === "number" ? b.battery_level : -1;
-        return batteryB - batteryA;
-      });
-    } else if (parsedBattery === "Nejnižší") {
-      filteredResults.sort((a, b) => {
-        const batteryA = typeof a.battery_level === "number" ? a.battery_level : 9999;
-        const batteryB = typeof b.battery_level === "number" ? b.battery_level : 9999;
-        return batteryA - batteryB;
-      });
-    } else {
-      filteredResults.sort((a, b) =>
-        parsedSortOrder === "A-Z" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name),
-      );
-    }
-    setFilteredPatients(filteredResults);
-    setSearchResults(filteredResults);
-    setHasAppliedInitialFilter(true);
-    setSelectedRooms(parsedRooms);
+  // Handle filtered patients update
+  const handleFilterChange = useCallback((filtered: Patient[]) => {
+    setFilteredPatients(filtered);
+    setSearchResults(filtered);
   }, []);
 
   const loadPatients = useCallback(async () => {
@@ -152,25 +106,20 @@ const UserList: React.FC<UserListProps> = ({ showFilter, setShowFilter }) => {
       setLoading(true);
       const data = await fetchAllPatients();
       setPatients(data);
-      applyInitialFilter(data);
+      // Initialize filtered patients with all patients
+      setFilteredPatients(data);
+      setHasAppliedInitialFilter(true);
     } catch (error) {
       console.error("Error loading patients:", error);
     } finally {
       setLoading(false);
     }
-  }, [applyInitialFilter]);
+  }, []);
 
   // Load patients only once and when updateKey changes
   useEffect(() => {
     loadPatients();
   }, [loadPatients, updateKey]);
-
-  useEffect(() => {
-    if (!prevIsOpen.current && showFilter) {
-      setFilteredPatients([]);
-    }
-    prevIsOpen.current = showFilter;
-  }, [showFilter]);
 
   useEffect(() => {
     if (hasAppliedInitialFilter) {
@@ -218,7 +167,7 @@ const UserList: React.FC<UserListProps> = ({ showFilter, setShowFilter }) => {
         </div>
         {showFilter && (
           <div className="mt-2">
-            <Filter isOpen={showFilter} patients={patients} onFilterChange={setFilteredPatients} />
+            <Filter isOpen={showFilter} patients={patients} onFilterChange={handleFilterChange} />
           </div>
         )}
       </div>

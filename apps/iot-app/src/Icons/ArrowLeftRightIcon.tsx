@@ -6,9 +6,9 @@ const ArrowLeftRightIcon = () => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     className="lucide lucide-arrow-left-right-icon lucide-arrow-left-right"
   >
     <path d="M8 3 4 7l4 4" />

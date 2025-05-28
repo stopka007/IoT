@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     return (
       <aside
         style={{ width: "32px" }}
-        className={`${sidebarBg} flex flex-col items-center justify-center h-full transition-all duration-300 ease-in-out relative shadow-md`}
+        className={`${sidebarBg} flex flex-col items-center justify-center h-full transition-all duration-200 relative shadow-md`}
       >
         <button
           onClick={onToggle}
@@ -58,11 +58,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside
       style={{ width: `${sidebarWidth}px` }}
-      className={`${sidebarBg} flex flex-col overflow-hidden relative transition-all duration-300 ease-in-out shadow-md`}
+      className={`${sidebarBg} flex flex-col overflow-hidden relative shadow-md select-none`}
     >
       <button
         onClick={onToggle}
-        className={`absolute right-2 top-8 -translate-y-1/2 transition-all duration-200
+        className={`absolute right-2 top-8 -translate-y-1/2
           ${theme === "light" ? "text-gray-500 hover:bg-neutral-400" : "text-white hover:bg-neutral-600"}`}
         style={{
           padding: 0,

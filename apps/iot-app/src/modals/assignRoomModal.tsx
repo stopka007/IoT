@@ -51,7 +51,7 @@ export default function AssignRoomModal({
               <select
                 value={selectedPatient}
                 onChange={e => setSelectedPatient(e.target.value)}
-                className={`w-full p-2 border rounded-md cursor-pointer ${
+                className={`w-full p-2 border rounded-md  ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -79,7 +79,7 @@ export default function AssignRoomModal({
                 <select
                   value={selectedRoom || ""}
                   onChange={e => setSelectedRoom(parseInt(e.target.value))}
-                  className={`w-full p-2 border rounded-md cursor-pointer ${
+                  className={`w-full p-2 border rounded-md  ${
                     theme === "light"
                       ? "bg-white border-gray-300 text-gray-900"
                       : "bg-neutral-700 border-neutral-600 text-white"

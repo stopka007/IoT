@@ -73,6 +73,10 @@ const ArchivedPatient: React.FC<ArchivedPatientProps> = ({
     }
   };
 
+  const translateStatus = (status: string) => {
+    return status?.toLowerCase() === "deceased" ? "Zemřel" : "Propuštěn";
+  };
+
   return (
     <div
       className={`relative border rounded-lg p-4 mb-4 shadow-sm hover:shadow-md transition-shadow
@@ -100,7 +104,11 @@ const ArchivedPatient: React.FC<ArchivedPatientProps> = ({
               Nemoc: {illness}
             </p>
           )}
-          {status && <p className={`text-sm mb-1 ${getStatusColor(status)}`}>Stav: {status}</p>}
+          {status && (
+            <p className={`text-sm mb-1 ${getStatusColor(status)}`}>
+              Stav: {translateStatus(status)}
+            </p>
+          )}
         </div>
         <div className="flex flex-col items-end ml-8 min-w-[180px]">
           {createdAt && (
@@ -141,10 +149,10 @@ const ArchivedPatient: React.FC<ArchivedPatientProps> = ({
         onConfirm={confirmDelete}
         theme={theme}
         type="delete"
-        title="Delete Patient"
-        message={`Are you sure you want to permanently delete patient "${name}"?`}
-        confirmButtonText="Delete"
-        cancelButtonText="Cancel"
+        title="Smazat pacienta"
+        message={`Opravdu chcete smazat pacienta "${name}"?`}
+        confirmButtonText="Smazat"
+        cancelButtonText="Zrušit"
       />
     </div>
   );

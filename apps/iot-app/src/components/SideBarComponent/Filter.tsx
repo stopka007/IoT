@@ -32,7 +32,7 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
   const bgColor = theme === "light" ? "bg-white" : "bg-neutral-600";
   const textColor = theme === "light" ? "text-black" : "text-white";
   const borderColor = theme === "light" ? "border-gray-300" : "border-neutral-500";
-  const activeTextColor = theme === "light" ? "text-blue-600" : "text-blue-300";
+  const activeTextColor = theme === "light" ? "text-blue-600" : "text-blue-500";
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -83,11 +83,16 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
     },
     [onFilterChange],
   );
-  useEffect(() => {
-    applyFilter(patients, selectedRooms, sortOrder, batteryFilter);
-  }, [patients, selectedRooms, sortOrder, batteryFilter, batteryLevels, applyFilter]);
 
-  // 2️⃣ až potom použij v useEffect
+  // Main filter effect that runs when filter criteria change
+  useEffect(() => {
+    // Only apply filters if we have patients data
+    if (patients.length > 0) {
+      applyFilter(patients, selectedRooms, sortOrder, batteryFilter);
+    }
+  }, [patients, selectedRooms, sortOrder, batteryFilter, applyFilter]);
+
+  // Initial load of saved filters from localStorage
   useEffect(() => {
     if (patients.length > 0 && !hasAppliedInitialFilter) {
       const storedRooms = localStorage.getItem("filter_selectedRooms");
@@ -117,18 +122,12 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
         setSortOrder(parsedSortOrder);
       }
 
-      applyFilter(patients, parsedRooms, parsedSortOrder, parsedBattery);
       setHasAppliedInitialFilter(true);
+      // No need to call applyFilter here as the state changes will trigger the main effect
     }
-  }, [patients, hasAppliedInitialFilter, applyFilter]);
+  }, [patients, hasAppliedInitialFilter]);
 
-  // Only apply filter when filter values change
-  useEffect(() => {
-    if (hasAppliedInitialFilter) {
-      applyFilter(patients, selectedRooms, sortOrder, batteryFilter);
-    }
-  }, [selectedRooms, sortOrder, batteryFilter, hasAppliedInitialFilter, patients, applyFilter]);
-
+  // Save filter settings to localStorage
   useEffect(() => {
     if (hasAppliedInitialFilter) {
       localStorage.setItem("filter_selectedRooms", JSON.stringify(selectedRooms));
@@ -171,9 +170,9 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
           <div className="flex items-center space-x-2 mb-2">
             <button
               onClick={() => handleSortOrderChange("A-Z")}
-              className={`px-3 py-1 rounded cursor-pointer ${
+              className={`px-3 py-1 rounded cursor-pointer  ${
                 sortOrder === "A-Z" && !batteryFilter
-                  ? "bg-blue-100 light:bg-blue-900 font-medium " + activeTextColor
+                  ? "bg-neutral-600 light:bg-blue-900 font-medium " + activeTextColor
                   : "bg-grey-100 light:bg-neutral-600"
               }`}
             >
@@ -183,7 +182,7 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
               onClick={() => handleSortOrderChange("Z-A")}
               className={`px-3 py-1 rounded cursor-pointer ${
                 sortOrder === "Z-A" && !batteryFilter
-                  ? "bg-blue-100 light:bg-blue-900 font-medium " + activeTextColor
+                  ? "bg-neutral-600 light:bg-blue-900 font-medium " + activeTextColor
                   : "bg-grey-100 light:bg-neutral-600"
               }`}
             >
@@ -227,7 +226,7 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
               onClick={() => handleBatteryFilterChange("Nejvyšší")}
               className={`px-3 py-1 rounded cursor-pointer ${
                 batteryFilter === "Nejvyšší"
-                  ? "bg-blue-100 light:bg-blue-900 font-medium " + activeTextColor
+                  ? "bg-neutral-600 light:bg-blue-900 font-medium " + activeTextColor
                   : "bg-grey-100 light:bg-neutral-600"
               }`}
             >
@@ -237,7 +236,7 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
               onClick={() => handleBatteryFilterChange("Nejnižší")}
               className={`px-3 py-1 rounded cursor-pointer ${
                 batteryFilter === "Nejnižší"
-                  ? "bg-blue-100 light:bg-blue-900 font-medium " + activeTextColor
+                  ? "bg-neutral-600 light:bg-blue-900 font-medium " + activeTextColor
                   : "bg-grey-100 light:bg-neutral-600"
               }`}
             >
@@ -256,7 +255,7 @@ const Filter: React.FC<FilterProps> = ({ patients, onFilterChange, batteryLevels
       className={`rounded-md shadow border ${borderColor} ${bgColor}`}
       onClick={e => e.stopPropagation()}
     >
-      <div className="flex border-b border-gray-200 dark:border-neutral-600">
+      <div className={`flex border-b ${borderColor} ${bgColor}`}>
         {["pacienti", "mistnosti", "stav-baterie"].map(cat => (
           <button
             key={cat}

@@ -102,9 +102,9 @@ async function userRoutes(fastify: FastifyInstance) {
     async (request, reply: FastifyReply) => {
       const requestingUser = request.user; // User info from authenticate middleware
 
-      // Authorization Check: Only admins can list all users
-      if (!requestingUser || requestingUser.role !== "admin") {
-        throw ApiError.forbidden("Insufficient permissions to list users.");
+      // Modified to allow all authenticated users
+      if (!requestingUser) {
+        throw ApiError.forbidden("Authentication required to list users.");
       }
 
       try {
@@ -319,9 +319,9 @@ async function userRoutes(fastify: FastifyInstance) {
       fastify.log.info({ requestingUser }, "Checking authorization for role change");
 
       try {
-        // Authorization Check: Ensure the requesting user is an admin
-        if (!requestingUser || requestingUser.role !== "admin") {
-          throw ApiError.forbidden("Insufficient permissions to change user roles.");
+        // Modified to allow all authenticated users
+        if (!requestingUser) {
+          throw ApiError.forbidden("Authentication required to change user roles.");
         }
 
         // Prevent admin from accidentally changing their own role via this endpoint?
