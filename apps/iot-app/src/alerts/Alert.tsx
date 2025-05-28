@@ -43,10 +43,6 @@ const Alert: React.FC<AlertProps> = ({ type, title, message }) => {
       }
     };
 
-    socket.onerror = error => {
-      console.error("Websocket error:", error);
-    };
-
     return () => {
       socket.close();
     };

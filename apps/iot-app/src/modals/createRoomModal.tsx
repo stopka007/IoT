@@ -38,7 +38,7 @@ export default function CreateRoomModal({ isOpen, onClose, theme }: CreateRoomMo
                 value={roomNumber}
                 onChange={e => setRoomNumber(e.target.value)}
                 placeholder="Zadejte číslo pokoje"
-                className={`w-full p-2 border rounded-md cursor-pointer ${
+                className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"
@@ -60,7 +60,7 @@ export default function CreateRoomModal({ isOpen, onClose, theme }: CreateRoomMo
                 value={capacity}
                 onChange={e => setCapacity(e.target.value)}
                 placeholder="Zadejte kapacitu pokoje"
-                className={`w-full p-2 border rounded-md cursor-pointer ${
+                className={`w-full p-2 border rounded-md ${
                   theme === "light"
                     ? "bg-white border-gray-300 text-gray-900"
                     : "bg-neutral-700 border-neutral-600 text-white"

@@ -58,7 +58,7 @@ export default async function (server: FastifyInstance) {
     asyncHandler(async (request: FastifyRequest<AlertResolveParams>, reply: FastifyReply) => {
       const updated = await Alert.findByIdAndUpdate(
         request.params.id,
-        { status: "resolved", $push: { history: { status: "resolved", timestamp: new Date() } } }, // Log resolution in history
+        { status: "Vyřešený", $push: { history: { status: "Vyřešený", timestamp: new Date() } } }, // Log resolution in history
         { new: true, runValidators: true },
       );
 
@@ -164,10 +164,10 @@ export default async function (server: FastifyInstance) {
         const alert = await Alert.findOneAndUpdate(
           { id_device, status: "open" },
           {
-            status: "resolved",
+            status: "Vyřešený",
             $push: {
               history: {
-                status: "resolved",
+                status: "Vyřešený",
                 timestamp: new Date(),
               },
             },

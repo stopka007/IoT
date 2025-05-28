@@ -97,6 +97,10 @@ const HistoricalAlert: React.FC<HistoricalAlertProps> = ({
     return status === "open" ? "text-red-500" : "text-green-500";
   };
 
+  const translateStatus = (status: string) => {
+    return status === "open" ? "Otevřený" : "Vyřešený";
+  };
+
   return (
     <div
       className={`border rounded-lg p-4 mb-4 shadow-sm hover:shadow-md transition-shadow
@@ -127,7 +131,7 @@ const HistoricalAlert: React.FC<HistoricalAlertProps> = ({
               )}
             </div>
             <span className={`px-2 py-1 rounded-full text-sm ${getStatusColor(status)}`}>
-              {status.toUpperCase()}
+              {translateStatus(status)}
             </span>
           </div>
 
@@ -135,12 +139,14 @@ const HistoricalAlert: React.FC<HistoricalAlertProps> = ({
             <h4
               className={`text-sm font-semibold mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}
             >
-              History:
+              Historie:
             </h4>
             <div className="space-y-2">
               {history.map((entry, index) => (
                 <div key={index} className="flex justify-between text-sm">
-                  <span className={getStatusColor(entry.status)}>{entry.status}</span>
+                  <span className={getStatusColor(entry.status)}>
+                    {translateStatus(entry.status)}
+                  </span>
                   <span className={isDark ? "text-gray-400" : "text-gray-500"}>
                     {formatDate(entry.timestamp)}
                   </span>

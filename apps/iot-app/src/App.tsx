@@ -1,5 +1,5 @@
 import { Toaster } from "react-hot-toast";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import ProtectedRoute from "./authentication/ProtectedRoute";
 import HomePage from "./components/MainPageComponent/HomePage";
@@ -12,15 +12,16 @@ import MainPage from "./pages/MainPage/MainPage";
 import ProfilePage from "./pages/ProfilePage";
 import RegisterPage from "./pages/RegisterPage";
 
+// Future flags are configured globally in index.html via window.__reactRouterFutureFlags
+
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <PatientModalProvider>
         <Toaster position="bottom-right" reverseOrder={false} />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<MainPage />}>
               <Route index element={<HomePage />} />
@@ -34,7 +35,7 @@ function App() {
         </Routes>
         <PatientModals />
       </PatientModalProvider>
-    </Router>
+    </BrowserRouter>
   );
 }
 

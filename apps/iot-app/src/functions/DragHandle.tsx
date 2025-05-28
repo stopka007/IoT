@@ -10,6 +10,9 @@ const DragHandle: React.FC<DragHandleProps> = ({ setSidebarWidth }) => {
   const startDrag = () => {
     isDragging.current = true;
 
+    // Add a class to the body to prevent text selection while dragging
+    document.body.classList.add("sidebar-resizing");
+
     const onMouseMove = (e: MouseEvent) => {
       if (isDragging.current) {
         const newWidth = Math.max(300, Math.min(e.clientX, 500));
@@ -19,6 +22,8 @@ const DragHandle: React.FC<DragHandleProps> = ({ setSidebarWidth }) => {
 
     const onMouseUp = () => {
       isDragging.current = false;
+      // Remove the class when done dragging
+      document.body.classList.remove("sidebar-resizing");
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
     };

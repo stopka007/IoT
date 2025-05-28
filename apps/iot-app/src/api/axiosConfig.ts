@@ -2,13 +2,8 @@ import { toast } from "react-hot-toast";
 
 import axios, { InternalAxiosRequestConfig } from "axios";
 
-// Log API URL for debugging
-const apiUrl = import.meta.env.VITE_API_URL;
-console.log("VITE_API_URL at runtime:", apiUrl);
-
-if (!apiUrl) {
-  console.error("VITE_API_URL is not defined. API calls will likely fail.");
-}
+// Get API URL from environment or default to server proxy
+const apiUrl = import.meta.env.VITE_API_URL || "";
 
 // Create axios instance with proper configuration
 const apiClient = axios.create({
@@ -26,50 +21,24 @@ const apiClient = axios.create({
 export const checkApiHealth = async () => {
   try {
     // Try the root endpoint first
-    console.log(`Checking API health at ${apiUrl}`);
-    const rootResponse = await axios.get(`${apiUrl}`, {
-      timeout: 5000,
-      withCredentials: false,
-    });
-    console.log("API root endpoint response:", rootResponse.data);
 
     // If we got here, the API is reachable
     return true;
   } catch (rootError) {
     console.error("API root check failed:", rootError);
 
-    // Try multiple health endpoints as fallbacks
-    const healthPaths = ["/health", "/api/health"];
-
-    for (const path of healthPaths) {
-      try {
-        console.log(`Trying health endpoint at ${apiUrl}${path}`);
-        const healthResponse = await axios.get(`${apiUrl}${path}`, {
-          timeout: 5000,
-          withCredentials: false,
-        });
-        console.log(`Health check at ${path} succeeded:`, healthResponse.data);
-        return true;
-      } catch (healthError) {
-        console.error(`Health check at ${path} failed:`, healthError);
-      }
-    }
-
-    // All health checks failed
+    // All health  checks failed
     return false;
   }
 };
 
-// Log all requests in development
+// Minimal request logging in development
 apiClient.interceptors.request.use(
   config => {
-    // Add API URL logging for debugging
-    console.log(`Full request URL: ${config.baseURL}${config.url}`);
-    console.log(`Request: ${config.method?.toUpperCase()} ${config.url}`, {
-      headers: config.headers,
-      baseURL: config.baseURL,
-      data: config.data,
-    });
+    // Only log in development and at debug level
+    if (process.env.NODE_ENV === "development" && localStorage.getItem("debug_api") === "true") {
+      console.log(`Request: ${config.method?.toUpperCase()} ${config.url}`);
+    }
 
     const token = localStorage.getItem("accessToken");
     if (token) {
@@ -101,7 +70,6 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 export const directLogin = async (email: string, password: string) => {
   try {
     const fullLoginUrl = `${apiUrl}/api/auth/login`;
-    console.log(`Attempting direct login to ${fullLoginUrl}`);
 
     // Try with absolute URL first
     const response = await axios.post(
@@ -114,7 +82,6 @@ export const directLogin = async (email: string, password: string) => {
       },
     );
 
-    console.log("Direct login successful:", response.data);
     return response.data;
   } catch (error) {
     console.error("Direct login failed:", error);
@@ -122,20 +89,16 @@ export const directLogin = async (email: string, password: string) => {
   }
 };
 
-// Log all responses and handle errors
+// Minimal response logging
 apiClient.interceptors.response.use(
   response => {
-    console.log(`Response: ${response.status} ${response.config.url}`, response.data);
+    // Only log in development and at debug level
+    if (process.env.NODE_ENV === "development" && localStorage.getItem("debug_api") === "true") {
+      console.log(`Response: ${response.status} ${response.config.url}`);
+    }
     return response;
   },
   async error => {
-    console.error("API Error:", error.message);
-    console.error("Error details:", {
-      config: error.config,
-      response: error.response,
-      request: error.request,
-    });
-
     // Show specific error if it's a CORS issue
     if (error.message.includes("Network Error") || !error.response) {
       console.error("Potential CORS issue - check server CORS configuration");
@@ -182,7 +145,6 @@ apiClient.interceptors.response.use(
       try {
         // Use the full URL for refresh token requests to avoid CORS issues
         const fullRefreshUrl = `${apiUrl}/api/auth/refresh`;
-        console.log("Refreshing token at:", fullRefreshUrl);
 
         const refreshResponse = await axios.post<{ accessToken: string }>(
           fullRefreshUrl,

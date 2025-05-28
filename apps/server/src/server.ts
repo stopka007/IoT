@@ -93,7 +93,7 @@ export async function buildServer(): Promise<FastifyInstance> {
   });
 
   server.setErrorHandler(errorHandler);
-  registerRoutes(server);
+  registerRoutes(server as FastifyInstance);
 
   return server;
 }
