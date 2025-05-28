@@ -65,6 +65,13 @@ export const useCreatePatientLogic = (
     };
 
     if (isOpen) {
+      setPatientName("");
+      setSelectedRoom(0);
+      setIllness("");
+      setAge("");
+      setNotes("");
+      setError(null);
+
       fetchData();
     }
   }, [isOpen]);
@@ -90,6 +97,12 @@ export const useCreatePatientLogic = (
       });
 
       if (response.status === 201) {
+        setPatientName("");
+        setSelectedRoom(0);
+        setIllness("");
+        setAge("");
+        setNotes("");
+
         triggerUpdate();
         onClose();
       } else {
