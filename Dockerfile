@@ -10,7 +10,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/server/package.json ./apps/server/package.json
 COPY my-turborepo/packages ./my-turborepo/packages
 
-RUN pnpm install --filter server --prod=false --frozen-lockfile
+RUN pnpm install --filter server --prod=false --no-frozen-lockfile
 
 FROM base AS builder
 WORKDIR /usr/src/app

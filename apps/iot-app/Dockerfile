@@ -2,7 +2,7 @@ FROM node:18-slim AS builder
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm@9.0.0 && pnpm install --frozen-lockfile
+RUN npm install -g pnpm@9.0.0 && pnpm install --no-frozen-lockfile
 
 COPY . .
 
