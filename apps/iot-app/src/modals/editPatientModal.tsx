@@ -224,34 +224,47 @@ export default function EditPatientModal({
             </div>
           </div>
 
-          <div className="flex justify-between mt-6 flex-wrap gap-0.5 py-0.5 overflow-y-auto">
-            <button
-              type="button"
-              onClick={() => setShowArchiveConfirm(true)}
-              className="mr-15 px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200 disabled:opacity-50 cursor-pointer"
-              disabled={isLoading || archiveLoading}
-            >
-              {archiveLoading ? "Archivuji..." : "Archivovat"}
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50 cursor-pointer"
-              disabled={isLoading || archiveLoading}
-            >
-              {isLoading ? "Aktualizuji..." : "Aktualizovat Pacienta"}
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className={`px-4 py-2 text-sm font-medium cursor-pointer ${
-                theme === "light"
-                  ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
-                  : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
-              } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
-              disabled={isLoading || archiveLoading}
-            >
-              Zrušit
-            </button>
+          <div className="mt-6 flex justify-between">
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => setShowArchiveConfirm(true)}
+                className={`px-4 py-2 text-sm font-medium cursor-pointer border ${
+                  theme === "light"
+                    ? "text-yellow-600 border-yellow-600 hover:bg-yellow-600 hover:text-white"
+                    : "text-yellow-500 border-yellow-500 hover:bg-yellow-600 hover:text-white"
+                } rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200 disabled:opacity-50`}
+                disabled={isLoading || archiveLoading}
+              >
+                {archiveLoading ? "Archivuji..." : "Archivovat"}
+              </button>
+              <button
+                type="submit"
+                className={`px-4 py-2 text-sm font-medium cursor-pointer border ${
+                  theme === "light"
+                    ? "text-green-600 border-green-600 hover:bg-green-600 hover:text-white"
+                    : "text-green-500 border-green-500 hover:bg-green-600 hover:text-white"
+                } rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50`}
+                disabled={isLoading || archiveLoading}
+              >
+                {isLoading ? "Aktualizuji..." : "Aktualizovat Pacienta"}
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className={`px-4 py-2 text-sm font-medium cursor-pointer border ${
+                  theme === "light"
+                    ? "text-gray-600 border-gray-300 hover:bg-gray-600 hover:text-white"
+                    : "text-gray-400 border-gray-600 hover:bg-gray-600 hover:text-white"
+                } rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors duration-200`}
+                disabled={isLoading || archiveLoading}
+              >
+                Zrušit
+              </button>
+            </div>
           </div>
         </form>
       </div>
@@ -293,24 +306,33 @@ export default function EditPatientModal({
               <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{archiveError}</div>
             )}
             <div className="flex justify-end gap-4">
-              <button
-                onClick={handleArchive}
-                className={`px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200 cursor-pointer`}
-                disabled={archiveLoading}
-              >
-                {archiveLoading ? "Archivuji..." : "Ano, Archivovat"}
-              </button>
-              <button
-                onClick={() => setShowArchiveConfirm(false)}
-                className={`px-4 py-2 text-sm font-medium cursor-pointer ${
-                  theme === "light"
-                    ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
-                    : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
-                } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
-                disabled={archiveLoading}
-              >
-                Zrušit
-              </button>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={handleArchive}
+                  className={`px-4 py-2 text-sm font-medium cursor-pointer border ${
+                    theme === "light"
+                      ? "text-yellow-600 border-yellow-600 hover:bg-yellow-600 hover:text-white"
+                      : "text-yellow-500 border-yellow-500 hover:bg-yellow-600 hover:text-white"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200`}
+                  disabled={archiveLoading}
+                >
+                  {archiveLoading ? "Archivuji..." : "Ano, Archivovat"}
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => setShowArchiveConfirm(false)}
+                  className={`px-4 py-2 text-sm font-medium cursor-pointer border ${
+                    theme === "light"
+                      ? "text-gray-600 border-gray-300 hover:bg-gray-600 hover:text-white"
+                      : "text-gray-400 border-gray-600 hover:bg-gray-600 hover:text-white"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors duration-200`}
+                  disabled={archiveLoading}
+                >
+                  Zrušit
+                </button>
+              </div>
             </div>
           </div>
         </div>
