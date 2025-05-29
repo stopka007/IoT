@@ -116,48 +116,52 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({ patient, onCl
             )}
           </div>
 
-          <div className="mt-6 flex justify-between flex-wrap gap-0.5 py-0.5 overflow-y-auto">
-            <button
-              onClick={handleEditClick}
-              className={`px-2 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
-                theme === "light"
-                  ? "text-white bg-green-500 hover:bg-green-600 focus:ring-green-300"
-                  : "text-white bg-green-600 hover:bg-green-700 focus:ring-green-500"
-              } focus:outline-none focus:ring-2 transition-colors duration-200`}
-            >
-              Upravit Pacienta
-            </button>
-            <button
-              onClick={handleAssignDeviceClick}
-              className={`px-2 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
-                theme === "light"
-                  ? "text-white bg-blue-500 hover:bg-blue-700 focus:ring-blue-500"
-                  : "text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
-              } focus:outline-none focus:ring-2 transition-colors duration-200`}
-            >
-              Přiřadit tlačítko
-            </button>
-            <button
-              onClick={handleUnassignDeviceClick}
-              className={`px-2 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
-                theme === "light"
-                  ? "text-gray-700 bg-yellow-300 hover:bg-yellow-400 focus:ring-yellow-300"
-                  : "text-gray-200 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500"
-              } focus:outline-none focus:ring-2 transition-colors duration-200`}
-            >
-              Odebrat tlačítko
-            </button>
+          <div className="mt-6 flex justify-between">
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={handleEditClick}
+                className={`px-2 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer border ${
+                  theme === "light"
+                    ? "text-green-600 border-green-600 hover:bg-green-600 hover:text-white focus:ring-green-300"
+                    : "text-green-500 border-green-500 hover:bg-green-600 hover:text-white focus:ring-green-500"
+                } focus:outline-none focus:ring-2 transition-colors duration-200`}
+              >
+                Upravit Pacienta
+              </button>
+              <button
+                onClick={handleAssignDeviceClick}
+                className={`px-2 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer border ${
+                  theme === "light"
+                    ? "text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white focus:ring-blue-500"
+                    : "text-blue-500 border-blue-500 hover:bg-blue-600 hover:text-white focus:ring-blue-500"
+                } focus:outline-none focus:ring-2 transition-colors duration-200`}
+              >
+                Přiřadit zařízení
+              </button>
+              <button
+                onClick={handleUnassignDeviceClick}
+                className={`px-2 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer border ${
+                  theme === "light"
+                    ? "text-yellow-600 border-yellow-600 hover:bg-yellow-600 hover:text-white focus:ring-yellow-300"
+                    : "text-yellow-500 border-yellow-500 hover:bg-yellow-600 hover:text-white focus:ring-yellow-500"
+                } focus:outline-none focus:ring-2 transition-colors duration-200`}
+              >
+                Odebrat zařízení
+              </button>
+            </div>
 
-            <button
-              onClick={onClose}
-              className={`px-2 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer ${
-                theme === "light"
-                  ? "text-gray-700 bg-gray-300 hover:bg-gray-400 focus:ring-gray-300"
-                  : "text-gray-800 bg-neutral-300 hover:bg-neutral-400 focus:ring-neutral-500"
-              } focus:outline-none focus:ring-2 transition-colors duration-200`}
-            >
-              Zavřít
-            </button>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={onClose}
+                className={`px-2 py-2 text-sm font-medium rounded-lg flex items-center gap-2 cursor-pointer border ${
+                  theme === "light"
+                    ? "text-gray-600 border-gray-300 hover:bg-gray-600 hover:text-white focus:ring-gray-300"
+                    : "text-gray-400 border-gray-600 hover:bg-gray-600 hover:text-white focus:ring-neutral-500"
+                } focus:outline-none focus:ring-2 transition-colors duration-200`}
+              >
+                Zavřít
+              </button>
+            </div>
           </div>
         </div>
       </div>

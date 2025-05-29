@@ -236,17 +236,24 @@ const RoomDetailComponent = () => {
             <div className="flex-1 overflow-y-auto">
               {selectedPatient ? (
                 <div>
-                  <h3 className="text-xl font-bold mb-4">{selectedPatient.name}</h3>
+                  <h3 className="text-2xl font-bold mb-4 tracking-wide">{selectedPatient.name}</h3>
+                  <div className="px-6 h-0.25 bg-neutral-500" />
                   <div className="space-y-2 text-lg">
-                    <p>
-                      <span className="font-semibold">Věk:</span> {selectedPatient.age}
+                    <p className="p-1">
+                      <span className="italic">Věk:</span>{" "}
+                      <a className="font-semibold">{selectedPatient.age}</a>
                     </p>
-                    <p>
-                      <span className="font-semibold">Diagnóza:</span>
-                      {selectedPatient.illness}
+                    <p className="p-1">
+                      <span className="italic">Diagnóza:</span>{" "}
+                      <a className="font-semibold">{selectedPatient.illness}</a>
                     </p>
-                    <p>
-                      <span className="font-semibold">Pokoj:</span> {selectedPatient.room}
+                    <p className="p-1">
+                      <span className="italic">Pokoj:</span>{" "}
+                      <a className="font-semibold">{selectedPatient.room}</a>
+                    </p>
+                    <p className="p-1">
+                      <span className="italic">Poznámka:</span>{" "}
+                      <a className="font-semibold">{selectedPatient.notes}</a>
                     </p>
                   </div>
                 </div>
