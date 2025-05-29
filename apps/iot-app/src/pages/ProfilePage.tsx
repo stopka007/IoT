@@ -85,7 +85,7 @@ function ProfilePage() {
   }
 
   return (
-    <div className={`p-6 max-w-4xl mx-auto min-h-full overflow-y-auto h-[1000px]`}>
+    <div className={`p-6 max-w-4xl mx-auto h-full overflow-y-auto`}>
       <h1 className="text-3xl font-bold mb-6 border-b pb-2">Uživatelský Profil</h1>
 
       {/* Display User Info */}
