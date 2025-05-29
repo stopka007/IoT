@@ -97,7 +97,7 @@ export default function MainPage() {
           <div className="flex items-center space-x-4">
             <button
               onClick={handleToggleTheme}
-              className={`${
+              className={` cursor-pointer ${
                 theme === "light"
                   ? "text-black hover:text-gray-600"
                   : "text-white hover:text-gray-300"
@@ -137,18 +137,16 @@ export default function MainPage() {
               )}
             </button>
 
-            {user?.role === "admin" && (
-              <button
-                onClick={() => setShowDetailedView(prev => !prev)}
-                className={`px-3 py-2 rounded ${
-                  theme === "light"
-                    ? "bg-gray-200 text-black hover:bg-gray-300"
-                    : "bg-neutral-600 duration-200 text-white hover:bg-neutral-700"
-                }`}
-              >
-                {!showDetailedView ? "Admin režim" : "Uživatelský režim"}
-              </button>
-            )}
+            <button
+              onClick={() => setShowDetailedView(prev => !prev)}
+              className={`px-3 py-2 rounded cursor-pointer ${
+                theme === "light"
+                  ? "bg-gray-200 text-black hover:bg-gray-300"
+                  : "bg-neutral-600 duration-200 text-white hover:bg-neutral-700"
+              }`}
+            >
+              {!showDetailedView ? "Admin režim" : "Uživatelský režim"}
+            </button>
 
             <div className="relative">
               <button
