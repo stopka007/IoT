@@ -31,12 +31,14 @@ services:
   - type: web
     name: iot-frontend
     runtime: node
-    rootDir: .
+    rootDir: apps/iot-app
     buildCommand: |
-      npm install -g pnpm@9.0.0
-      pnpm install
-      pnpm run build --filter=iot-app
-    startCommand: cd apps/iot-app && npx serve dist
+      cd ../..
+      npm install -g pnpm
+      pnpm install --no-frozen-lockfile
+      cd apps/iot-app
+      pnpm build
+    startCommand: npx serve dist
     envVars:
       - key: NODE_ENV
         value: production
