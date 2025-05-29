@@ -34,7 +34,7 @@ services:
     rootDir: .
     buildCommand: |
       npm install -g pnpm@9.0.0
-      pnpm install --no-frozen-lockfile
+      pnpm install
       pnpm run build --filter=iot-app
     startCommand: cd apps/iot-app && npx serve dist
     envVars:
