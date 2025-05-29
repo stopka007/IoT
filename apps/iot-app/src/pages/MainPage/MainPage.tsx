@@ -146,7 +146,7 @@ export default function MainPage() {
             </div>
           </div>
         </header>
-        <Breadcrumbs setShowFilter={setShowFilter} />
+        <Breadcrumbs setShowFilter={setShowFilter} setShowDetailedView={setShowDetailedView} />
         <div className={`p-4 border-b ${headerClass} border-t-0`}>
           <Alert type="warning" title="Varování" message="Možný pád pacienta!" room="A-105" />
           <Alert

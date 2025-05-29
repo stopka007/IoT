@@ -8,9 +8,10 @@ import { Patient } from "../../functions/patientService";
 
 interface BreadcrumbsProps {
   setShowFilter?: (show: boolean) => void;
+  setShowDetailedView?: (show: boolean) => void;
 }
 
-const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ setShowFilter }) => {
+const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ setShowFilter, setShowDetailedView }) => {
   const { theme } = useTheme();
   const location = useLocation();
   const { roomNumber, id } = useParams<{ roomNumber?: string; id?: string }>();
@@ -57,6 +58,9 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ setShowFilter }) => {
   const handleHomeClick = () => {
     if (setShowFilter) {
       setShowFilter(false);
+    }
+    if (setShowDetailedView) {
+      setShowDetailedView(true);
     }
   };
 
