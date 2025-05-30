@@ -146,7 +146,7 @@ export default function MainPage() {
                     : "bg-neutral-600 duration-200 text-white hover:bg-neutral-700"
                 }`}
               >
-                {!showDetailedView ? "Admin režim" : "Uživatelský režim"}
+                {!showDetailedView ? "Uživatelský režim" : "Admin režim"}
               </button>
             )}
 
