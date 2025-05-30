@@ -137,16 +137,18 @@ export default function MainPage() {
               )}
             </button>
 
-            <button
-              onClick={() => setShowDetailedView(prev => !prev)}
-              className={`px-3 py-2 rounded cursor-pointer ${
-                theme === "light"
-                  ? "bg-gray-200 text-black hover:bg-gray-300"
-                  : "bg-neutral-600 duration-200 text-white hover:bg-neutral-700"
-              }`}
-            >
-              {!showDetailedView ? "Admin režim" : "Uživatelský režim"}
-            </button>
+            {user?.role === "admin" && (
+              <button
+                onClick={() => setShowDetailedView(prev => !prev)}
+                className={`px-3 py-2 rounded ${
+                  theme === "light"
+                    ? "bg-gray-200 text-black hover:bg-gray-300"
+                    : "bg-neutral-600 duration-200 text-white hover:bg-neutral-700"
+                }`}
+              >
+                {!showDetailedView ? "Přehled pokojů" : "Režim úprav"}
+              </button>
+            )}
 
             <div className="relative">
               <button
