@@ -97,7 +97,7 @@ export default function MainPage() {
           <div className="flex items-center space-x-4">
             <button
               onClick={handleToggleTheme}
-              className={`${
+              className={` cursor-pointer ${
                 theme === "light"
                   ? "text-black hover:text-gray-600"
                   : "text-white hover:text-gray-300"

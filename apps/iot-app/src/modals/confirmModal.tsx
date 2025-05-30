@@ -56,11 +56,11 @@ export default function ConfirmModal({
         <div className="flex justify-end gap-4">
           <button
             onClick={onClose}
-            className={`px-4 py-2 text-sm font-medium cursor-pointer ${
+            className={`px-4 py-2 text-sm font-medium cursor-pointer border ${
               theme === "light"
-                ? "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300"
-                : "text-gray-200 bg-neutral-700 hover:bg-neutral-600 focus:ring-neutral-500"
-            } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
+                ? "text-gray-600 border-gray-300 hover:bg-gray-600 hover:text-white"
+                : "text-gray-400 border-gray-600 hover:bg-gray-600 hover:text-white"
+            } rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors duration-200`}
           >
             {cancelButtonText || defaultCancelText}
           </button>
@@ -69,12 +69,18 @@ export default function ConfirmModal({
               onConfirm();
               onClose();
             }}
-            className={`px-4 py-2 text-sm font-medium text-white cursor-pointer ${
+            className={`px-4 py-2 text-sm font-medium cursor-pointer border ${
               type === "logout"
-                ? "bg-red-600 hover:bg-red-700 focus:ring-red-500"
+                ? theme === "light"
+                  ? "text-red-600 border-red-600 hover:bg-red-600 hover:text-white"
+                  : "text-red-500 border-red-500 hover:bg-red-600 hover:text-white"
                 : type === "delete"
-                  ? "bg-red-600 hover:bg-red-700 focus:ring-red-500"
-                  : "bg-red-600 hover:bg-red-700 focus:ring-red-500"
+                  ? theme === "light"
+                    ? "text-red-600 border-red-600 hover:bg-red-600 hover:text-white"
+                    : "text-red-500 border-red-500 hover:bg-red-600 hover:text-white"
+                  : theme === "light"
+                    ? "text-red-600 border-red-600 hover:bg-red-600 hover:text-white"
+                    : "text-red-500 border-red-500 hover:bg-red-600 hover:text-white"
             } rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200`}
           >
             {confirmButtonText || defaultConfirmText}
